@@ -15,8 +15,8 @@ public class LexerTest {
     }
     
     struct ExpectedTest {
-        public string ExpectedType { get; set; }
-        public string ExpectedLiteral { get; set; }
+        public string ExpectedType { get; init; }
+        public string ExpectedLiteral { get; init; }
     }
     
     [Fact]

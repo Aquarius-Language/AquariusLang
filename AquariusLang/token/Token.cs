@@ -45,7 +45,7 @@ public struct TokenLookup {
     /// <summary>
     /// keywords table maps corresponded to keywords constants above.
     /// </summary>
-    public static readonly Dictionary<string, string> Keywords = new() {
+    private static readonly Dictionary<string, string> Keywords = new() {
         {"fn",     TokenType.FUNCTION},
         {"let",    TokenType.LET},
         {"true",   TokenType.TRUE},
@@ -70,8 +70,9 @@ public struct Token {
     /// <summary>
     /// Example token types: "=", "INT", "<", etc. It's corresponded to constants above in TokenType.
     /// </summary>
-    public string Type { get; set; }
-    public string Literal { get; set; }
+    public string Type;
+
+    public string Literal;
 
     public override string ToString() {
         return $"Type: {Type}, Literal: {Literal}";
