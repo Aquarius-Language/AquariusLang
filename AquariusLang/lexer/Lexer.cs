@@ -3,7 +3,7 @@
 namespace AquariusLang.lexer; 
 
 public class Lexer {
-    private string input;     
+    private string? input;     
     private int position;     // current position in input (points to current char)
     private int readPosition; // current reading position in input (after current char)
     private char ch;          // current char under examination
@@ -12,7 +12,7 @@ public class Lexer {
     /// Singleton.
     /// </summary>
     /// <param name="input"></param>
-    public static Lexer NewInstance(string input) {
+    public static Lexer NewInstance(string? input) {
         Lexer l = new Lexer() { input = input };
         l.readChar();
         return l;

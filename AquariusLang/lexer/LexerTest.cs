@@ -21,7 +21,7 @@ public class LexerTest {
     
     [Fact]
     public void TestNextToken() {
-        string input = @"
+        string? input = @"
             let five = 5;
             let ten = 10;
 
