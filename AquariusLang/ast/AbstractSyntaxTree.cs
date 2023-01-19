@@ -48,6 +48,10 @@ public class LetStatement : IStatement {
     private Identifier name;
     private IExpression value; // The expression that produces the value.
 
+    public LetStatement(Token token) {
+        this.token = token;
+    }
+
     public LetStatement(Token token, Identifier name, IExpression value) {
         this.token = token;
         this.name = name;
@@ -96,6 +100,10 @@ public class ReturnStatement : IStatement {
     private Token token;
     private IExpression returnValue;
 
+    public ReturnStatement(Token token) {
+        this.token = token;
+    }
+
     public ReturnStatement(Token token, IExpression returnValue) {
         this.token = token;
         this.returnValue = returnValue;
@@ -140,6 +148,10 @@ public class ExpressionStatement : IStatement {
     private Token token;
     private IExpression expression;
 
+    public ExpressionStatement(Token token) {
+        this.token = token;
+    }
+
     public ExpressionStatement(Token token, IExpression expression) {
         this.token = token;
         this.expression = expression;
@@ -167,6 +179,7 @@ public class ExpressionStatement : IStatement {
 
     public IExpression Expression {
         get => expression;
+        set => expression = value;
     }
 }
 
@@ -282,6 +295,10 @@ public class Boolean : IExpression {
 public class IntegerLiteral : IExpression {
     private Token token;
     private int value;
+
+    public IntegerLiteral(Token token) {
+        this.token = token;
+    }
 
     public IntegerLiteral(Token token, int value) {
         this.token = token;
