@@ -187,6 +187,10 @@ public class BlockStatement : IStatement {
     private Token token;
     private IStatement[] statements;
 
+    public BlockStatement(Token token) {
+        this.token = token;
+    }
+
     public BlockStatement(Token token, IStatement[] statements) {
         this.token = token;
         this.statements = statements;
@@ -261,11 +265,11 @@ public class Identifier : IExpression {
     }
 }
 
-public class Boolean : IExpression {
+public class BooleanLiteral : IExpression {
     private Token token;
     private bool value;
 
-    public Boolean(Token token, bool value) {
+    public BooleanLiteral(Token token, bool value) {
         this.token = token;
         this.value = value;
     }
@@ -332,9 +336,18 @@ public class PrefixExpression : IExpression {
     private string _operator;
     private IExpression right;
 
-    public PrefixExpression(Token token, string @operator, IExpression right) {
+    public PrefixExpression(Token token) {
         this.token = token;
-        _operator = @operator;
+    }
+
+    public PrefixExpression(Token token, string _operator) {
+        this.token = token;
+        this._operator = _operator;
+    }
+
+    public PrefixExpression(Token token, string _operator, IExpression right) {
+        this.token = token;
+        this._operator = _operator;
         this.right = right;
     }
 
@@ -376,10 +389,25 @@ public class InfixExpression : IExpression {
     private string _operator;
     private IExpression right;
 
-    public InfixExpression(Token token, IExpression left, string @operator, IExpression right) {
+    public InfixExpression(Token token) {
+        this.token = token;
+    }
+
+    public InfixExpression(Token token, IExpression left) {
         this.token = token;
         this.left = left;
-        _operator = @operator;
+    }
+
+    public InfixExpression(Token token, IExpression left, string _operator) {
+        this.token = token;
+        this.left = left;
+        this._operator = _operator;
+    }
+
+    public InfixExpression(Token token, IExpression left, string _operator, IExpression right) {
+        this.token = token;
+        this.left = left;
+        this._operator = _operator;
         this.right = right;
     }
 
@@ -427,6 +455,16 @@ class IfExpression : IExpression {
     private BlockStatement consequence; // Series of statements under "if".
     private BlockStatement alternative; // Series of statements under "else".
 
+    public IfExpression(Token token) {
+        this.token = token;
+    }
+
+    public IfExpression(Token token, IExpression condition, BlockStatement consequence) {
+        this.token = token;
+        this.condition = condition;
+        this.consequence = consequence;
+    }
+
     public IfExpression(Token token, IExpression condition, BlockStatement consequence, BlockStatement alternative) {
         this.token = token;
         this.condition = condition;
@@ -455,12 +493,36 @@ class IfExpression : IExpression {
 
     public void ExpressionNode() {
     }
+
+    public Token Token {
+        get => token;
+        set => token = value;
+    }
+
+    public IExpression Condition {
+        get => condition;
+        set => condition = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    public BlockStatement Consequence {
+        get => consequence;
+        set => consequence = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    public BlockStatement Alternative {
+        get => alternative;
+        set => alternative = value ?? throw new ArgumentNullException(nameof(value));
+    }
 }
 
 class FunctionLiteral : IExpression {
     private Token token; // The 'fn' token.
     private Identifier[] parameters;
     private BlockStatement body;
+
+    public FunctionLiteral(Token token) {
+        this.token = token;
+    }
 
     public FunctionLiteral(Token token, Identifier[] parameters, BlockStatement body) {
         this.token = token;
@@ -512,6 +574,15 @@ class CallExpression : IExpression {
     private Token token; // The '(' token.
     private IExpression function; // Identifier or FunctionLiteral.
     private IExpression[] arguments;
+
+    public CallExpression(Token token) {
+        this.token = token;
+    }
+
+    public CallExpression(Token token, IExpression function) {
+        this.token = token;
+        this.function = function;
+    }
 
     public CallExpression(Token token, IExpression function, IExpression[] arguments) {
         this.token = token;

@@ -88,10 +88,35 @@ public class Parser {
     /// <returns>Parser instance.</returns>
     public static Parser NewInstance(Lexer lexer) {
         Parser parser = new Parser() { lexer = lexer, errors = new List<string>(), };
+
+        parser.prefixParseFns = new Dictionary<string, PrefixParseFn>();
+        parser.registerPrefix(TokenType.IDENT, parser.parseIdentifier);
+        parser.registerPrefix(TokenType.INT, parser.parseIntegerLiteral);
+        parser.registerPrefix(TokenType.BANG, parser.parsePrefixExpression);
+        parser.registerPrefix(TokenType.MINUS, parser.parsePrefixExpression);
+        parser.registerPrefix(TokenType.TRUE, parser.parseBoolean);
+        parser.registerPrefix(TokenType.FALSE, parser.parseBoolean);
+        parser.registerPrefix(TokenType.LPAREN, parser.parseGroupedExpression);
+        parser.registerPrefix(TokenType.IF, parser.parseIfExpression);
+        parser.registerPrefix(TokenType.FUNCTION, parser.parseFunctionLiteral);
+
+        parser.infixParseFns = new Dictionary<string, InfixParseFn>();
+        parser.registerInfix(TokenType.PLUS, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.MINUS, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.SLASH, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.ASTERISK, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.EQ, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.NOT_EQ, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.LT, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.GT, parser.parseInfixExpression);
+        
+        parser.registerInfix(TokenType.LPAREN, parser.parseCallExpression);
         
         // Read two tokens, so curToken and peekToken are both set.
         parser.nextToken();
         parser.nextToken();
+
+        return parser;
     }
 
     private void nextToken() {
@@ -285,8 +310,225 @@ public class Parser {
         integerLiteral.Value = value;
         return integerLiteral;
     }
-    
-    
+
+
+    /// <summary>
+    /// Prefix operators:
+    ///     -5;
+    ///     !foobar;
+    ///     5 + -10;
+    /// 
+    /// The structure of their usage is the following:
+    ///     <prefix operator><expression>;
+    /// 
+    /// Any expression can follow a prefix operator as operand. These are valid:
+    /// 
+    ///     !isGreaterThanZero(2);
+    ///     5 + -add(5, 5);
+    /// 
+    /// That means that an AST node for a prefix operator expression has to be flexible enough to
+    /// point to any expression as its operand.
+    /// </summary>
+    /// <returns></returns>
+    private IExpression parsePrefixExpression() {
+        PrefixExpression expression = new PrefixExpression(currToken, currToken.Literal);
+        nextToken();
+        expression.Right = parseExpression((int)Precedence.OperatorPrecedence.PREFIX);
+        return expression;
+    }
+
+    /// <summary>
+    /// Infix operator examples:
+    ///
+    ///     5 + 5;
+    ///     5 - 5;
+    ///     5 * 5;
+    ///     5 / 5;
+    ///     5 > 5;
+    ///     5 < 5;
+    ///     5 == 5;
+    ///     5 != 5;
+    /// 
+    /// As with prefix operator expressions, we can use any expressions to the left and right of the operator:
+    ///     <expression> <infix operator> <expression>
+    /// 
+    /// Because of the two operands (left and right) these expressions are sometimes called “binary expressions”.
+    /// </summary>
+    /// <param name="leftExpr"></param>
+    /// <returns></returns>
+    private IExpression parseInfixExpression(IExpression leftExpr) {
+        InfixExpression expression = new InfixExpression(currToken, leftExpr, currToken.Literal);
+        int precedence = currPrecedence();
+        nextToken();
+        expression.Right = parseExpression(precedence);
+        return expression;
+    }
+
+    private IExpression parseBoolean() {
+        return new BooleanLiteral(currToken, currTokenIs(TokenType.TRUE));
+    }
+
+    /// <summary>
+    /// This will be the magical function that makes parsing grouped expressions "()" correct
+    /// and influence their precedence and thus the order in which they are evaluated in their context.
+    /// </summary>
+    /// <returns></returns>
+    private IExpression parseGroupedExpression() {
+        nextToken();
+        IExpression expression = parseExpression((int)Precedence.OperatorPrecedence.LOWEST);
+        
+        if (!expectPeek(TokenType.RPAREN)) {
+            return null;
+        }
+
+        return expression;
+    }
+
+    /// <summary>
+    /// If expression example in Monkey:
+    ///
+    ///    if (x > y) {
+    ///        return x;
+    ///    } else {
+    ///        return y;
+    ///    }
+    ///
+    /// Else is optional:
+    /// 
+    ///     if (x > y) {
+    ///         return x;
+    ///     }
+    /// 
+    /// No need for return statements here:
+    /// 
+    ///     let foobar = if (x > y) { x } else { y };
+    /// 
+    /// Structure:
+    /// 
+    ///     if (<condition>) <consequence> else <alternative>
+    /// </summary>
+    /// <returns></returns>
+    private IExpression parseIfExpression() {
+        IfExpression expression = new IfExpression(currToken);
+        if (!expectPeek(TokenType.LPAREN)) {
+            return null;
+        }
+        nextToken();
+        expression.Condition = parseExpression((int)Precedence.OperatorPrecedence.LOWEST);
+        if (!expectPeek(TokenType.RPAREN)) {
+            return null;
+        }
+
+        if (!expectPeek(TokenType.LBRACE)) {
+            return null;
+        }
+
+        expression.Consequence = parseBlockStatement();
+
+        if (peekTokenIs(TokenType.ELSE)) { // Else is optional.
+            nextToken();
+            if (!expectPeek(TokenType.LBRACE)) {
+                return null;
+            }
+
+            expression.Alternative = parseBlockStatement();
+        }
+
+        return expression;
+    }
+
+    private BlockStatement parseBlockStatement() {
+        BlockStatement block = new BlockStatement(currToken);
+        nextToken();
+        List<IStatement> statements = new List<IStatement>();
+        while (!currTokenIs(TokenType.RBRACE) && !currTokenIs(TokenType.EOF)) {
+            IStatement statement = parseStatement();
+            if (statement != null) {
+                statements.Add(statement);
+            }
+            nextToken();
+        }
+
+        block.Statements = statements.ToArray();
+        return block;
+    }
+
+    public IExpression parseFunctionLiteral() {
+        FunctionLiteral functionLiteral = new FunctionLiteral(currToken);
+        if (!expectPeek(TokenType.LPAREN)) {
+            return null;
+        }
+
+        functionLiteral.Parameters = parseFunctionParameters();
+
+        if (!expectPeek(TokenType.LBRACE)) {
+            return null;
+        }
+
+        functionLiteral.Body = parseBlockStatement();
+
+        return functionLiteral;
+    }
+
+    public Identifier[] parseFunctionParameters() {
+        List<Identifier> identifiers = new List<Identifier>();
+        if (peekTokenIs(TokenType.RPAREN)) {
+            nextToken();
+            return identifiers.ToArray();
+        }
+        nextToken();
+        Identifier identifier = new Identifier(currToken, currToken.Literal);
+        identifiers.Add(identifier);
+
+        while (peekTokenIs(TokenType.COMMA)) {
+            nextToken();
+            nextToken();
+            identifier = new Identifier(currToken, currToken.Literal);
+            identifiers.Add(identifier);
+        }
+
+        if (!expectPeek(TokenType.RPAREN)) {
+            return null;
+        }
+
+        return identifiers.ToArray();
+    }
+
+    private IExpression parseCallExpression(IExpression function) {
+        CallExpression callExpression = new CallExpression(currToken, function, parseCallArguments());
+        return callExpression;
+    }
+
+    private IExpression[] parseCallArguments() {
+        List<IExpression> arguments = new List<IExpression>();
+        if (peekTokenIs(TokenType.RPAREN)) {
+            nextToken();
+            return arguments.ToArray();
+        }
+        
+        nextToken();
+        arguments.Add(parseExpression((int)Precedence.OperatorPrecedence.LOWEST));
+        
+        while (peekTokenIs(TokenType.COMMA)) {
+            nextToken();
+            nextToken();
+            arguments.Add(parseExpression((int)Precedence.OperatorPrecedence.LOWEST));
+        }
+
+        if (!expectPeek(TokenType.RPAREN)) {
+            return null;
+        }
+
+        return arguments.ToArray();
+    }
+
+    private void registerPrefix(string tokenType, PrefixParseFn fn) {
+        prefixParseFns[tokenType] = fn;
+    }
+
+    private void registerInfix(string tokenType, InfixParseFn fn) {
+        infixParseFns[tokenType] = fn;
+    }
 
     public List<string> Errors => errors;
 }
