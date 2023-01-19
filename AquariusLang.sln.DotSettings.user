@@ -4,7 +4,9 @@
     &lt;TestAncestor&gt;&#xD;
       &lt;TestId&gt;xUnit::34CB0693-A2DA-43EE-B232-015E60F474D0::net6.0::AquariusLang.lexer.LexerTest&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::34CB0693-A2DA-43EE-B232-015E60F474D0::net6.0::AquariusLang.ast.AbstractSyntaxTreeTest.TestString&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::34CB0693-A2DA-43EE-B232-015E60F474D0::net6.0::AquariusLang.parser.ParserTest.TestLetStatements&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
     &lt;ProjectFile&gt;34CB0693-A2DA-43EE-B232-015E60F474D0/d:ast/f:AbstractSyntaxTreeTest.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;34CB0693-A2DA-43EE-B232-015E60F474D0/d:parser/f:ParserTest.cs&lt;/ProjectFile&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
