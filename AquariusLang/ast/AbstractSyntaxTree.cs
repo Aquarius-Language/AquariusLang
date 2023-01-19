@@ -612,6 +612,21 @@ class CallExpression : IExpression {
 
     public void ExpressionNode() {
     }
+
+    public Token Token {
+        get => token;
+        set => token = value;
+    }
+
+    public IExpression Function {
+        get => function;
+        set => function = value;
+    }
+
+    public IExpression[] Arguments {
+        get => arguments;
+        set => arguments = value;
+    }
 }
 
 /// <summary>
