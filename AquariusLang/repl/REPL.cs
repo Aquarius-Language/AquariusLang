@@ -1,4 +1,6 @@
-﻿using AquariusLang.lexer;
+﻿using AquariusLang.ast;
+using AquariusLang.lexer;
+using AquariusLang.parser;
 using AquariusLang.token;
 
 namespace AquariusLang.repl; 
@@ -15,10 +17,23 @@ public class REPL {
             
             string? line = Console.ReadLine();
             Lexer lexer = Lexer.NewInstance(line);
+            Parser parser = Parser.NewInstance(lexer);
+            AbstractSyntaxTree tree = parser.ParseAST();
 
-            for (Token token = lexer.NextToken(); token.Type != TokenType.EOF; token = lexer.NextToken()) {
-                Console.WriteLine($"{token}\n");
+            if (parser.Errors.Count != 0) {
+                printParserErrors(parser.Errors.ToArray());
+                continue;
             }
+            
+            Console.WriteLine(tree.String());
+            Console.WriteLine();
+        }
+    }
+
+    private static void printParserErrors(string[] errors) {
+        Console.WriteLine("Parser errors:");
+        foreach (var error in errors) {
+            Console.WriteLine($"\t{error}");
         }
     }
 }

@@ -28,7 +28,7 @@ public struct TokenType {
     public const string RPAREN = ")";
     public const string LBRACE = "{";
     public const string RBRACE = "}";
-    // Keywords;
+    // Keywords
     public const string FUNCTION = "FUNCTION";
     public const string LET      = "LET";
     public const string TRUE     = "TRUE";
