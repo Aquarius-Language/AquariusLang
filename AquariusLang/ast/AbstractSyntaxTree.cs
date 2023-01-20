@@ -204,7 +204,7 @@ public class BlockStatement : IStatement {
         StringBuilder builder = new StringBuilder();
 
         foreach (var statement in statements) {
-            builder.Append(String());
+            builder.Append(statement.String());
         }
 
         return builder.ToString();

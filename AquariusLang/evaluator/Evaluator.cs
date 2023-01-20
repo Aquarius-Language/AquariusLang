@@ -179,7 +179,7 @@ public class Evaluator {
             case "-":
                 return evalMinusPrefixOperatorExpression(right);
             default:
-                return newError($"unknown operator: {_operator}{right.Type()}");
+                return newError($"Unknown operator: {_operator}{right.Type()}");
         }
     }
 
@@ -251,7 +251,7 @@ public class Evaluator {
 
     private static Object.Object evalMinusPrefixOperatorExpression(Object.Object right) {
         if (right.Type() != ObjectType.INTEGER_OBJ) {
-            return newError($"Unknown operator: {right.Type()}");
+            return newError($"Unknown operator: -{right.Type()}");
         }
 
         int value = ((IntegerObj)right).Value;

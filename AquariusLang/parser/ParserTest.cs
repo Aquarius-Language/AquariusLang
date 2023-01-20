@@ -31,7 +31,7 @@ public class ParserTest {
             Lexer lexer = Lexer.NewInstance(test.input);
             Parser parser = Parser.NewInstance(lexer);
             AbstractSyntaxTree tree = parser.ParseAST();
-            Assert.Equal(checkParserErrors(parser), false);
+            Assert.False(checkParserErrors(parser));
 
             if (tree.Statements.Length != 1) {
                 _testOutputHelper.WriteLine($"tree.Statements does not contain 1 statements. Got={tree.Statements.Length}");
@@ -39,12 +39,12 @@ public class ParserTest {
 
             IStatement statement = tree.Statements[0];
             
-            Assert.IsType(typeof(LetStatement), statement);
+            Assert.IsType<LetStatement>(statement);
             
-            Assert.Equal(testLetStatement(statement, test.expectedIdentifier), true);
+            Assert.True(testLetStatement(statement, test.expectedIdentifier));
 
             IExpression value = ((LetStatement)statement).Value;
-            Assert.Equal(testLiteralExpression(value, test.expectedValue), true);
+            Assert.True(testLiteralExpression(value, test.expectedValue));
         }
     }
 
@@ -71,8 +71,8 @@ public class ParserTest {
             Assert.IsType(typeof(ReturnStatement), statement);
 
             ReturnStatement returnStatement = (ReturnStatement)statement;
-            Assert.Equal(returnStatement.TokenLiteral(), "return");
-            Assert.Equal(testLiteralExpression(returnStatement.ReturnValue, test.expectedValue), true);
+            Assert.Equal("return", returnStatement.TokenLiteral());
+            Assert.True(testLiteralExpression(returnStatement.ReturnValue, test.expectedValue));
         }
     }
 
@@ -86,16 +86,16 @@ public class ParserTest {
         
         Assert.NotEqual(checkParserErrors(parser), true);
 
-        Assert.Equal(tree.Statements.Length, 1);
-        Assert.IsType(typeof(ExpressionStatement), tree.Statements[0]);
+        Assert.Equal(1, tree.Statements.Length);
+        Assert.IsType<ExpressionStatement>(tree.Statements[0]);
         
         ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
         
-        Assert.IsType(typeof(Identifier), statement.Expression);
+        Assert.IsType<Identifier>(statement.Expression);
         
         Identifier identifier = (Identifier)statement.Expression;
-        Assert.Equal(identifier.Value, "foobar");
-        Assert.Equal(identifier.TokenLiteral(), "foobar");
+        Assert.Equal("foobar", identifier.Value);
+        Assert.Equal("foobar", identifier.TokenLiteral());
     }
 
     [Fact]

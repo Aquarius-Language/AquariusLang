@@ -45,7 +45,7 @@ public class EvaluatorTest {
 
         foreach (var test in tests) {
             Object.Object evaluated = testEval(test.input);
-            Assert.Equal(testIntegerObject(evaluated, test.expected), true);
+            Assert.True(testIntegerObject(evaluated, test.expected));
         }
     }
 
@@ -80,7 +80,7 @@ public class EvaluatorTest {
 
         foreach (var test in tests) {
             Object.Object evaluated = testEval(test.input);
-            Assert.Equal(testBooleanObject(evaluated, test.expected), true);
+            Assert.True(testBooleanObject(evaluated, test.expected));
         }
     }
 
@@ -96,7 +96,7 @@ public class EvaluatorTest {
         };
         foreach (var test in tests) {
             Object.Object evaluated = testEval(test.input);
-            Assert.Equal(testBooleanObject(evaluated, test.expected), true);
+            Assert.True(testBooleanObject(evaluated, test.expected));
         }
     }
 
@@ -120,13 +120,13 @@ public class EvaluatorTest {
             _testOutputHelper.WriteLine(test.input);
             if (test.expected is int) {
                 int integer = (int)test.expected;
-                Assert.Equal(testIntegerObject(evaluated, integer), true);
+                Assert.True(testIntegerObject(evaluated, integer));
             } else {
                 /*
 				 When a conditional doesn’t evaluate to a value it’s supposed to
 				 return NULL, e.g.: if (false) { 10 }
 			    */
-                Assert.Equal(testNullObject(evaluated), true);
+                Assert.True(testNullObject(evaluated));
             }
         }
     }
@@ -176,6 +176,123 @@ public class EvaluatorTest {
                 expected = 20,
             },
         };
+
+        foreach (var test in tests) {
+            Object.Object evaluated = testEval(test.input);
+            Assert.True(testIntegerObject(evaluated, test.expected));
+        }
+    }
+
+    struct ErrorHandlingTest {
+        public string input;
+        public string expectedMessage;
+    }
+
+    [Fact]
+    public void TestErrorHandling() {
+        ErrorHandlingTest[] tests = {
+            new() { input = "5 + true;", expectedMessage = "Type mismatch: INTEGER + BOOLEAN", },
+            new() { input = "5 + true; 5;", expectedMessage = "Type mismatch: INTEGER + BOOLEAN", },
+            new() { input = "-true", expectedMessage = "Unknown operator: -BOOLEAN", },
+            new() { input = "true + false;", expectedMessage = "Unknown operator: BOOLEAN + BOOLEAN", },
+            new() { input = "true + false + true + false;", expectedMessage = "Unknown operator: BOOLEAN + BOOLEAN", },
+            new() { input = "5; true + false; 5", expectedMessage = "Unknown operator: BOOLEAN + BOOLEAN", },
+            new() { input = "if (10 > 1) { true + false; }", expectedMessage = "Unknown operator: BOOLEAN + BOOLEAN", },
+            new() {
+                input = @"
+                if (10 > 1) {
+                    if (10 > 1) {
+                        return true + false;
+                    }
+
+                    return 1;
+                }
+                ",
+                expectedMessage = "Unknown operator: BOOLEAN + BOOLEAN",
+            },
+            new() { input = "foobar", expectedMessage = "Identifier not found: foobar", },
+        };
+
+        foreach (var test in tests) {
+            Object.Object evaluated = testEval(test.input);
+            Assert.IsType<ErrorObj>(evaluated);
+
+            ErrorObj errorObj = (ErrorObj)evaluated;
+            
+            Assert.Equal(test.expectedMessage, errorObj.Message);
+        }
+    }
+
+    struct LetStatementTest {
+        public string input;
+        public int expected;
+    }
+
+    [Fact]
+    public void TestLetStatements() {
+        LetStatementTest[] tests = {
+            new () {input = "let a = 5; a;", expected = 5},
+            new () {input = "let a = 5 * 5; a;", expected = 25},
+            new () {input = "let a = 5; let b = a; b;", expected = 5},
+            new () {input = "let a = 5; let b = a; let c = a + b + 5; c;", expected = 15},
+        };
+
+        foreach (var test in tests) {
+            Assert.True(testIntegerObject(testEval(test.input), test.expected));
+        }
+    }
+
+    [Fact]
+    public void TestFunctionObject() {
+        string input = "fn(x) { x + 2; };";
+        Object.Object evaluated = testEval(input);
+
+        Assert.IsType<FunctionObj>(evaluated);
+        FunctionObj functionObj = (FunctionObj)evaluated;
+        
+        Assert.Single(functionObj.Parameters);
+        
+        Assert.Equal("x", functionObj.Parameters[0].String());
+        
+        Assert.Equal("(x + 2)", functionObj.Body.String());
+    }
+
+    struct FunctionApplicationTest {
+        public string input;
+        public int expected;
+    }
+    [Fact]
+    public void TestFunctionApplication() {
+        FunctionApplicationTest[] tests = {
+            new() { input = "let identity = fn(x) { x; }; identity(5);", expected = 5 },
+            new() { input = "let identity = fn(x) { return x; }; identity(5);", expected = 5 },
+            new() { input = "let double = fn(x) { x * 2; }; double(5);", expected = 10 },
+            new() { input = "let add = fn(x, y) { x + y; }; add(5, 5);", expected = 10 },
+            new() { input = "let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));", expected = 20 },
+            new() { input = "fn(x) { x; }(5)", expected = 5 },
+        };
+
+        foreach (var test in tests) {
+            Assert.True(testIntegerObject(testEval(test.input), test.expected));
+        }
+    }
+
+    [Fact]
+    public void TestEnclosingEnvironment() {
+        string input = @"
+            let first = 10;
+            let second = 10;
+            let third = 10;
+
+            let ourFunction = fn(first) {
+              let second = 20;
+
+              first + second + third;
+            };
+
+            ourFunction(20) + first + second;
+        ";
+        Assert.True(testIntegerObject(testEval(input), 70));
     }
 
     private Object.Object testEval(string input) {

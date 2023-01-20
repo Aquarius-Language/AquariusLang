@@ -26,6 +26,6 @@ public class AbstractSyntaxTreeTest {
         _testOutputHelper.WriteLine(abstractSyntaxTree.String());
         _testOutputHelper.WriteLine("let myVar = anotherVar;");
         
-        Assert.Equal(abstractSyntaxTree.String(), "let myVar = anotherVar;");
+        Assert.Equal("let myVar = anotherVar;", abstractSyntaxTree.String());
     }
 }
