@@ -131,6 +131,53 @@ public class EvaluatorTest {
         }
     }
 
+    struct ReturnStatementTest {
+        public string input;
+        public int expected;
+    }
+    [Fact]
+    public void TestReturnStatements() {
+        ReturnStatementTest[] tests = {
+            new () {input = "return 10;", expected = 10},
+            new () {input = "return 10; 9;", expected = 10},
+            new () {input = "return 2 * 5; 9;", expected = 10},
+            new () {input = "9; return 2 * 5; 9;", expected = 10},
+            new () {input = "if (10 > 1) { return 10; }", expected = 10},
+            new () {
+                input = @"
+                if (10 > 1) {
+                    if (10 > 1) {
+                        return 10;
+                    }
+                    return 1;
+                }
+                ",
+                expected = 10,
+            },
+            new () {
+                input = 
+                @"
+                let f = fn(x) {
+                    return x;
+                    x + 10;
+                };
+                f(10);",
+                expected = 10,
+            },
+            new () {
+                input = 
+                @"
+                let f = fn(x) {
+                    let result = x + 10;
+                    return result;
+                    return 10;
+                };
+                f(10);",
+                expected = 20,
+            },
+        };
+    }
+
     private Object.Object testEval(string input) {
         Lexer lexer = Lexer.NewInstance(input);
         Parser parser = Parser.NewInstance(lexer);
