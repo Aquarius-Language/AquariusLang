@@ -16,43 +16,44 @@ public struct RepeatedPrimitives {
 }
 
 public class Evaluator {
-    private static Dictionary<Type, int> nodeTypeMap = new() {
-        {typeof(AbstractSyntaxTree), ASTMapValue},
-        {typeof(BlockStatement), BlockMapValue},
-        {typeof(ExpressionStatement), ExpressMapValue},
-        {typeof(ReturnStatement), ReturnMapValue},
-        {typeof(LetStatement), LetMapValue},
-        {typeof(IntegerLiteral), IntMapValue},
-        {typeof(BooleanLiteral), BoolMapValue},
-        {typeof(PrefixExpression), PrefixMapValue},
-        {typeof(InfixExpression), InfixMapValue},
-        {typeof(IfExpression), IfMapValue},
-        {typeof(Identifier), IdentMapValue},
-        {typeof(FunctionLiteral), FuncMapValue},
-        {typeof(CallExpression), CallMapValue},
-        {typeof(StringLiteral), StringMapValue},
+    private static Dictionary<Type, NodeTypeMapValue> nodeTypeMap = new() {
+        {typeof(AbstractSyntaxTree), NodeTypeMapValue.ASTMapValue},
+        {typeof(BlockStatement), NodeTypeMapValue.BlockMapValue},
+        {typeof(ExpressionStatement), NodeTypeMapValue.ExpressMapValue},
+        {typeof(ReturnStatement), NodeTypeMapValue.ReturnMapValue},
+        {typeof(LetStatement), NodeTypeMapValue.LetMapValue},
+        {typeof(IntegerLiteral), NodeTypeMapValue.IntMapValue},
+        {typeof(BooleanLiteral), NodeTypeMapValue.BoolMapValue},
+        {typeof(PrefixExpression), NodeTypeMapValue.PrefixMapValue},
+        {typeof(InfixExpression), NodeTypeMapValue.InfixMapValue},
+        {typeof(IfExpression), NodeTypeMapValue.IfMapValue},
+        {typeof(Identifier), NodeTypeMapValue.IdentMapValue},
+        {typeof(FunctionLiteral), NodeTypeMapValue.FuncMapValue},
+        {typeof(CallExpression), NodeTypeMapValue.CallMapValue},
+        {typeof(StringLiteral), NodeTypeMapValue.StringMapValue},
+        {typeof(ArrayLiteral), NodeTypeMapValue.ArrayMapValue}
     };
 
     public static IObject Eval(INode node, Environment environment) {
         Type nodeType = node.GetType();
         switch (nodeTypeMap[nodeType]) {
-            case ASTMapValue:
+            case NodeTypeMapValue.ASTMapValue:
                 return evalTree((AbstractSyntaxTree)node, environment);
             
-            case BlockMapValue:
+            case NodeTypeMapValue.BlockMapValue:
                 return evalBlockStatement((BlockStatement)node, environment);
             
-            case ExpressMapValue:
+            case NodeTypeMapValue.ExpressMapValue:
                 return Eval(((ExpressionStatement)node).Expression, environment);
             
-            case ReturnMapValue:
+            case NodeTypeMapValue.ReturnMapValue:
                 IObject rtnObj = Eval(((ReturnStatement)node).ReturnValue, environment);
                 if (isError(rtnObj)) {
                     return rtnObj;
                 }
                 return new ReturnValueObj(rtnObj);
             
-            case LetMapValue:
+            case NodeTypeMapValue.LetMapValue:
                 LetStatement letStatement = (LetStatement)node;
                 IObject letObj = Eval(letStatement.Value, environment);
                 if (isError(letObj)) {
@@ -61,20 +62,20 @@ public class Evaluator {
                 environment.Set(letStatement.Name.Value, letObj); // Saving value to variable.
                 break;
             
-            case IntMapValue:
+            case NodeTypeMapValue.IntMapValue:
                 return new IntegerObj(((IntegerLiteral)node).Value);
             
-            case BoolMapValue:
+            case NodeTypeMapValue.BoolMapValue:
                 return nativeBoolToBoolObj(((BooleanLiteral)node).Value);
             
-            case PrefixMapValue:
+            case NodeTypeMapValue.PrefixMapValue:
                 IObject right = Eval(((PrefixExpression)node).Right, environment);
                 if (isError(right)) {
                     return right;
                 }
                 return evalPrefixExpression(((PrefixExpression)node).Operator, right);
             
-            case InfixMapValue:
+            case NodeTypeMapValue.InfixMapValue:
                 InfixExpression _node = (InfixExpression)node;
                 IObject _left = Eval(_node.Left, environment);
                 if (isError(_left)) {
@@ -88,19 +89,19 @@ public class Evaluator {
 
                 return evalInfixExpression(_node.Operator, _left, _right);
             
-            case IfMapValue:
+            case NodeTypeMapValue.IfMapValue:
                 return evalIfExpression((IfExpression)node, environment);
             
-            case IdentMapValue:
+            case NodeTypeMapValue.IdentMapValue:
                 return evalIdentifier((Identifier)node, environment);
             
-            case FuncMapValue:
+            case NodeTypeMapValue.FuncMapValue:
                 FunctionLiteral functionLiteralNode = (FunctionLiteral)node;
                 Identifier[] parameters = functionLiteralNode.Parameters;
                 BlockStatement body = functionLiteralNode.Body;
                 return new FunctionObj(parameters, body, environment);
             
-            case CallMapValue:
+            case NodeTypeMapValue.CallMapValue:
                 CallExpression callExpressionNode = (CallExpression)node;
                 IObject function = Eval(callExpressionNode.Function, environment); // function should be of type FunctionObj.
                 if (isError(function)) {
@@ -114,8 +115,16 @@ public class Evaluator {
 
                 return applyFunction(function, args);
             
-            case StringMapValue:
+            case NodeTypeMapValue.StringMapValue:
                 return new StringObj(((StringLiteral)node).Value);
+            
+            case NodeTypeMapValue.ArrayMapValue:
+                IObject[] elements = evalExpressions(((ArrayLiteral)node).Elements, environment);
+                if (elements.Length == 1 && isError(elements[0])) {
+                    return elements[0];
+                }
+
+                return new ArrayObj(elements);
         }
 
         return null;
@@ -406,18 +415,37 @@ public class Evaluator {
         return true;
     }
 
-    private const int ASTMapValue = 0;
-    private const int BlockMapValue = 1;
-    private const int ExpressMapValue = 2;
-    private const int ReturnMapValue = 3;
-    private const int LetMapValue = 4;
-    private const int IntMapValue = 5;
-    private const int BoolMapValue = 6;
-    private const int PrefixMapValue = 7;
-    private const int InfixMapValue = 8;
-    private const int IfMapValue = 9;
-    private const int IdentMapValue = 10;
-    private const int FuncMapValue = 11;
-    private const int CallMapValue = 12;
-    private const int StringMapValue = 13;
+    private enum NodeTypeMapValue {
+        ASTMapValue,
+        BlockMapValue,
+        ExpressMapValue,
+        ReturnMapValue,
+        LetMapValue,
+        IntMapValue,
+        BoolMapValue,
+        PrefixMapValue,
+        InfixMapValue,
+        IfMapValue,
+        IdentMapValue ,
+        FuncMapValue ,
+        CallMapValue ,
+        StringMapValue ,
+        ArrayMapValue ,
+    }
+
+    // private const int ASTMapValue = 0;
+    // private const int BlockMapValue = 1;
+    // private const int ExpressMapValue = 2;
+    // private const int ReturnMapValue = 3;
+    // private const int LetMapValue = 4;
+    // private const int IntMapValue = 5;
+    // private const int BoolMapValue = 6;
+    // private const int PrefixMapValue = 7;
+    // private const int InfixMapValue = 8;
+    // private const int IfMapValue = 9;
+    // private const int IdentMapValue = 10;
+    // private const int FuncMapValue = 11;
+    // private const int CallMapValue = 12;
+    // private const int StringMapValue = 13;
+    // private const int ArrayMapValue = 13;
 }

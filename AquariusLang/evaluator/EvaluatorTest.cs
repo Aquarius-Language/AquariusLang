@@ -345,6 +345,21 @@ public class EvaluatorTest {
         }
     }
 
+    [Fact]
+    public void TestArrayLiterals() {
+        string input = "[1, 2 * 2, 3 + 3]";
+        IObject evaluated = testEval(input);
+        
+        Assert.IsType<ArrayObj>(evaluated);
+        ArrayObj result = (ArrayObj)evaluated;
+        
+        Assert.Equal(3, result.Elements.Length);
+        
+        Assert.True(testIntegerObject(result.Elements[0], 1));
+        Assert.True(testIntegerObject(result.Elements[1], 4));
+        Assert.True(testIntegerObject(result.Elements[2], 6));
+    }
+
     private IObject testEval(string input) {
         Lexer lexer = Lexer.NewInstance(input);
         Parser parser = Parser.NewInstance(lexer);

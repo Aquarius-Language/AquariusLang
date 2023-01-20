@@ -220,11 +220,33 @@ public class BuiltinObj : IObject {
 }
 
 public class ArrayObj : IObject {
+    private IObject[] elements;
+
+    public ArrayObj(IObject[] elements) {
+        this.elements = elements;
+    }
+
     public string Type() {
-        throw new NotImplementedException();
+        return ObjectType.ARRAY_OBJ;
     }
 
     public string Inspect() {
-        throw new NotImplementedException();
+        StringBuilder builder = new StringBuilder();
+
+        List<string> _elements = new List<string>();
+        foreach (var element in elements) {
+            _elements.Add(element.Inspect());
+        }
+        
+        builder.Append('[')
+            .Append(string.Join(", ", _elements))
+            .Append(']');
+        
+        return builder.ToString();
+    }
+
+    public IObject[] Elements {
+        get => elements;
+        set => elements = value;
     }
 }
