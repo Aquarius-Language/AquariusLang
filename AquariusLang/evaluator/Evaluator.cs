@@ -252,13 +252,13 @@ public class Evaluator {
             return newError($"Unknown operator: {right.Type()}");
         }
 
-        int value = ((IntegerLiteral)right).Value;
+        int value = ((IntegerObj)right).Value;
         return new IntegerObj(-value);
     }
 
     private static Object.Object evalIntegerInfixExpression(string _operator, Object.Object left, Object.Object right) {
-        int leftVal = ((IntegerLiteral)left).Value;
-        int rightVal = ((IntegerLiteral)right).Value;
+        int leftVal = ((IntegerObj)left).Value;
+        int rightVal = ((IntegerObj)right).Value;
         switch (_operator) {
             case "+":
                 return new IntegerObj(leftVal + rightVal);

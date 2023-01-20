@@ -1,7 +1,9 @@
 ﻿using AquariusLang.ast;
+using AquariusLang.evaluator;
 using AquariusLang.lexer;
 using AquariusLang.parser;
 using AquariusLang.token;
+using Environment = AquariusLang.Object.Environment;
 
 namespace AquariusLang.repl; 
 
@@ -12,6 +14,8 @@ public class REPL {
     const string PROMPT = ">> ";
         
     public static void Start() {
+        Environment environment = Environment.NewEnvironment();
+        
         while (true) {
             Console.Write(PROMPT);
             
@@ -24,9 +28,12 @@ public class REPL {
                 printParserErrors(parser.Errors.ToArray());
                 continue;
             }
-            
-            Console.WriteLine(tree.String());
-            Console.WriteLine();
+
+            Object.Object evaluated = Evaluator.Eval(tree, environment);
+            if (evaluated != null) {
+                Console.WriteLine(evaluated.Inspect());
+                Console.WriteLine();
+            }
         }
     }
 
