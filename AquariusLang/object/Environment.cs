@@ -4,9 +4,9 @@ public class Environment {
     private Dictionary<string, Object> store;
     private Environment outer;
 
+
     public static Environment NewEnclosedEnvironment(Environment outer) {
-        Environment environment = new Environment();
-        environment.outer = outer;
+        Environment environment = new Environment() { store = new Dictionary<string, Object>(), outer = outer };
         return environment;
     }
 

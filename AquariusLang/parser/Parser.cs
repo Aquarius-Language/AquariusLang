@@ -245,7 +245,7 @@ public class Parser {
     }
 
     private IExpression parseExpression(int precedence) {
-        PrefixParseFn prefixParseFn = prefixParseFns[currToken.Type];
+        bool hasKey = prefixParseFns.TryGetValue(currToken.Type, out PrefixParseFn prefixParseFn);
         if (prefixParseFn == null) {
             noPrefixParseFnError(currToken.Type);
             return null;

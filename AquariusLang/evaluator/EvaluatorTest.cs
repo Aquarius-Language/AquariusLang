@@ -4,6 +4,7 @@ using AquariusLang.Object;
 using AquariusLang.parser;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 using Environment = AquariusLang.Object.Environment;
 
 namespace AquariusLang.evaluator; 
@@ -99,6 +100,37 @@ public class EvaluatorTest {
         }
     }
 
+    struct IfElseTest {
+        public string input;
+        public object expected;
+    }
+    [Fact]
+    public void TestIfElseExpressions() {
+        IfElseTest[] tests = {
+            new () {input = "if (true) { 10 }", expected = 10},
+            new () {input = "if (false) { 10 }", expected = null},
+            new () {input = "if (1) { 10 }", expected = 10},
+            new () {input = "if (1 < 2) { 10 }", expected = 10},
+            new () {input = "if (1 > 2) { 10 }", expected = null},
+            new () {input = "if (1 > 2) { 10 } else { 20 }", expected = 20},
+            new () {input = "if (1 < 2) { 10 } else { 20 }", expected = 10},
+        };
+        foreach (var test in tests) {
+            Object.Object evaluated = testEval(test.input);
+            _testOutputHelper.WriteLine(test.input);
+            if (test.expected is int) {
+                int integer = (int)test.expected;
+                Assert.Equal(testIntegerObject(evaluated, integer), true);
+            } else {
+                /*
+				 When a conditional doesn’t evaluate to a value it’s supposed to
+				 return NULL, e.g.: if (false) { 10 }
+			    */
+                Assert.Equal(testNullObject(evaluated), true);
+            }
+        }
+    }
+
     private Object.Object testEval(string input) {
         Lexer lexer = Lexer.NewInstance(input);
         Parser parser = Parser.NewInstance(lexer);
@@ -119,6 +151,15 @@ public class EvaluatorTest {
 
         _testOutputHelper.WriteLine($"obj is not BooleanObj. Got={obj}");
         return false;
+    }
+
+    private bool testNullObject(Object.Object obj) {
+        if (obj != RepeatedPrimitives.NULL) {
+            _testOutputHelper.WriteLine($"object is not NULL. Got={obj}");
+            return false;
+        }
+
+        return true;
     }
 
     private bool testIntegerObject(Object.Object obj, int expected) {

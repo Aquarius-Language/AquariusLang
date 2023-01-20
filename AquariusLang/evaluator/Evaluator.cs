@@ -140,12 +140,14 @@ public class Evaluator {
 	    */
         foreach (var statement in tree.Statements) {
             result = Eval(statement, environment);
-            Type resultType = result.GetType();
+            if (result != null) {
+                Type resultType = result.GetType();
             
-            if (resultType == typeof(ReturnValueObj)) {
-                return ((ReturnValueObj)result).Value;
-            } else if (resultType == typeof(ErrorObj)) { // Part of error handling.
-                return result;
+                if (resultType == typeof(ReturnValueObj)) {
+                    return ((ReturnValueObj)result).Value;
+                } else if (resultType == typeof(ErrorObj)) { // Part of error handling.
+                    return result;
+                }
             }
         }
 
@@ -320,7 +322,7 @@ public class Evaluator {
     /// <returns></returns>
     private static Environment extendFunctionEnv(FunctionObj fn, Object.Object[] args) {
         Environment environment = Environment.NewEnclosedEnvironment(fn.Env);
-
+        
         for (var i = 0; i < fn.Parameters.Length; i++) {
             environment.Set(fn.Parameters[i].Value, args[i]);
         }
