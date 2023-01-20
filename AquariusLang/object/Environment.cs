@@ -1,17 +1,17 @@
 ﻿namespace AquariusLang.Object; 
 
 public class Environment {
-    private Dictionary<string, Object> store;
+    private Dictionary<string, IObject> store;
     private Environment outer;
 
 
     public static Environment NewEnclosedEnvironment(Environment outer) {
-        Environment environment = new Environment() { store = new Dictionary<string, Object>(), outer = outer };
+        Environment environment = new Environment() { store = new Dictionary<string, IObject>(), outer = outer };
         return environment;
     }
 
     public static Environment NewEnvironment() {
-        Environment environment = new Environment() { store = new Dictionary<string, Object>(), outer = null };
+        Environment environment = new Environment() { store = new Dictionary<string, IObject>(), outer = null };
         return environment;
     }
 
@@ -21,7 +21,7 @@ public class Environment {
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    public Object Get(string name, out bool hasVar) {
+    public IObject Get(string name, out bool hasVar) {
         if (!store.ContainsKey(name)) {
             Environment _outer = outer;
             while (_outer != null) {
@@ -40,7 +40,7 @@ public class Environment {
         return null;
     }
 
-    public Object Set(string name, Object val) {
+    public IObject Set(string name, IObject val) {
         store[name] = val;
         return val;
     }

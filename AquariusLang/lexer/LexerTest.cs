@@ -43,6 +43,7 @@ public class LexerTest {
             10 != 9;
             ""foobar""
             ""foo bar""
+            [1, 2];
         ";
         
         ExpectedTest[] tests = new [] {
@@ -121,6 +122,12 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
             new ExpectedTest(){ExpectedType = TokenType.STRING,    ExpectedLiteral = "foobar"},
             new ExpectedTest(){ExpectedType = TokenType.STRING,    ExpectedLiteral = "foo bar"},
+            new ExpectedTest(){ExpectedType = TokenType.LBRACKET,  ExpectedLiteral = "["},
+            new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "1"},
+            new ExpectedTest(){ExpectedType = TokenType.COMMA,     ExpectedLiteral = ","},
+            new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "2"},
+            new ExpectedTest(){ExpectedType = TokenType.RBRACKET,  ExpectedLiteral = "]"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
             new ExpectedTest(){ExpectedType = TokenType.EOF,       ExpectedLiteral = ""},
         };
         

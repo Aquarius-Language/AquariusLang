@@ -18,6 +18,7 @@ public static class Precedence {
         PRODUCT = 5,
         PREFIX = 6,
         CALL = 7,
+        INDEX = 8, //  array[index]. Index (left bracket) should have highest precedence of all.
     }
 
     /// <summary>
@@ -34,6 +35,7 @@ public static class Precedence {
         {TokenType.SLASH, OperatorPrecedence.PRODUCT},
         {TokenType.ASTERISK, OperatorPrecedence.PRODUCT},
         {TokenType.LPAREN, OperatorPrecedence.CALL},
+        {TokenType.LBRACKET, OperatorPrecedence.INDEX},
     };
 
     public static int PrecedenceFor(string tokenType) {
@@ -100,6 +102,7 @@ public class Parser {
         parser.registerPrefix(TokenType.IF, parser.parseIfExpression);
         parser.registerPrefix(TokenType.FUNCTION, parser.parseFunctionLiteral);
         parser.registerPrefix(TokenType.STRING, parser.parseStringLiteral);
+        parser.registerPrefix(TokenType.LBRACKET, parser.parseArrayLiteral);
 
         parser.infixParseFns = new Dictionary<string, InfixParseFn>();
         parser.registerInfix(TokenType.PLUS, parser.parseInfixExpression);
@@ -112,6 +115,7 @@ public class Parser {
         parser.registerInfix(TokenType.GT, parser.parseInfixExpression);
         
         parser.registerInfix(TokenType.LPAREN, parser.parseCallExpression);
+        parser.registerInfix(TokenType.LBRACKET, parser.parseIndexExpression);
         
         // Read two tokens, so curToken and peekToken are both set.
         parser.nextToken();
@@ -500,31 +504,50 @@ public class Parser {
     }
 
     private IExpression parseCallExpression(IExpression function) {
-        CallExpression callExpression = new CallExpression(currToken, function, parseCallArguments());
+        CallExpression callExpression = new CallExpression(currToken, function);
+        callExpression.Arguments = parseExpressionList(TokenType.RPAREN);
         return callExpression;
     }
 
-    private IExpression[] parseCallArguments() {
-        List<IExpression> arguments = new List<IExpression>();
-        if (peekTokenIs(TokenType.RPAREN)) {
+    private IExpression parseArrayLiteral() {
+        ArrayLiteral array = new ArrayLiteral(currToken);
+        array.Elements = parseExpressionList(TokenType.RBRACKET);
+        return array;
+    }
+
+    private IExpression[] parseExpressionList(string endTokenType) {
+        List<IExpression> list = new List<IExpression>();
+
+        if (peekTokenIs(endTokenType)) {
             nextToken();
-            return arguments.ToArray();
+            return list.ToArray();
         }
         
         nextToken();
-        arguments.Add(parseExpression((int)Precedence.OperatorPrecedence.LOWEST));
-        
+        list.Add(parseExpression((int)Precedence.OperatorPrecedence.LOWEST));
+
         while (peekTokenIs(TokenType.COMMA)) {
             nextToken();
             nextToken();
-            arguments.Add(parseExpression((int)Precedence.OperatorPrecedence.LOWEST));
+            list.Add(parseExpression((int)Precedence.OperatorPrecedence.LOWEST));
         }
 
-        if (!expectPeek(TokenType.RPAREN)) {
+        if (!expectPeek(endTokenType)) {
             return null;
         }
 
-        return arguments.ToArray();
+        return list.ToArray();
+    }
+
+    private IExpression parseIndexExpression(IExpression left) {
+        IndexExpression expression = new IndexExpression(currToken, left);
+        nextToken();
+        expression.Index = parseExpression((int)Precedence.OperatorPrecedence.LOWEST);
+        if (!expectPeek(TokenType.RBRACKET)) {
+            return null;
+        }
+
+        return expression;
     }
 
     private void registerPrefix(string tokenType, PrefixParseFn fn) {

@@ -33,7 +33,7 @@ public class Evaluator {
         {typeof(StringLiteral), StringMapValue},
     };
 
-    public static Object.Object Eval(INode node, Environment environment) {
+    public static IObject Eval(INode node, Environment environment) {
         Type nodeType = node.GetType();
         switch (nodeTypeMap[nodeType]) {
             case ASTMapValue:
@@ -46,7 +46,7 @@ public class Evaluator {
                 return Eval(((ExpressionStatement)node).Expression, environment);
             
             case ReturnMapValue:
-                Object.Object rtnObj = Eval(((ReturnStatement)node).ReturnValue, environment);
+                IObject rtnObj = Eval(((ReturnStatement)node).ReturnValue, environment);
                 if (isError(rtnObj)) {
                     return rtnObj;
                 }
@@ -54,7 +54,7 @@ public class Evaluator {
             
             case LetMapValue:
                 LetStatement letStatement = (LetStatement)node;
-                Object.Object letObj = Eval(letStatement.Value, environment);
+                IObject letObj = Eval(letStatement.Value, environment);
                 if (isError(letObj)) {
                     return letObj;
                 }
@@ -68,7 +68,7 @@ public class Evaluator {
                 return nativeBoolToBoolObj(((BooleanLiteral)node).Value);
             
             case PrefixMapValue:
-                Object.Object right = Eval(((PrefixExpression)node).Right, environment);
+                IObject right = Eval(((PrefixExpression)node).Right, environment);
                 if (isError(right)) {
                     return right;
                 }
@@ -76,12 +76,12 @@ public class Evaluator {
             
             case InfixMapValue:
                 InfixExpression _node = (InfixExpression)node;
-                Object.Object _left = Eval(_node.Left, environment);
+                IObject _left = Eval(_node.Left, environment);
                 if (isError(_left)) {
                     return _left;
                 }
 
-                Object.Object _right = Eval(_node.Right, environment);
+                IObject _right = Eval(_node.Right, environment);
                 if (isError(_right)) {
                     return _right;
                 }
@@ -102,12 +102,12 @@ public class Evaluator {
             
             case CallMapValue:
                 CallExpression callExpressionNode = (CallExpression)node;
-                Object.Object function = Eval(callExpressionNode.Function, environment); // function should be of type FunctionObj.
+                IObject function = Eval(callExpressionNode.Function, environment); // function should be of type FunctionObj.
                 if (isError(function)) {
                     return function;
                 }
 
-                Object.Object[] args = evalExpressions(callExpressionNode.Arguments, environment);
+                IObject[] args = evalExpressions(callExpressionNode.Arguments, environment);
                 if (args.Length == 1 && isError(args[0])) {
                     return args[0];
                 }
@@ -121,8 +121,8 @@ public class Evaluator {
         return null;
     }
 
-    private static Object.Object evalTree(AbstractSyntaxTree tree, Environment environment) {
-        Object.Object result = null;
+    private static IObject evalTree(AbstractSyntaxTree tree, Environment environment) {
+        IObject result = null;
         
         /*
 			Sometimes we have to keep track of object.ReturnValues for longer
@@ -158,8 +158,8 @@ public class Evaluator {
         return result;
     }
 
-    private static Object.Object evalBlockStatement(BlockStatement blockStatement, Environment environment) {
-        Object.Object result = null;
+    private static IObject evalBlockStatement(BlockStatement blockStatement, Environment environment) {
+        IObject result = null;
         foreach (var statement in blockStatement.Statements) {
             result = Eval(statement, environment);
             /*
@@ -176,7 +176,7 @@ public class Evaluator {
         return result;
     }
 
-    private static Object.Object evalPrefixExpression(string _operator, Object.Object right) {
+    private static IObject evalPrefixExpression(string _operator, IObject right) {
         switch (_operator) {
             case "!":
                 return evalBangOperatorExpression(right);
@@ -187,7 +187,7 @@ public class Evaluator {
         }
     }
 
-    private static Object.Object evalInfixExpression(string _operator, Object.Object left, Object.Object right) {
+    private static IObject evalInfixExpression(string _operator, IObject left, IObject right) {
         if (left.Type() == ObjectType.INTEGER_OBJ && right.Type() == ObjectType.INTEGER_OBJ) {
             return evalIntegerInfixExpression(_operator, left, right);
         }
@@ -210,7 +210,7 @@ public class Evaluator {
         return NewError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
     }
 
-    private static Object.Object evalStringInfixExpression(string _operator, Object.Object left, Object.Object right) {
+    private static IObject evalStringInfixExpression(string _operator, IObject left, IObject right) {
         if (_operator != "+") {
             return NewError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
         }
@@ -219,8 +219,8 @@ public class Evaluator {
         return new StringObj(leftVal + rightVal);
     }
 
-    private static Object.Object evalIfExpression(IfExpression ifExpression, Environment environment) {
-        Object.Object condition = Eval(ifExpression.Condition, environment);
+    private static IObject evalIfExpression(IfExpression ifExpression, Environment environment) {
+        IObject condition = Eval(ifExpression.Condition, environment);
         if (isError(condition)) {
             return condition;
         }
@@ -234,10 +234,10 @@ public class Evaluator {
         }
     }
 
-    private static Object.Object[] evalExpressions(IExpression[] expressions, Environment environment) {
-        List<Object.Object> result = new List<Object.Object>();
+    private static IObject[] evalExpressions(IExpression[] expressions, Environment environment) {
+        List<IObject> result = new List<IObject>();
         foreach (var expression in expressions) {
-            Object.Object evaluated = Eval(expression, environment);
+            IObject evaluated = Eval(expression, environment);
             if (isError(evaluated)) {
                 return new[] { evaluated };
             }
@@ -247,10 +247,10 @@ public class Evaluator {
         return result.ToArray();
     }
 
-    private static Object.Object applyFunction(Object.Object fn, Object.Object[] args) {
+    private static IObject applyFunction(IObject fn, IObject[] args) {
         if (fn is FunctionObj functionObj) {
             Environment extendedEnv = extendFunctionEnv(functionObj, args);
-            Object.Object evaluated = Eval(functionObj.Body, extendedEnv);
+            IObject evaluated = Eval(functionObj.Body, extendedEnv);
             return unwrapReturnValue(evaluated);
         } else if (fn is BuiltinObj builtinObj) {
             return builtinObj.Fn(args);
@@ -259,14 +259,14 @@ public class Evaluator {
         return NewError($"Not a function: {fn.Type()}");
     }
 
-    private static Object.Object evalIdentifier(Identifier node, Environment environment) {
+    private static IObject evalIdentifier(Identifier node, Environment environment) {
         // Looking up built-in functions.
         bool hasVal = Builtins.builtins.TryGetValue(node.Value, out BuiltinObj value);
         if (hasVal) {
             return value;
         }
         
-        Object.Object val = environment.Get(node.Value, out bool hasVar);
+        IObject val = environment.Get(node.Value, out bool hasVar);
         if (!hasVar) {
             return NewError($"Identifier not found: {node.Value}");
         }
@@ -274,7 +274,7 @@ public class Evaluator {
         return val;
     }
 
-    private static Object.Object evalMinusPrefixOperatorExpression(Object.Object right) {
+    private static IObject evalMinusPrefixOperatorExpression(IObject right) {
         if (right.Type() != ObjectType.INTEGER_OBJ) {
             return NewError($"Unknown operator: -{right.Type()}");
         }
@@ -283,7 +283,7 @@ public class Evaluator {
         return new IntegerObj(-value);
     }
 
-    private static Object.Object evalIntegerInfixExpression(string _operator, Object.Object left, Object.Object right) {
+    private static IObject evalIntegerInfixExpression(string _operator, IObject left, IObject right) {
         int leftVal = ((IntegerObj)left).Value;
         int rightVal = ((IntegerObj)right).Value;
         switch (_operator) {
@@ -308,7 +308,7 @@ public class Evaluator {
         }
     }
 
-    private static Object.Object evalBangOperatorExpression(Object.Object right) {
+    private static IObject evalBangOperatorExpression(IObject right) {
         if (right == RepeatedPrimitives.TRUE) {
             return RepeatedPrimitives.FALSE;
         } else if (right == RepeatedPrimitives.FALSE) {
@@ -345,7 +345,7 @@ public class Evaluator {
     /// <param name="fn"></param>
     /// <param name="args"></param>
     /// <returns></returns>
-    private static Environment extendFunctionEnv(FunctionObj fn, Object.Object[] args) {
+    private static Environment extendFunctionEnv(FunctionObj fn, IObject[] args) {
         Environment environment = Environment.NewEnclosedEnvironment(fn.Env);
         
         for (var i = 0; i < fn.Parameters.Length; i++) {
@@ -355,7 +355,7 @@ public class Evaluator {
         return environment;
     }
 
-    private static Object.Object unwrapReturnValue(Object.Object obj) {
+    private static IObject unwrapReturnValue(IObject obj) {
         /*
 		 This is to stop executing any further statements after the return expression.
 		 Just return back the unwrapped value.
@@ -386,7 +386,7 @@ public class Evaluator {
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    private static bool isError(Object.Object obj) {
+    private static bool isError(IObject obj) {
         if (obj != null) {
             return obj.Type() == ObjectType.ERROR_OBJ;
         }
@@ -394,7 +394,7 @@ public class Evaluator {
         return false;
     }
 
-    private static bool isTruthy(Object.Object obj) {
+    private static bool isTruthy(IObject obj) {
         if (obj == RepeatedPrimitives.NULL) {
             return false;
         } else if (obj == RepeatedPrimitives.TRUE) {

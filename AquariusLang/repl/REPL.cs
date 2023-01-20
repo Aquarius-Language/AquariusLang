@@ -1,6 +1,7 @@
 ﻿using AquariusLang.ast;
 using AquariusLang.evaluator;
 using AquariusLang.lexer;
+using AquariusLang.Object;
 using AquariusLang.parser;
 using AquariusLang.token;
 using Environment = AquariusLang.Object.Environment;
@@ -29,7 +30,7 @@ public class REPL {
                 continue;
             }
 
-            Object.Object evaluated = Evaluator.Eval(tree, environment);
+            IObject evaluated = Evaluator.Eval(tree, environment);
             if (evaluated != null) {
                 Console.WriteLine(evaluated.Inspect());
                 Console.WriteLine();

@@ -12,14 +12,15 @@ public struct ObjectType {
     public const string FUNCTION_OBJ = "FUNCTION";
     public const string STRING_OBJ = "STRING";
     public const string BUILTIN_OBJ = "BUILTIN";
+    public const string ARRAY_OBJ = "ARRAY";
 }
 
-public interface Object {
+public interface IObject {
     string Type(); // Corresponds to ObjectType members.
     string Inspect();
 }
 
-public class IntegerObj : Object {
+public class IntegerObj : IObject {
     private int value;
 
     public IntegerObj(int value) {
@@ -40,7 +41,7 @@ public class IntegerObj : Object {
     }
 }
 
-public class BooleanObj : Object {
+public class BooleanObj : IObject {
     private bool value;
 
     public BooleanObj(bool value) {
@@ -64,7 +65,7 @@ public class BooleanObj : Object {
 /// <summary>
 /// Null doesn’t wrap any value. It represents the absence of any value.
 /// </summary>
-public class NullObj : Object {
+public class NullObj : IObject {
     public string Type() {
         return ObjectType.NULL_OBJ;
     }
@@ -74,10 +75,10 @@ public class NullObj : Object {
     }
 }
 
-public class ReturnValueObj : Object {
-    private Object value;
+public class ReturnValueObj : IObject {
+    private IObject value;
 
-    public ReturnValueObj(Object value) {
+    public ReturnValueObj(IObject value) {
         this.value = value;
     }
 
@@ -89,7 +90,7 @@ public class ReturnValueObj : Object {
         return value.Inspect();
     }
 
-    public Object Value {
+    public IObject Value {
         get => value;
         set => this.value = value;
     }
@@ -98,7 +99,7 @@ public class ReturnValueObj : Object {
 /// <summary>
 /// This is used for internal error handling.
 /// </summary>
-public class ErrorObj : Object {
+public class ErrorObj : IObject {
     private string message;
 
     public ErrorObj(string message) {
@@ -125,7 +126,7 @@ public class ErrorObj : Object {
 /// closures, which “close over” the environment they’re defined in and can later access
 /// it.
 /// </summary>
-public class FunctionObj : Object {
+public class FunctionObj : IObject {
     private Identifier[] parameters;
     private BlockStatement body;
     private Environment env;
@@ -174,7 +175,7 @@ public class FunctionObj : Object {
     }
 }
 
-public class StringObj : Object {
+public class StringObj : IObject {
     private string value;
 
     public StringObj(string value) {
@@ -195,9 +196,9 @@ public class StringObj : Object {
     }
 }
 
-public delegate Object BuiltinFunction(Object[] args);
+public delegate IObject BuiltinFunction(IObject[] args);
 
-public class BuiltinObj : Object {
+public class BuiltinObj : IObject {
     private BuiltinFunction fn;
 
     public BuiltinObj(BuiltinFunction fn) {
@@ -215,5 +216,15 @@ public class BuiltinObj : Object {
     public BuiltinFunction Fn {
         get => fn;
         set => fn = value ?? throw new ArgumentNullException(nameof(value));
+    }
+}
+
+public class ArrayObj : IObject {
+    public string Type() {
+        throw new NotImplementedException();
+    }
+
+    public string Inspect() {
+        throw new NotImplementedException();
     }
 }

@@ -88,6 +88,12 @@ public class Lexer {
             case '"':
                 token = newToken(TokenType.STRING, readString());
                 break;
+            case '[':
+                token = newToken(TokenType.LBRACKET, ch);
+                break;
+            case ']':
+                token = newToken(TokenType.RBRACKET, ch);
+                break;
             case (char)0:
                 token = newToken(TokenType.EOF, "");
                 break;

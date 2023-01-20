@@ -44,7 +44,7 @@ public class EvaluatorTest {
         };
 
         foreach (var test in tests) {
-            Object.Object evaluated = testEval(test.input);
+            IObject evaluated = testEval(test.input);
             Assert.True(testIntegerObject(evaluated, test.expected));
         }
     }
@@ -79,7 +79,7 @@ public class EvaluatorTest {
         };
 
         foreach (var test in tests) {
-            Object.Object evaluated = testEval(test.input);
+            IObject evaluated = testEval(test.input);
             Assert.True(testBooleanObject(evaluated, test.expected));
         }
     }
@@ -95,7 +95,7 @@ public class EvaluatorTest {
             new () {input = "!!5", expected = true},
         };
         foreach (var test in tests) {
-            Object.Object evaluated = testEval(test.input);
+            IObject evaluated = testEval(test.input);
             Assert.True(testBooleanObject(evaluated, test.expected));
         }
     }
@@ -116,7 +116,7 @@ public class EvaluatorTest {
             new () {input = "if (1 < 2) { 10 } else { 20 }", expected = 10},
         };
         foreach (var test in tests) {
-            Object.Object evaluated = testEval(test.input);
+            IObject evaluated = testEval(test.input);
             _testOutputHelper.WriteLine(test.input);
             if (test.expected is int) {
                 int integer = (int)test.expected;
@@ -178,7 +178,7 @@ public class EvaluatorTest {
         };
 
         foreach (var test in tests) {
-            Object.Object evaluated = testEval(test.input);
+            IObject evaluated = testEval(test.input);
             Assert.True(testIntegerObject(evaluated, test.expected));
         }
     }
@@ -215,7 +215,7 @@ public class EvaluatorTest {
         };
 
         foreach (var test in tests) {
-            Object.Object evaluated = testEval(test.input);
+            IObject evaluated = testEval(test.input);
             Assert.IsType<ErrorObj>(evaluated);
 
             ErrorObj errorObj = (ErrorObj)evaluated;
@@ -246,7 +246,7 @@ public class EvaluatorTest {
     [Fact]
     public void TestFunctionObject() {
         string input = "fn(x) { x + 2; };";
-        Object.Object evaluated = testEval(input);
+        IObject evaluated = testEval(input);
 
         Assert.IsType<FunctionObj>(evaluated);
         FunctionObj functionObj = (FunctionObj)evaluated;
@@ -299,7 +299,7 @@ public class EvaluatorTest {
     [Fact]
     public void TestStringLiteral() {
         string input = "\"Hello World!\"";
-        Object.Object evaluated = testEval(input);
+        IObject evaluated = testEval(input);
         Assert.IsType<StringObj>(evaluated);
         StringObj stringObj = (StringObj)evaluated;
         Assert.Equal("Hello World!", stringObj.Value);
@@ -308,7 +308,7 @@ public class EvaluatorTest {
     [Fact]
     public void TestStringConcatenation() {
         string input = "\"Hello\" + \" \" + \"World!\"";
-        Object.Object evaluated = testEval(input);
+        IObject evaluated = testEval(input);
         
         Assert.IsType<StringObj>(evaluated);
         StringObj stringObj = (StringObj)evaluated;
@@ -332,7 +332,7 @@ public class EvaluatorTest {
         };
 
         foreach (var test in tests) {
-            Object.Object evaluated = testEval(test.input);
+            IObject evaluated = testEval(test.input);
             Type evaluatedType = evaluated.GetType();
             if (evaluatedType == typeof(int)) {
                 Assert.True(testIntegerObject(evaluated, (int)test.expected));
@@ -345,7 +345,7 @@ public class EvaluatorTest {
         }
     }
 
-    private Object.Object testEval(string input) {
+    private IObject testEval(string input) {
         Lexer lexer = Lexer.NewInstance(input);
         Parser parser = Parser.NewInstance(lexer);
         AbstractSyntaxTree tree = parser.ParseAST();
@@ -353,7 +353,7 @@ public class EvaluatorTest {
         return Evaluator.Eval(tree, environment);
     }
 
-    private bool testBooleanObject(Object.Object obj, bool expected) {
+    private bool testBooleanObject(IObject obj, bool expected) {
         if (obj is BooleanObj booleanObj) {
             if (booleanObj.Value != expected) {
                 _testOutputHelper.WriteLine($"obj has wrong value. Got={booleanObj.Value}, want={expected}.");
@@ -367,7 +367,7 @@ public class EvaluatorTest {
         return false;
     }
 
-    private bool testNullObject(Object.Object obj) {
+    private bool testNullObject(IObject obj) {
         if (obj != RepeatedPrimitives.NULL) {
             _testOutputHelper.WriteLine($"object is not NULL. Got={obj}");
             return false;
@@ -376,7 +376,7 @@ public class EvaluatorTest {
         return true;
     }
 
-    private bool testIntegerObject(Object.Object obj, int expected) {
+    private bool testIntegerObject(IObject obj, int expected) {
         if (obj is IntegerObj integerObj) {
             if (integerObj.Value != expected) {
                 _testOutputHelper.WriteLine($"Object has wrong value. Got={integerObj.Value}, want={expected}");

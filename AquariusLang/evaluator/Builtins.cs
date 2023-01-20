@@ -10,7 +10,7 @@ public class Builtins {
                     return Evaluator.NewError($"Wrong number of arguments. Got={args.Length}, want=1");
                 }
 
-                Object.Object arg0 = args[0];
+                IObject arg0 = args[0];
                 Type arg0Type = arg0.GetType();
                 if (arg0Type == typeof(StringObj)) {
                     StringObj arg0StrObj = (StringObj)arg0;

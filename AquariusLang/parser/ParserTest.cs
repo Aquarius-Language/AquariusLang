@@ -228,14 +228,16 @@ public class ParserTest {
             new() { input = "a + add(b * c) + d", expected = "((a + add((b * c))) + d)", },
             new() { input = "add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8))", expected = "add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)))", },
             new() { input = "add(a + b + c * d / f + g)", expected = "add((((a + b) + ((c * d) / f)) + g))", },
+            new() { input = "a * [1, 2, 3, 4][b * c] * d", expected = "((a * ([1, 2, 3, 4][(b * c)])) * d)", },
+            new() { input = "add(a * b[2], b[1], 2 * [1, 2][1])", expected = "add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))", },
         };
         foreach (var test in tests) {
             Lexer lexer = Lexer.NewInstance(test.input);
             Parser parser = Parser.NewInstance(lexer);
             AbstractSyntaxTree tree = parser.ParseAST();
-            Assert.NotEqual(checkParserErrors(parser), true);
+            Assert.NotEqual(true, checkParserErrors(parser));
             string actual = tree.String();
-            Assert.Equal(actual, test.expected);
+            Assert.Equal(test.expected, actual);
         }
     }
 
@@ -461,6 +463,45 @@ public class ParserTest {
         StringLiteral expression = (StringLiteral)statement.Expression;
         
         Assert.Equal("hello world", expression.Value);
+    }
+
+    [Fact]
+    public void TestParsingArrayLiterals() {
+        string input = "[1, 2 * 2, 3 + 3]";
+        Lexer lexer = Lexer.NewInstance(input);
+        Parser parser = Parser.NewInstance(lexer);
+        AbstractSyntaxTree tree = parser.ParseAST();
+        Assert.False(checkParserErrors(parser));
+        
+        Assert.IsType<ExpressionStatement>(tree.Statements[0]);
+        ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
+
+        Assert.IsType<ArrayLiteral>(statement.Expression);
+        ArrayLiteral array = (ArrayLiteral)statement.Expression;
+
+        Assert.Equal(3, array.Elements.Length);
+        
+        Assert.True(testIntegerLiteral(array.Elements[0], 1));
+        Assert.True(testInfixExpression(array.Elements[1], 2, "*", 2));
+        Assert.True(testInfixExpression(array.Elements[2], 3, "+", 3));
+    }
+
+    [Fact]
+    public void TestParsingIndexExpressions() {
+        string input = "myArray[1 + 1]";
+        Lexer lexer = Lexer.NewInstance(input);
+        Parser parser = Parser.NewInstance(lexer);
+        AbstractSyntaxTree tree = parser.ParseAST();
+        Assert.False(checkParserErrors(parser));
+
+        Assert.IsType<ExpressionStatement>(tree.Statements[0]);
+        ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
+
+        Assert.IsType<IndexExpression>(statement.Expression);
+        IndexExpression indexExpression = (IndexExpression)statement.Expression;
+        
+        Assert.True(testIdentifier(indexExpression.Left, "myArray"));
+        Assert.True(testInfixExpression(indexExpression.Index, 1, "+", 1));
     }
 
     private bool testInfixExpression(IExpression expression, object left, string _operator, object right) {

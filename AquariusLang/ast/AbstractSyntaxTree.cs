@@ -693,3 +693,103 @@ public class StringLiteral : IExpression {
         set => this.value = value;
     }
 }
+
+public class ArrayLiteral : IExpression {
+    private Token token;
+    private IExpression[] elements;
+
+    public ArrayLiteral(Token token) {
+        this.token = token;
+    }
+
+    public ArrayLiteral(Token token, IExpression[] elements) {
+        this.token = token;
+        this.elements = elements;
+    }
+
+    public string TokenLiteral() {
+        return token.Literal;
+    }
+
+    public string String() {
+        StringBuilder builder = new StringBuilder();
+
+        List<string> _elements = new List<string>();
+        foreach (var element in elements) {
+            _elements.Add(element.String());
+        }
+        
+        builder.Append('[')
+            .Append(string.Join(", ", _elements))
+            .Append(']');
+        
+        return builder.ToString();
+    }
+
+    public void ExpressionNode() {
+    }
+
+    public Token Token {
+        get => token;
+        set => token = value;
+    }
+
+    public IExpression[] Elements {
+        get => elements;
+        set => elements = value;
+    }
+}
+
+public class IndexExpression : IExpression {
+    private Token token;
+    private IExpression left;
+    private IExpression index;
+
+    public IndexExpression(Token token) {
+        this.token = token;
+    }
+
+    public IndexExpression(Token token, IExpression left) {
+        this.token = token;
+        this.left = left;
+    }
+
+    public IndexExpression(Token token, IExpression left, IExpression index) {
+        this.token = token;
+        this.left = left;
+        this.index = index;
+    }
+
+    public string TokenLiteral() {
+        return token.Literal;
+    }
+
+    public string String() {
+        StringBuilder builder = new StringBuilder();
+        builder.Append('(')
+            .Append(left.String())
+            .Append('[')
+            .Append(index.String())
+            .Append("])");
+
+        return builder.ToString();
+    }
+
+    public void ExpressionNode() {
+    }
+
+    public Token Token {
+        get => token;
+        set => token = value;
+    }
+
+    public IExpression Left {
+        get => left;
+        set => left = value;
+    }
+
+    public IExpression Index {
+        get => index;
+        set => index = value;
+    }
+}
