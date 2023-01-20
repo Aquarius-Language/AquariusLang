@@ -183,7 +183,7 @@ public class Evaluator {
             case "-":
                 return evalMinusPrefixOperatorExpression(right);
             default:
-                return newError($"Unknown operator: {_operator}{right.Type()}");
+                return NewError($"Unknown operator: {_operator}{right.Type()}");
         }
     }
 
@@ -204,15 +204,15 @@ public class Evaluator {
         }
 
         if (left.Type() != right.Type()) {
-            return newError($"Type mismatch: {left.Type()} {_operator} {right.Type()}");
+            return NewError($"Type mismatch: {left.Type()} {_operator} {right.Type()}");
         }
 
-        return newError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
+        return NewError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
     }
 
     private static Object.Object evalStringInfixExpression(string _operator, Object.Object left, Object.Object right) {
         if (_operator != "+") {
-            return newError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
+            return NewError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
         }
         string leftVal = ((StringObj)left).Value;
         string rightVal = ((StringObj)right).Value;
@@ -252,15 +252,23 @@ public class Evaluator {
             Environment extendedEnv = extendFunctionEnv(functionObj, args);
             Object.Object evaluated = Eval(functionObj.Body, extendedEnv);
             return unwrapReturnValue(evaluated);
+        } else if (fn is BuiltinObj builtinObj) {
+            return builtinObj.Fn(args);
         }
 
-        return newError($"Not a function: {fn.Type()}");
+        return NewError($"Not a function: {fn.Type()}");
     }
 
     private static Object.Object evalIdentifier(Identifier node, Environment environment) {
+        // Looking up built-in functions.
+        bool hasVal = Builtins.builtins.TryGetValue(node.Value, out BuiltinObj value);
+        if (hasVal) {
+            return value;
+        }
+        
         Object.Object val = environment.Get(node.Value, out bool hasVar);
         if (!hasVar) {
-            return newError($"Identifier not found: {node.Value}");
+            return NewError($"Identifier not found: {node.Value}");
         }
 
         return val;
@@ -268,7 +276,7 @@ public class Evaluator {
 
     private static Object.Object evalMinusPrefixOperatorExpression(Object.Object right) {
         if (right.Type() != ObjectType.INTEGER_OBJ) {
-            return newError($"Unknown operator: -{right.Type()}");
+            return NewError($"Unknown operator: -{right.Type()}");
         }
 
         int value = ((IntegerObj)right).Value;
@@ -296,7 +304,7 @@ public class Evaluator {
             case "!=":
                 return nativeBoolToBoolObj(leftVal != rightVal);
             default:
-                return newError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
+                return NewError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
         }
     }
 
@@ -368,7 +376,7 @@ public class Evaluator {
     /// </summary>
     /// <param name="msg"></param>
     /// <returns></returns>
-    private static ErrorObj newError(string msg) {
+    public static ErrorObj NewError(string msg) {
         return new ErrorObj(msg);
     }
     

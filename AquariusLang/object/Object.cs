@@ -11,6 +11,7 @@ public struct ObjectType {
     public const string RETURN_VALUE_OBJ = "RETURN_VALUE";
     public const string FUNCTION_OBJ = "FUNCTION";
     public const string STRING_OBJ = "STRING";
+    public const string BUILTIN_OBJ = "BUILTIN";
 }
 
 public interface Object {
@@ -191,5 +192,28 @@ public class StringObj : Object {
     public string Value {
         get => value;
         set => this.value = value;
+    }
+}
+
+public delegate Object BuiltinFunction(Object[] args);
+
+public class BuiltinObj : Object {
+    private BuiltinFunction fn;
+
+    public BuiltinObj(BuiltinFunction fn) {
+        this.fn = fn;
+    }
+
+    public string Type() {
+        return ObjectType.BUILTIN_OBJ;
+    }
+
+    public string Inspect() {
+        return "builtin function";
+    }
+
+    public BuiltinFunction Fn {
+        get => fn;
+        set => fn = value ?? throw new ArgumentNullException(nameof(value));
     }
 }

@@ -316,6 +316,35 @@ public class EvaluatorTest {
         Assert.Equal("Hello World!", stringObj.Value);
     }
 
+    struct BuiltinFunctionTest {
+        public string input;
+        public object expected;
+    }
+
+    [Fact]
+    public void TestBuiltinFunctions() {
+        BuiltinFunctionTest[] tests = {
+            new () {input = "len(\"\")", expected = 0},
+            new () {input = "len(\"four\")", expected = 4},
+            new () {input = "len(\"hello world\")", expected = 11},
+            new () {input = "len(1)", expected = "Argument to `len` not supported, got INTEGER"},
+            new () {input = "len(\"one\", \"two\")", expected = "Wrong number of arguments. got=2, want=1"},
+        };
+
+        foreach (var test in tests) {
+            Object.Object evaluated = testEval(test.input);
+            Type evaluatedType = evaluated.GetType();
+            if (evaluatedType == typeof(int)) {
+                Assert.True(testIntegerObject(evaluated, (int)test.expected));
+            } else if (evaluatedType == typeof(string)) {
+                Assert.IsType<ErrorObj>(evaluated);
+
+                ErrorObj errorObj = (ErrorObj)evaluated;
+                Assert.Equal(test.expected, errorObj.Message);
+            }
+        }
+    }
+
     private Object.Object testEval(string input) {
         Lexer lexer = Lexer.NewInstance(input);
         Parser parser = Parser.NewInstance(lexer);
