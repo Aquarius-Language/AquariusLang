@@ -4,13 +4,13 @@ public class Environment {
     private Dictionary<string, Object> store;
     private Environment outer;
 
-    public Environment NewEnclosedEnvironment(Environment outer) {
+    public static Environment NewEnclosedEnvironment(Environment outer) {
         Environment environment = new Environment();
         environment.outer = outer;
         return environment;
     }
 
-    public Environment NewEnvironment() {
+    public static Environment NewEnvironment() {
         Environment environment = new Environment() { store = new Dictionary<string, Object>(), outer = null };
         return environment;
     }
