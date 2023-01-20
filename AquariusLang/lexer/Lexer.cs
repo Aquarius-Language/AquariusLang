@@ -85,6 +85,9 @@ public class Lexer {
             case ')':
                 token = newToken(TokenType.RPAREN, ch);
                 break;
+            case '"':
+                token = newToken(TokenType.STRING, readString());
+                break;
             case (char)0:
                 token = newToken(TokenType.EOF, "");
                 break;
@@ -106,6 +109,18 @@ public class Lexer {
 
         readChar();
         return token;
+    }
+
+    private string readString() {
+        int lastPos = position + 1;
+        while (true) {
+            readChar();
+            if (ch == '"' || ch == 0) {
+                break;
+            }
+        }
+
+        return input.Substring(lastPos, position - lastPos);
     }
 
     private void skipWhitespace() {

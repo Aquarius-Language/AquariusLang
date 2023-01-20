@@ -99,6 +99,7 @@ public class Parser {
         parser.registerPrefix(TokenType.LPAREN, parser.parseGroupedExpression);
         parser.registerPrefix(TokenType.IF, parser.parseIfExpression);
         parser.registerPrefix(TokenType.FUNCTION, parser.parseFunctionLiteral);
+        parser.registerPrefix(TokenType.STRING, parser.parseStringLiteral);
 
         parser.infixParseFns = new Dictionary<string, InfixParseFn>();
         parser.registerInfix(TokenType.PLUS, parser.parseInfixExpression);
@@ -451,6 +452,10 @@ public class Parser {
 
         block.Statements = statements.ToArray();
         return block;
+    }
+
+    public IExpression parseStringLiteral() {
+        return new StringLiteral(currToken, currToken.Literal);
     }
 
     public IExpression parseFunctionLiteral() {

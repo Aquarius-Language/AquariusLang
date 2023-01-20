@@ -211,6 +211,7 @@ public class EvaluatorTest {
                 expectedMessage = "Unknown operator: BOOLEAN + BOOLEAN",
             },
             new() { input = "foobar", expectedMessage = "Identifier not found: foobar", },
+            new() { input = "\"Hello\" - \"World\"", expectedMessage = "Unknown operator: STRING - STRING" },
         };
 
         foreach (var test in tests) {
@@ -293,6 +294,26 @@ public class EvaluatorTest {
             ourFunction(20) + first + second;
         ";
         Assert.True(testIntegerObject(testEval(input), 70));
+    }
+
+    [Fact]
+    public void TestStringLiteral() {
+        string input = "\"Hello World!\"";
+        Object.Object evaluated = testEval(input);
+        Assert.IsType<StringObj>(evaluated);
+        StringObj stringObj = (StringObj)evaluated;
+        Assert.Equal("Hello World!", stringObj.Value);
+    }
+
+    [Fact]
+    public void TestStringConcatenation() {
+        string input = "\"Hello\" + \" \" + \"World!\"";
+        Object.Object evaluated = testEval(input);
+        
+        Assert.IsType<StringObj>(evaluated);
+        StringObj stringObj = (StringObj)evaluated;
+        
+        Assert.Equal("Hello World!", stringObj.Value);
     }
 
     private Object.Object testEval(string input) {

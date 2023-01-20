@@ -30,6 +30,7 @@ public class Evaluator {
         {typeof(Identifier), IdentMapValue},
         {typeof(FunctionLiteral), FuncMapValue},
         {typeof(CallExpression), CallMapValue},
+        {typeof(StringLiteral), StringMapValue},
     };
 
     public static Object.Object Eval(INode node, Environment environment) {
@@ -112,6 +113,9 @@ public class Evaluator {
                 }
 
                 return applyFunction(function, args);
+            
+            case StringMapValue:
+                return new StringObj(((StringLiteral)node).Value);
         }
 
         return null;
@@ -195,11 +199,24 @@ public class Evaluator {
                 return nativeBoolToBoolObj(left != right);
         }
 
+        if (left.Type() == ObjectType.STRING_OBJ && right.Type() == ObjectType.STRING_OBJ) {
+            return evalStringInfixExpression(_operator, left, right);
+        }
+
         if (left.Type() != right.Type()) {
             return newError($"Type mismatch: {left.Type()} {_operator} {right.Type()}");
         }
 
         return newError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
+    }
+
+    private static Object.Object evalStringInfixExpression(string _operator, Object.Object left, Object.Object right) {
+        if (_operator != "+") {
+            return newError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
+        }
+        string leftVal = ((StringObj)left).Value;
+        string rightVal = ((StringObj)right).Value;
+        return new StringObj(leftVal + rightVal);
     }
 
     private static Object.Object evalIfExpression(IfExpression ifExpression, Environment environment) {
@@ -394,4 +411,5 @@ public class Evaluator {
     private const int IdentMapValue = 10;
     private const int FuncMapValue = 11;
     private const int CallMapValue = 12;
+    private const int StringMapValue = 13;
 }

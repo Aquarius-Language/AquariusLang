@@ -446,6 +446,23 @@ public class ParserTest {
         }
     }
 
+    [Fact]
+    public void TestStringLiteralExpression() {
+        string input = "\"hello world\";";
+        Lexer lexer = Lexer.NewInstance(input);
+        Parser parser = Parser.NewInstance(lexer);
+        AbstractSyntaxTree tree = parser.ParseAST();
+        Assert.False(checkParserErrors(parser));
+        
+        Assert.IsType<ExpressionStatement>(tree.Statements[0]);
+        ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
+
+        Assert.IsType<StringLiteral>(statement.Expression);
+        StringLiteral expression = (StringLiteral)statement.Expression;
+        
+        Assert.Equal("hello world", expression.Value);
+    }
+
     private bool testInfixExpression(IExpression expression, object left, string _operator, object right) {
         if (expression.GetType() != typeof(InfixExpression)) {
             _testOutputHelper.WriteLine($"expression is not InfixExpression. Got={expression}");

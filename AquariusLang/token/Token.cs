@@ -36,6 +36,8 @@ public struct TokenType {
     public const string IF       = "IF";
     public const string ELSE     = "ELSE";
     public const string RETURN   = "RETURN";
+
+    public const string STRING = "STRING";
 }
 
 /// <summary>

@@ -10,6 +10,7 @@ public struct ObjectType {
     public const string BOOLEAN_OBJ = "BOOLEAN";
     public const string RETURN_VALUE_OBJ = "RETURN_VALUE";
     public const string FUNCTION_OBJ = "FUNCTION";
+    public const string STRING_OBJ = "STRING";
 }
 
 public interface Object {
@@ -169,5 +170,26 @@ public class FunctionObj : Object {
     public Environment Env {
         get => env;
         set => env = value;
+    }
+}
+
+public class StringObj : Object {
+    private string value;
+
+    public StringObj(string value) {
+        this.value = value;
+    }
+
+    public string Type() {
+        return ObjectType.STRING_OBJ;
+    }
+
+    public string Inspect() {
+        return value;
+    }
+
+    public string Value {
+        get => value;
+        set => this.value = value;
     }
 }

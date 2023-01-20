@@ -659,3 +659,37 @@ public class AbstractSyntaxTree : INode {
         set => statements = value;
     }
 }
+
+public class StringLiteral : IExpression {
+    private Token token;
+    private string value;
+
+    public StringLiteral() {
+    }
+
+    public StringLiteral(Token token, string value) {
+        this.token = token;
+        this.value = value;
+    }
+
+    public string TokenLiteral() {
+        return token.Literal;
+    }
+
+    public string String() {
+        return token.Literal;
+    }
+
+    public void ExpressionNode() {
+    }
+
+    public Token Token {
+        get => token;
+        set => token = value;
+    }
+
+    public string Value {
+        get => value;
+        set => this.value = value;
+    }
+}

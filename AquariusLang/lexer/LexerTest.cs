@@ -41,6 +41,8 @@ public class LexerTest {
 
             10 == 10;
             10 != 9;
+            ""foobar""
+            ""foo bar""
         ";
         
         ExpectedTest[] tests = new [] {
@@ -117,6 +119,8 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.NOT_EQ,    ExpectedLiteral = "!="},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "9"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            new ExpectedTest(){ExpectedType = TokenType.STRING,    ExpectedLiteral = "foobar"},
+            new ExpectedTest(){ExpectedType = TokenType.STRING,    ExpectedLiteral = "foo bar"},
             new ExpectedTest(){ExpectedType = TokenType.EOF,       ExpectedLiteral = ""},
         };
         
