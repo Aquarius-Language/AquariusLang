@@ -19,3 +19,4 @@ To implement:
    The hashcode version of the string and int values might happen to have collisions of same value. To fix
    that, can use linked lists as values for the hashmap. (learnt from Algorithm course in university)
 6. Make numbers available as part of identifiers(variable names).
+7. Implement ||, &&, <=, >=...
