@@ -31,7 +31,7 @@ public class REPL {
             }
 
             IObject evaluated = Evaluator.Eval(tree, environment);
-            if (evaluated != null) {
+            if (evaluated != null && evaluated != RepeatedPrimitives.NULL) {
                 Console.WriteLine(evaluated.Inspect());
             }
         }
