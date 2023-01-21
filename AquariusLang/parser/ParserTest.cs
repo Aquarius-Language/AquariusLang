@@ -504,6 +504,37 @@ public class ParserTest {
         Assert.True(testInfixExpression(indexExpression.Index, 1, "+", 1));
     }
 
+    [Fact]
+    public void TestParsingHashLiteralStringKeys() {
+        string input = "{\"one\": 1, \"two\": 2, \"three\": 3}";
+        Lexer lexer = Lexer.NewInstance(input);
+        Parser parser = Parser.NewInstance(lexer);
+        AbstractSyntaxTree tree = parser.ParseAST();
+        Assert.False(checkParserErrors(parser));
+
+        ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
+
+        Assert.IsType<HashLiteral>(statement.Expression);
+        HashLiteral hashLiteral = (HashLiteral)statement.Expression;
+        
+        Assert.Equal(3, hashLiteral.Pairs.Count);
+
+        Dictionary<string, int> expected = new() {
+            {"one", 1},
+            {"two", 2},
+            {"three", 3},
+        };
+        
+        foreach (var hashLiteralPair in hashLiteral.Pairs) {
+            Assert.IsType<StringLiteral>(hashLiteralPair.Key);
+            StringLiteral key = (StringLiteral)hashLiteralPair.Key;
+
+            int _expected = expected[key.String()];
+            
+            Assert.True(testIntegerLiteral(hashLiteralPair.Value, _expected));
+        }
+    }
+
     private bool testInfixExpression(IExpression expression, object left, string _operator, object right) {
         if (expression.GetType() != typeof(InfixExpression)) {
             _testOutputHelper.WriteLine($"expression is not InfixExpression. Got={expression}");

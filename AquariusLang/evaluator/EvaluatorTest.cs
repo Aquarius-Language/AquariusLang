@@ -360,6 +360,36 @@ public class EvaluatorTest {
         Assert.True(testIntegerObject(result.Elements[2], 6));
     }
 
+    struct ArrayIndexTest {
+        public string input;
+        public object expected;
+    }
+
+    [Fact]
+    public void TestArrayIndexExpressions() {
+        ArrayIndexTest[] tests = {
+            new () { input = "[1, 2, 3][0]", expected = 1, },
+            new () { input = "[1, 2, 3][1]", expected = 2, },
+            new () { input = "[1, 2, 3][2]", expected = 3, },
+            new () { input = "let i = 0; [1][i];", expected = 1, },
+            new () { input = "[1, 2, 3][1 + 1];", expected = 3, },
+            new () { input = "let myArray = [1, 2, 3]; myArray[2];", expected = 3, },
+            new () { input = "let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2];", expected = 6, },
+            new () { input = "let myArray = [1, 2, 3]; let i = myArray[0]; myArray[i]", expected = 2, },
+            new () { input = "[1, 2, 3][3]", expected = null, },
+            new () { input = "[1, 2, 3][-1]", expected = null, },
+        };
+
+        foreach (var test in tests) {
+            IObject evaluated = testEval(test.input);
+            if (test.expected == null) {
+                Assert.True(testNullObject(evaluated));
+            } else {
+                Assert.True(testIntegerObject(evaluated, (int)test.expected));
+            }
+        }
+    }
+
     private IObject testEval(string input) {
         Lexer lexer = Lexer.NewInstance(input);
         Parser parser = Parser.NewInstance(lexer);

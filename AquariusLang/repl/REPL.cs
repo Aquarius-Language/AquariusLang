@@ -33,7 +33,6 @@ public class REPL {
             IObject evaluated = Evaluator.Eval(tree, environment);
             if (evaluated != null) {
                 Console.WriteLine(evaluated.Inspect());
-                Console.WriteLine();
             }
         }
     }

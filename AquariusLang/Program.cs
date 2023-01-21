@@ -1,6 +1,6 @@
 ﻿using AquariusLang.repl;
 
-Console.WriteLine("Hello, this is the Monkey Programming language!");
-Console.WriteLine("Feel free to type in commands!");
+Console.WriteLine("Hello, this is the Aquarius programming language!");
+Console.WriteLine("We're now in REPL mode!");
 
 REPL.Start();

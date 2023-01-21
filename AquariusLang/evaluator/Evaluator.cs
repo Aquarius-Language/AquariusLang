@@ -31,7 +31,8 @@ public class Evaluator {
         {typeof(FunctionLiteral), NodeTypeMapValue.FuncMapValue},
         {typeof(CallExpression), NodeTypeMapValue.CallMapValue},
         {typeof(StringLiteral), NodeTypeMapValue.StringMapValue},
-        {typeof(ArrayLiteral), NodeTypeMapValue.ArrayMapValue}
+        {typeof(ArrayLiteral), NodeTypeMapValue.ArrayMapValue},
+        {typeof(IndexExpression), NodeTypeMapValue.IndexMapValue},
     };
 
     public static IObject Eval(INode node, Environment environment) {
@@ -125,6 +126,20 @@ public class Evaluator {
                 }
 
                 return new ArrayObj(elements);
+            
+            case NodeTypeMapValue.IndexMapValue:
+                IndexExpression indexNode = (IndexExpression)node;
+                IObject left = Eval(indexNode.Left, environment);
+                if (isError(left)) {
+                    return left;
+                }
+
+                IObject index = Eval(indexNode.Index, environment);
+                if (isError(index)) {
+                    return index;
+                }
+
+                return evalIndexExpression(left, index);
         }
 
         return null;
@@ -329,6 +344,25 @@ public class Evaluator {
         return RepeatedPrimitives.FALSE;
     }
 
+    private static IObject evalIndexExpression(IObject left, IObject index) {
+        if (left.Type() == ObjectType.ARRAY_OBJ && index.Type() == ObjectType.INTEGER_OBJ) {
+            return evalArrayIndexExpression(left, index);
+        }
+
+        return NewError($"Index operator not supported: {left.Type()}");
+    }
+
+    private static IObject evalArrayIndexExpression(IObject array, IObject index) {
+        ArrayObj arrayObj = (ArrayObj)array;
+        int idx = ((IntegerObj)index).Value;
+        int max = arrayObj.Elements.Length - 1;
+        if (idx < 0 || idx > max) {
+            return RepeatedPrimitives.NULL;
+        }
+
+        return arrayObj.Elements[idx];
+    }
+
     /// <summary>
     ///     Create a new environment (local scope) for inside the function. Values of variables
     /// from paramters get passed into this newly created environment.
@@ -415,6 +449,9 @@ public class Evaluator {
         return true;
     }
 
+    /// <summary>
+    /// For use to compare types using switch through the help of dictionary and constant enum values.
+    /// </summary>
     private enum NodeTypeMapValue {
         ASTMapValue,
         BlockMapValue,
@@ -426,26 +463,11 @@ public class Evaluator {
         PrefixMapValue,
         InfixMapValue,
         IfMapValue,
-        IdentMapValue ,
-        FuncMapValue ,
-        CallMapValue ,
-        StringMapValue ,
-        ArrayMapValue ,
+        IdentMapValue,
+        FuncMapValue,
+        CallMapValue,
+        StringMapValue,
+        ArrayMapValue,
+        IndexMapValue,
     }
-
-    // private const int ASTMapValue = 0;
-    // private const int BlockMapValue = 1;
-    // private const int ExpressMapValue = 2;
-    // private const int ReturnMapValue = 3;
-    // private const int LetMapValue = 4;
-    // private const int IntMapValue = 5;
-    // private const int BoolMapValue = 6;
-    // private const int PrefixMapValue = 7;
-    // private const int InfixMapValue = 8;
-    // private const int IfMapValue = 9;
-    // private const int IdentMapValue = 10;
-    // private const int FuncMapValue = 11;
-    // private const int CallMapValue = 12;
-    // private const int StringMapValue = 13;
-    // private const int ArrayMapValue = 13;
 }

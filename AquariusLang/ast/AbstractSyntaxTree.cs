@@ -793,3 +793,47 @@ public class IndexExpression : IExpression {
         set => index = value;
     }
 }
+
+public class HashLiteral : IExpression {
+    private Token token;
+    private Dictionary<IExpression, IExpression> pairs;
+
+    public HashLiteral(Token token) {
+        this.token = token;
+    }
+
+    public HashLiteral(Token token, Dictionary<IExpression, IExpression> pairs) {
+        this.token = token;
+        this.pairs = pairs;
+    }
+
+    public string TokenLiteral() {
+        return token.Literal;
+    }
+
+    public string String() {
+        StringBuilder builder = new StringBuilder();
+        List<string> _pairs = new List<string>();
+        foreach (var keyValuePair in pairs) {
+            _pairs.Append(keyValuePair.Key.String() + ":" + keyValuePair.Value.String());
+        }
+        builder.Append('{')
+            .Append(string.Join(", ", _pairs))
+            .Append('}');
+
+        return builder.ToString();
+    }
+
+    public void ExpressionNode() {
+    }
+
+    public Token Token {
+        get => token;
+        set => token = value;
+    }
+
+    public Dictionary<IExpression, IExpression> Pairs {
+        get => pairs;
+        set => pairs = value;
+    }
+}
