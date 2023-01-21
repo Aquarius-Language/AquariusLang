@@ -44,6 +44,7 @@ public class LexerTest {
             ""foobar""
             ""foo bar""
             [1, 2];
+            {""foo"": ""bar""}
         ";
         
         ExpectedTest[] tests = new [] {
@@ -128,6 +129,11 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "2"},
             new ExpectedTest(){ExpectedType = TokenType.RBRACKET,  ExpectedLiteral = "]"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            new ExpectedTest(){ExpectedType = TokenType.LBRACE,    ExpectedLiteral = "{"},
+            new ExpectedTest(){ExpectedType = TokenType.STRING,    ExpectedLiteral = "foo"},
+            new ExpectedTest(){ExpectedType = TokenType.COLON,    ExpectedLiteral = ":"},
+            new ExpectedTest(){ExpectedType = TokenType.STRING,    ExpectedLiteral = "bar"},
+            new ExpectedTest(){ExpectedType = TokenType.RBRACE,    ExpectedLiteral = "}"},
             new ExpectedTest(){ExpectedType = TokenType.EOF,       ExpectedLiteral = ""},
         };
         
@@ -139,8 +145,8 @@ public class LexerTest {
             _testOutputHelper.WriteLine("Token -    " + token);
             _testOutputHelper.WriteLine("Expected - " + $"Type: {expectedTest.ExpectedType}, Literal: {expectedTest.ExpectedLiteral}");
 
-            Assert.Equal(token.Type, expectedTest.ExpectedType);
-            Assert.Equal(token.Literal, expectedTest.ExpectedLiteral);
+            Assert.Equal(expectedTest.ExpectedType, token.Type);
+            Assert.Equal(expectedTest.ExpectedLiteral, token.Literal);
         }
     }
 }

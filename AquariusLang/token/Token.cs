@@ -40,6 +40,7 @@ public struct TokenType {
     public const string STRING = "STRING";
     public const string LBRACKET = "[";
     public const string RBRACKET = "]";
+    public const string COLON = ":";
 }
 
 /// <summary>

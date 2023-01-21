@@ -535,6 +535,67 @@ public class ParserTest {
         }
     }
 
+    [Fact]
+    public void TestParsingEmptyHashLiteral() {
+        string input = "{}";
+        Lexer lexer = Lexer.NewInstance(input);
+        Parser parser = Parser.NewInstance(lexer);
+        AbstractSyntaxTree tree = parser.ParseAST();
+        Assert.False(checkParserErrors(parser));
+
+        Assert.IsType<ExpressionStatement>(tree.Statements[0]);
+        ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
+
+        Assert.IsType<HashLiteral>(statement.Expression);
+        HashLiteral hashLiteral = (HashLiteral)statement.Expression;
+        
+        Assert.Empty(hashLiteral.Pairs);
+    }
+
+    public delegate void ParsingHashLiteralsTestFunc(IExpression expression);
+    
+    [Fact]
+    public void TestParsingHashLiteralsWithExpressions() {
+        string input = "{\"one\": 0 + 1, \"two\": 10 - 8, \"three\": 15 / 5}";
+        Lexer lexer = Lexer.NewInstance(input);
+        Parser parser = Parser.NewInstance(lexer);
+        AbstractSyntaxTree tree = parser.ParseAST();
+        Assert.False(checkParserErrors(parser));
+        
+        Assert.IsType<ExpressionStatement>(tree.Statements[0]);
+        ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
+
+        Assert.IsType<HashLiteral>(statement.Expression);
+        HashLiteral hashLiteral = (HashLiteral)statement.Expression;
+        
+        Assert.Equal(3, hashLiteral.Pairs.Count);
+
+        Dictionary<string, ParsingHashLiteralsTestFunc> tests = new() {
+            {
+                "one", expression => {
+                    Assert.True(testInfixExpression(expression, 0, "+", 1));
+                }
+            }, {
+                "two", expression => {
+                    Assert.True(testInfixExpression(expression, 10, "-", 8));
+                }
+            }, {
+                "three", expression => {
+                    Assert.True(testInfixExpression(expression, 15, "/", 5));
+                }
+            }
+        };
+        
+        foreach (var hashLiteralPair in hashLiteral.Pairs) {
+            Assert.IsType<StringLiteral>(hashLiteralPair.Key);
+            StringLiteral literal = (StringLiteral)hashLiteralPair.Key;
+            
+            Assert.True(tests.TryGetValue(literal.String(), out ParsingHashLiteralsTestFunc func));
+
+            func(hashLiteralPair.Value);
+        }
+    }
+
     private bool testInfixExpression(IExpression expression, object left, string _operator, object right) {
         if (expression.GetType() != typeof(InfixExpression)) {
             _testOutputHelper.WriteLine($"expression is not InfixExpression. Got={expression}");

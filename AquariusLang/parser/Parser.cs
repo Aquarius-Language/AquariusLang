@@ -103,6 +103,7 @@ public class Parser {
         parser.registerPrefix(TokenType.FUNCTION, parser.parseFunctionLiteral);
         parser.registerPrefix(TokenType.STRING, parser.parseStringLiteral);
         parser.registerPrefix(TokenType.LBRACKET, parser.parseArrayLiteral);
+        parser.registerPrefix(TokenType.LBRACE, parser.parseHashLiteral);
 
         parser.infixParseFns = new Dictionary<string, InfixParseFn>();
         parser.registerInfix(TokenType.PLUS, parser.parseInfixExpression);
@@ -548,6 +549,31 @@ public class Parser {
         }
 
         return expression;
+    }
+
+    private IExpression parseHashLiteral() {
+        HashLiteral hashLiteral = new HashLiteral(currToken, new Dictionary<IExpression, IExpression>());
+        while (!peekTokenIs(TokenType.RBRACE)) {
+            nextToken();
+            IExpression key = parseExpression((int)Precedence.OperatorPrecedence.LOWEST);
+            if (!expectPeek(TokenType.COLON)) {
+                return null;
+            }
+            
+            nextToken();
+            IExpression value = parseExpression((int)Precedence.OperatorPrecedence.LOWEST);
+            hashLiteral.Pairs[key] = value;
+
+            if (!peekTokenIs(TokenType.RBRACE) && !expectPeek(TokenType.COMMA)) {
+                return null;
+            }
+        }
+
+        if (!expectPeek(TokenType.RBRACE)) {
+            return null;
+        }
+
+        return hashLiteral;
     }
 
     private void registerPrefix(string tokenType, PrefixParseFn fn) {

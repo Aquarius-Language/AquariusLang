@@ -94,6 +94,9 @@ public class Lexer {
             case ']':
                 token = newToken(TokenType.RBRACKET, ch);
                 break;
+            case ':':
+                token = newToken(TokenType.COLON, ch);
+                break;
             case (char)0:
                 token = newToken(TokenType.EOF, "");
                 break;
