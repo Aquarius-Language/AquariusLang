@@ -1,5 +1,4 @@
-﻿using AquariusLang.repl;
-using AquariusREPL.interpret;
+﻿using AquariusREPL.interpret;
 
 string[] cmdArgs = Environment.GetCommandLineArgs();
 
