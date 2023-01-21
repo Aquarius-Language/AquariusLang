@@ -1,4 +1,5 @@
 ﻿using AquariusLang.Object;
+using AquariusLang.utils;
 
 namespace AquariusLang.evaluator;
 
@@ -60,22 +61,12 @@ public class Builtins {
                    return Evaluator.NewError($"Argument to `push` must be ARRAY, got {args[0].Type()}");
                
                ArrayObj arrayObj = (ArrayObj)args[0];
-               IObject[] newElements = pushToArray(arrayObj.Elements, args[1]);
+               IObject[] newElements = Utils.PushToArray(arrayObj.Elements, args[1]);
 
                return new ArrayObj(newElements);
            }) 
         }
     };
     
-    private static T[] pushToArray<T>(T[] target, T item)
-    {
-        if (target == null)
-        {
-            //TODO: Return null or throw ArgumentNullException;
-        }
-        T[] result = new T[target.Length + 1];
-        target.CopyTo(result, 0);
-        result[target.Length] = item;
-        return result;
-    }
+
 }

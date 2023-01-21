@@ -13,6 +13,7 @@ public struct ObjectType {
     public const string STRING_OBJ = "STRING";
     public const string BUILTIN_OBJ = "BUILTIN";
     public const string ARRAY_OBJ = "ARRAY";
+    public const string HASH_OBJ = "HASH";
 }
 
 public interface IObject {
@@ -20,7 +21,36 @@ public interface IObject {
     string Inspect();
 }
 
-public class IntegerObj : IObject {
+public interface IHashable {
+    HashKey HashKey();
+}
+
+/// <summary>
+///     BE VERY CAREFUL! HashKey MUST either be struct type for being stack variables, or they need to override Equals() and GetHashCode(),
+/// so they can be used as dictionary keys. Otherwise, it'll not work as dictionary keys. (Maybe because class instances are pointers to heap?)
+/// Extra advantage of this: since HashKey doesn't have complicated types nor polymorphic members, it also might boost performance. 
+/// </summary>
+public struct HashKey {
+    private string type;
+    private int value;
+
+    public HashKey(string type, int value) {
+        this.type = type;
+        this.value = value;
+    }
+
+    public string Type {
+        get => type;
+        set => type = value;
+    }
+
+    public int Value {
+        get => value;
+        set => this.value = value;
+    }
+}
+
+public class IntegerObj : IObject, IHashable {
     private int value;
 
     public IntegerObj(int value) {
@@ -39,9 +69,13 @@ public class IntegerObj : IObject {
         get => value;
         set => this.value = value;
     }
+
+    public HashKey HashKey() {
+        return new HashKey(Type(), value);
+    }
 }
 
-public class BooleanObj : IObject {
+public class BooleanObj : IObject, IHashable {
     private bool value;
 
     public BooleanObj(bool value) {
@@ -59,6 +93,36 @@ public class BooleanObj : IObject {
     public bool Value {
         get => value;
         set => this.value = value;
+    }
+
+    public HashKey HashKey() {
+        int _value = value ? 1 : 0;
+        return new HashKey(Type(), _value);
+    }
+}
+
+public class StringObj : IObject, IHashable {
+    private string value;
+
+    public StringObj(string value) {
+        this.value = value;
+    }
+
+    public string Type() {
+        return ObjectType.STRING_OBJ;
+    }
+
+    public string Inspect() {
+        return value;
+    }
+
+    public string Value {
+        get => value;
+        set => this.value = value;
+    }
+
+    public HashKey HashKey() {
+        return new HashKey(Type(), value.GetHashCode());
     }
 }
 
@@ -175,27 +239,6 @@ public class FunctionObj : IObject {
     }
 }
 
-public class StringObj : IObject {
-    private string value;
-
-    public StringObj(string value) {
-        this.value = value;
-    }
-
-    public string Type() {
-        return ObjectType.STRING_OBJ;
-    }
-
-    public string Inspect() {
-        return value;
-    }
-
-    public string Value {
-        get => value;
-        set => this.value = value;
-    }
-}
-
 public delegate IObject BuiltinFunction(IObject[] args);
 
 public class BuiltinObj : IObject {
@@ -248,5 +291,55 @@ public class ArrayObj : IObject {
     public IObject[] Elements {
         get => elements;
         set => elements = value;
+    }
+}
+
+public class HashPair {
+    private IObject key;
+    private IObject value;
+
+    public HashPair(IObject key, IObject value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public IObject Key {
+        get => key;
+        set => key = value;
+    }
+
+    public IObject Value {
+        get => value;
+        set => this.value = value;
+    }
+}
+
+public class HashObj : IObject {
+    private Dictionary<HashKey, HashPair> pairs;
+
+    public HashObj(Dictionary<HashKey, HashPair> pairs) {
+        this.pairs = pairs;
+    }
+
+    public string Type() {
+        return ObjectType.HASH_OBJ;
+    }
+
+    public string Inspect() {
+        StringBuilder builder = new StringBuilder();
+        List<string> _pairs = new();
+        foreach (var pair in pairs) {
+            _pairs.Add($"{pair.Value.Key.Inspect()}: {pair.Value.Value.Inspect()}");
+        }
+        builder.Append('{')
+            .Append(string.Join(", ", _pairs))
+            .Append('}');
+
+        return builder.ToString();
+    }
+
+    public Dictionary<HashKey, HashPair> Pairs {
+        get => pairs;
+        set => pairs = value;
     }
 }

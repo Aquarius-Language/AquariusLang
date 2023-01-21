@@ -1,5 +1,6 @@
 ﻿using AquariusLang.ast;
 using AquariusLang.Object;
+using AquariusLang.utils;
 using Environment = AquariusLang.Object.Environment;
 
 namespace AquariusLang.evaluator;
@@ -33,6 +34,7 @@ public class Evaluator {
         {typeof(StringLiteral), NodeTypeMapValue.StringMapValue},
         {typeof(ArrayLiteral), NodeTypeMapValue.ArrayMapValue},
         {typeof(IndexExpression), NodeTypeMapValue.IndexMapValue},
+        {typeof(HashLiteral), NodeTypeMapValue.HashMapValue},
     };
 
     public static IObject Eval(INode node, Environment environment) {
@@ -140,6 +142,9 @@ public class Evaluator {
                 }
 
                 return evalIndexExpression(left, index);
+            
+            case NodeTypeMapValue.HashMapValue:
+                return evalHashLiteral((HashLiteral)node, environment);
         }
 
         return null;
@@ -347,6 +352,8 @@ public class Evaluator {
     private static IObject evalIndexExpression(IObject left, IObject index) {
         if (left.Type() == ObjectType.ARRAY_OBJ && index.Type() == ObjectType.INTEGER_OBJ) {
             return evalArrayIndexExpression(left, index);
+        } else if (left.Type() == ObjectType.HASH_OBJ) {
+            return evalHashIndexExpression(left, index);
         }
 
         return NewError($"Index operator not supported: {left.Type()}");
@@ -361,6 +368,47 @@ public class Evaluator {
         }
 
         return arrayObj.Elements[idx];
+    }
+
+    private static IObject evalHashIndexExpression(IObject hash, IObject index) {
+        HashObj hashObj = (HashObj)hash; 
+        bool ok = Utils.TryCast(index, out IHashable key);
+        if (!ok) {
+            return NewError($"Unusable as hash key: {index.Type()}");
+        }
+
+        ok = hashObj.Pairs.TryGetValue(key.HashKey(), out HashPair pair);
+
+        if (!ok) {
+            return RepeatedPrimitives.NULL;
+        }
+
+        return pair.Value;
+    }
+
+    private static IObject evalHashLiteral(HashLiteral node, Environment environment) {
+        Dictionary<HashKey, HashPair> pairs = new Dictionary<HashKey, HashPair>();
+        foreach (var pair in node.Pairs) {
+            IObject key = Eval(pair.Key, environment);
+            if (isError(key)) {
+                return key;
+            }
+
+            bool usable = Utils.TryCast(key, out IHashable hashKey);
+            if (!usable) {
+                return NewError($"Unusable as hash key: {key.Type()}");
+            }
+
+            IObject value = Eval(pair.Value, environment);
+            if (isError(value)) {
+                return value;
+            }
+
+            HashKey hashed = hashKey.HashKey();
+            pairs[hashed] = new HashPair(key, value);
+        }
+
+        return new HashObj(pairs);
     }
 
     /// <summary>
@@ -469,5 +517,6 @@ public class Evaluator {
         StringMapValue,
         ArrayMapValue,
         IndexMapValue,
+        HashMapValue,
     }
 }

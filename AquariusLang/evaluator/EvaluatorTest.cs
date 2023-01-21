@@ -212,6 +212,7 @@ public class EvaluatorTest {
             },
             new() { input = "foobar", expectedMessage = "Identifier not found: foobar", },
             new() { input = "\"Hello\" - \"World\"", expectedMessage = "Unknown operator: STRING - STRING" },
+            new() { input = "{\"name\": \"Monkey\"}[fn(x) { x }];", expectedMessage = "Unusable as hash key: FUNCTION" }, 
         };
 
         foreach (var test in tests) {
@@ -390,6 +391,88 @@ public class EvaluatorTest {
         }
     }
 
+    [Fact]
+    public void TestHashLiterals() {
+        string input = @"
+        let two = ""two"";
+        {
+            ""one"": 10 - 9,
+            two: 1 + 1,
+            ""thr"" + ""ee"": 6 / 2,
+            4: 4,
+            true: 5,
+            false: 6
+        }
+        ";
+        IObject evaluated = testEval(input);
+        Assert.IsType<HashObj>(evaluated);
+        HashObj result = (HashObj)evaluated;
+
+        Dictionary<HashKey, int> expected = new() {
+            { (new StringObj("one")).HashKey(), 1 },
+            { (new StringObj("two")).HashKey(), 2 },
+            { (new StringObj("three")).HashKey(), 3 },
+            { (new IntegerObj(4)).HashKey(), 4 },
+            { RepeatedPrimitives.TRUE.HashKey(), 5 },
+            { RepeatedPrimitives.FALSE.HashKey(), 6 }
+        };
+        
+        Assert.Equal(expected.Count, result.Pairs.Count);
+        
+        foreach (var _expected in expected) {
+            Assert.True(result.Pairs.TryGetValue(_expected.Key, out HashPair value));
+            Assert.True(testIntegerObject(value.Value, _expected.Value));
+        }
+    }
+
+    struct HashIndexExpressionTest {
+        public string input;
+        public int? expected;
+    }
+    [Fact]
+    public void TestHashIndexExpressions() {
+        HashIndexExpressionTest[] tests = {
+            new() {
+                input = "{\"foo\": 5}[\"foo\"]",
+                expected = 5,
+            },
+            new() {
+                input = "{\"foo\": 5}[\"bar\"]",
+                expected = null,
+            },
+            new() {
+                input = "let key = \"foo\"; {\"foo\": 5}[key]",
+                expected = 5,
+            },
+            new() {
+                input = "{}[\"foo\"]",
+                expected = null,
+            },
+            new() {
+                input = "{5: 5}[5]",
+                expected = 5,
+            },
+            new() {
+                input = "{true: 5}[true]",
+                expected = 5,
+            },
+            new() {
+                input = "{false: 5}[false]",
+                expected = 5,
+            },
+        };
+
+        foreach (var test in tests) {
+            _testOutputHelper.WriteLine($"input: {test.input}, expected: {test.expected}");
+            IObject evaluated = testEval(test.input);
+            if (test.expected != null) {
+                Assert.True(testIntegerObject(evaluated, test.expected));
+            } else {
+                Assert.True(testNullObject(evaluated));
+            }
+        }
+    }
+
     private IObject testEval(string input) {
         Lexer lexer = Lexer.NewInstance(input);
         Parser parser = Parser.NewInstance(lexer);
@@ -421,7 +504,7 @@ public class EvaluatorTest {
         return true;
     }
 
-    private bool testIntegerObject(IObject obj, int expected) {
+    private bool testIntegerObject(IObject obj, int? expected) {
         if (obj is IntegerObj integerObj) {
             if (integerObj.Value != expected) {
                 _testOutputHelper.WriteLine($"Object has wrong value. Got={integerObj.Value}, want={expected}");
@@ -430,7 +513,7 @@ public class EvaluatorTest {
 
             return true;
         }
-        _testOutputHelper.WriteLine($"Object is not BooleanObj. Got={obj}");
+        _testOutputHelper.WriteLine($"Object is not IntegerObj. Got={obj}");
         return false;
     }
 }
