@@ -11,7 +11,7 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
 
 To implement:
 
-1. For loop, while loop.
+1. While loop.
 2. Floating point numbers.
 3Use "Visitor pattern" to replace "type checking using switch case" under Evaluator.Eval().
 3. ~~String keys are saved as hashcode/int (.GetHashCode()) in dictionary for Hashmap type in Aquarius lang.
@@ -26,7 +26,8 @@ To implement:
 
 Finished implementing:
 
-1. Variable re-assignment. (Implemented. Added to Evaluator.assignVariableVal().)
+1. Variable re-assignment. Added to Evaluator.assignVariableVal().
+2. For loop. Added to Evaluator.evalForLoopLiteral() and.parseForLoopLiteral().  (global and local issues not completely done yet)
 
 SUGGESTIONS WHEN IMPLEMENTING NEW FEATURES:
 

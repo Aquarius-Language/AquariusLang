@@ -499,59 +499,9 @@ public class Parser {
         nextToken();
 
         forLoopLiteral.Body = parseBlockStatement();
-        
-        // /*
-        //  * Reason for passing false to checkEndToken param:
-        //  *   Semicolon can't be found during the end of those functions. They get skipped through nextToken() during the way.
-        //  *  So there's no point check for them.
-        //  */
-        // Console.WriteLine($"Current token 0: {currToken}");
-        // Console.WriteLine($"Next token 0: {peekToken}");
-        // forLoopLiteral.DeclareStatement = parseLetStatementList(TokenType.SEMICOLON, false); 
-        // Console.WriteLine($"DeclareStatements length: {forLoopLiteral.DeclareStatement.Length}");
-        // Console.WriteLine($"Current token 1: {currToken}");
-        // Console.WriteLine($"Next token 1: {peekToken}");
-        // Console.WriteLine($"STRING 1: {forLoopLiteral.DeclareStatement[0].String()}");
-        // // nextToken();
-        // nextToken();
-        // forLoopLiteral.ConditionalExpression = parseExpressionList(TokenType.SEMICOLON, false);
-        // Console.WriteLine($"ConditionalExpressions length: {forLoopLiteral.ConditionalExpression.Length}");
-        // Console.WriteLine($"Current token 2: {currToken}");
-        // Console.WriteLine($"Next token 2: {peekToken}");
-        // Console.WriteLine($"STRING 2: {forLoopLiteral.ConditionalExpression[0].String()}");
-        // nextToken();
-        // forLoopLiteral.ValueChangeStatement = parseStatementList(TokenType.RPAREN);
-        // // nextToken();
-        // forLoopLiteral.Body = parseBlockStatement();
 
         return forLoopLiteral;
     }
-
-    // private LetStatement[] parseForLoopLetStatements() {
-    //     List<LetStatement> letStatements = new List<LetStatement>();
-    //     while (true) {
-    //         if (expectPeek(TokenType.LET)) {
-    //             letStatements.Append(parseLetStatement());
-    //             if (expectPeek(TokenType.COMMA)) {
-    //                 nextToken();
-    //                 if (!expectPeek(TokenType.LET)) {
-    //                     peekError(TokenType.LET);
-    //                     return null;
-    //                 }
-    //             }
-    //         } else {
-    //             break;
-    //         }
-    //         nextToken();
-    //     }
-    //
-    //     return letStatements.ToArray();
-    // }
-
-    // private IExpression[] parseForLoopConditionalExpressions() {
-    //     List<IExpression> conditionalExpressions = new List<IExpression>();
-    //     
-    // }
 
     private IExpression parseFunctionLiteral() {
         FunctionLiteral functionLiteral = new FunctionLiteral(currToken);

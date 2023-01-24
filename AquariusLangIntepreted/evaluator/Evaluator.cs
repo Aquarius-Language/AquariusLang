@@ -474,6 +474,7 @@ public class Evaluator {
             string letStatementVarName = letStatement.Name.Value;
             IObject letStatementVar = enclosedEnvironment.Get(letStatementVarName, out bool hasVar);
             enclosedEnvironment = Environment.NewEnclosedEnvironment(environment);
+            
             /*
              * Value saved to variable of which was declared inside parentheses (ex. "func (let i = 0;...") of for loop,
              * should have its value kept during each loop. Other variables declared inside body ({}) should be cleared out. 
