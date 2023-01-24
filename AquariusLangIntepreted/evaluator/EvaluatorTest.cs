@@ -49,6 +49,22 @@ public class EvaluatorTest {
         }
     }
 
+    struct IntIncrementDecrementTest {
+        public string input;
+        public int expected;
+    }
+    [Fact]
+    public void TestIntIncrementDecrement() {
+        IntIncrementDecrementTest[] tests = {
+            new() {input = "let a = 5; a += 10; a;", expected = 15},
+            new() {input = "let b = 25; b -= 5; b -= 19; b;", expected = 1}
+        };
+        foreach (var test in tests) {
+            IObject evaluated = testEval(test.input);
+            Assert.True(testIntegerObject(evaluated, test.expected));
+        }
+    }
+
     struct EvalBooleanTest {
         public string input;
         public bool expected;
@@ -82,6 +98,7 @@ public class EvaluatorTest {
             new () {input = "false && false", expected = false},
             new () {input = "true && true", expected = true},
             new () {input = "true && false", expected = false},
+            new () {input = "!5 && false", expected = false},
         };
 
         foreach (var test in tests) {

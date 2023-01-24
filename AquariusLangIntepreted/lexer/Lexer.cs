@@ -29,10 +29,8 @@ public class Lexer {
         switch (ch) {
             case '=':
                 if (peekChar() == '=') {
-                    char _ch = ch;
                     readChar();
-                    // string literal = char.ToString(_ch) + char.ToString(ch);
-                    string literal = new string(new[] { _ch, ch });
+                    string literal = "==";
                     token = newToken(TokenType.EQ, literal);
                 } else {
                     token = newToken(TokenType.ASSIGN, ch);
@@ -40,9 +38,8 @@ public class Lexer {
                 break;
             case '+':
                 if (peekChar() == '=') {
-                    char _ch = ch;
                     readChar();
-                    string literal = new string(new[] { _ch, ch });
+                    string literal = "+=";
                     token = newToken(TokenType.PLUS_EQ, literal);
                 } else {
                     token = newToken(TokenType.PLUS, ch);
@@ -50,8 +47,8 @@ public class Lexer {
                 break;
             case '-':
                 if (peekChar() == '=') {
-                    char _ch = ch;
-                    string literal = new string(new[] { _ch, ch });
+                    readChar();
+                    string literal = "-=";
                     token = newToken(TokenType.MINUS_EQ, literal);
                 } else {
                     token = newToken(TokenType.MINUS, ch);
@@ -60,9 +57,8 @@ public class Lexer {
             case '!':
                 // Two-character token: '!='.
                 if (peekChar() == '=') {
-                    char _ch = ch;
                     readChar();
-                    string literal = new string(new[] { _ch, ch });
+                    string literal = "!=";
                     token = newToken(TokenType.NOT_EQ, literal);
                 } else {
                     token = newToken(TokenType.BANG, ch);
@@ -113,9 +109,8 @@ public class Lexer {
             case '&':
                 char peekedChar = peekChar();
                 if (peekedChar == '&') {
-                    char _ch = ch;
                     readChar();
-                    string literal = new string(new[] { _ch, ch });
+                    string literal = "&&";
                     token = newToken(TokenType.AND_AND, literal);
                 } else if (peekedChar == ' ') {
                     // TODO Implement Binary And '&' feature.
@@ -124,9 +119,8 @@ public class Lexer {
             case '|':
                 char _peekedChar = peekChar();
                 if (_peekedChar == '|') {
-                    char _ch = ch;
                     readChar();
-                    string literal = new string(new[] { _ch, ch });
+                    string literal = "||";
                     token = newToken(TokenType.OR_OR, literal);
                 } else if (_peekedChar == ' ') {
                     // TODO Implement Binary Or '|' feature.

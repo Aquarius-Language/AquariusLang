@@ -118,6 +118,22 @@ public class Evaluator {
                             return NewError($"Left operand for += operator not identifier. Got={_node.Left.GetType()}");
                         }
                         break;
+                    case "-=":
+                        if (_node.Left is Identifier __leftIdent) {
+                            if (_right.Type() == ObjectType.INTEGER_OBJ) {
+                                IObject identVal = evalIdentifier(__leftIdent, environment);
+                                if (identVal.Type() == ObjectType.INTEGER_OBJ) {
+                                    environment.Set(__leftIdent.Value, new IntegerObj(((IntegerObj)identVal).Value - ((IntegerObj)_right).Value));
+                                } else {
+                                    return NewError($"Incorrect left operand type for INT -=: {identVal.Type()}");
+                                }
+                            } else if (_right.Type() == ObjectType.STRING_OBJ) {
+                                return NewError("String as left operand type for -= string concatenation doesn't exist.");
+                            }
+                        } else {
+                            return NewError($"Left operand for -= operator not identifier. Got={_node.Left.GetType()}");
+                        }
+                        break;
                     default:
                         return evalInfixExpression(_node.Operator, _left, _right);
                 }

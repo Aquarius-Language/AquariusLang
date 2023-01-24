@@ -34,7 +34,9 @@ Finished implementing:
    Turns out there's no need to do that, since HashKey instance contains "type" member as string. Therefore,
    the hashmap in the language can differentiate between two instances with different types but same hash int values.
 
-SUGGESTIONS WHEN IMPLEMENTING NEW FEATURES:
+SUGGESTIONS AND NOTES WHEN IMPLEMENTING NEW FEATURES:
 
 - Be VERY CAREFUL about when to call nextTokens(). I missed few nextTokens() call when I was implementing for loop parsing.
   But they seem to get fixed when I added those function calls.
+- Sometimes when adding new operators but it's not showing up in search for prefix/infix callbacks, make sure if they're being 
+  referenced under Parser.precedencesMap.
