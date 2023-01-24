@@ -195,7 +195,10 @@ public class Evaluator {
                 return evalHashLiteral((HashLiteral)node, environment);
             
             case NodeTypeMapValue.ForMapValue:
-                evalForLoopLiteral((ForLoopLiteral)node, environment);
+                IObject result = evalForLoopLiteral((ForLoopLiteral)node, environment);
+                if (result != null) {
+                    return result;
+                }
                 break;
         }
 
@@ -481,7 +484,7 @@ public class Evaluator {
         return new HashObj(pairs);
     }
 
-    private static void evalForLoopLiteral(ForLoopLiteral node, Environment environment) {
+    private static IObject evalForLoopLiteral(ForLoopLiteral node, Environment environment) {
         Environment enclosedEnvironment = Environment.NewEnclosedEnvironment(environment);
         LetStatement letStatement = node.DeclareStatement;
         IExpression conditionalExpression = node.ConditionalExpression;
@@ -497,7 +500,16 @@ public class Evaluator {
                     break;
                 }
 
-                Eval(blockStatement, enclosedEnvironment);
+                IObject result = Eval(blockStatement, enclosedEnvironment);
+
+                /*
+                 * If the for loop is inside a function, this can instantiate a return value, break
+                 * out of this for loop, and return the value out of the function.
+                 */
+                if (result is ReturnValueObj returnValueObj) {
+                    return returnValueObj.Value;
+                }
+                
                 Eval(valueChangeStatement, enclosedEnvironment);
             } else {
                 NewError($"Expected bool from for loop conditionals. Got={evalConditionResult.Type()}");
@@ -513,6 +525,8 @@ public class Evaluator {
              */
             enclosedEnvironment.Set(letStatementVarName, letStatementVar); 
         }
+
+        return null;
     }
 
     /// <summary>

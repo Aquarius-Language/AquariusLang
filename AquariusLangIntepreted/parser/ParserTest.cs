@@ -213,12 +213,12 @@ public class ParserTest {
             Parser parser = Parser.NewInstance(lexer);
             AbstractSyntaxTree tree = parser.ParseAST();
             
-            Assert.NotEqual(checkParserErrors(parser), true);
-            Assert.Equal(tree.Statements.Length, 1);
-            Assert.IsType(typeof(ExpressionStatement), tree.Statements[0]);
+            Assert.False(checkParserErrors(parser));
+            Assert.Single(tree.Statements);
+            Assert.IsType<ExpressionStatement>(tree.Statements[0]);
 
             ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
-            Assert.Equal(testInfixExpression(statement.Expression, test.leftValue, test._operator, test.rightValue), true);
+            Assert.True(testInfixExpression(statement.Expression, test.leftValue, test._operator, test.rightValue));
         }
     }
 

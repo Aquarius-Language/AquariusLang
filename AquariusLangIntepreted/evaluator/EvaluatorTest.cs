@@ -198,6 +198,36 @@ public class EvaluatorTest {
                 f(10);",
                 expected = 20,
             },
+            new () { // Return from for loop to out of function.
+                input = 
+                @"
+                let func = fn(){
+                    for(let a = 5; a < 10; a+=1) {
+                        if (a > 6) {
+                            return a;
+                        }
+                    }
+                }
+                func();
+                ",
+                expected = 7,
+            },
+            new () { // Return from nested for loop to out of function.
+            input = 
+            @"
+                let func = fn(){
+                    for(let a = 5; a < 10; a+=1) {
+                        for (let b = 0; b < 5; b+=1) {
+                            if (a > 6) {
+                                return a;
+                            }
+                        }
+                    }
+                }
+                func();
+                ",
+            expected = 7,
+            }
         };
 
         foreach (var test in tests) {

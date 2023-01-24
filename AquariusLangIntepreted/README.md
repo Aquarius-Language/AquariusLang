@@ -15,14 +15,16 @@ To implement:
 2. Floating point numbers.
 3. Use "Visitor pattern" to replace "type checking using switch case" under Evaluator.Eval(). (for performance enhancement)
 4. Make numbers available as part of identifiers(variable names).
-5. Implement ||, &&, <=, >=...
-6. Implement else if (elif)...
-7. Ignore comments.
-8. Value re-assignment to array and hashmap; pass them by reference to functions.
-9. "break" from loops.
-10. "return" out of function from loop.
-11. Implement "outer" and "local" variables for environments. (to fix local variable problems in loop)
-12. Add "for loop example unit testing" when the problems for for loop are fixed.
+5. Implement else if (elif)...
+6. Ignore comments.
+7. Value re-assignment to array and hashmap; pass them by reference to functions.
+8. "break" from loops.
+9. "return" out of function from loop.
+10. Implement "outer" and "local" variables for environments. (to fix local variable problems in loop)
+11. Add "for loop example unit testing" when the problems for for loop are fixed.
+12. Make for loop still work even when no few statements in parenthesis. ex. for(; i < 10; i+=1){}
+13. Binary and, or (|, &)
+14. String concatenate with int.
 
 Finished implementing:
 
@@ -33,6 +35,7 @@ Finished implementing:
    that, can use linked lists as values for the hashmap. (learnt from Algorithm course in university)~~
    Turns out there's no need to do that, since HashKey instance contains "type" member as string. Therefore,
    the hashmap in the language can differentiate between two instances with different types but same hash int values.
+4. Implement ||, &&, <=, >=...
 
 SUGGESTIONS AND NOTES WHEN IMPLEMENTING NEW FEATURES:
 
