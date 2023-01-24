@@ -496,6 +496,7 @@ public class Parser {
 
         forLoopLiteral.ValueChangeStatement = parseStatement();
         nextToken();
+        nextToken();
 
         forLoopLiteral.Body = parseBlockStatement();
         

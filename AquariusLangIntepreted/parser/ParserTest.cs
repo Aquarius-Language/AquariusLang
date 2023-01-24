@@ -383,7 +383,7 @@ public class ParserTest {
 
         _testOutputHelper.WriteLine(forLoopLiteral.String());
         
-        Assert.Equal("for(let i = 0;(i < 5);(i += 1)){(a = 0)}", forLoopLiteral.String());
+        Assert.Equal("for(let i = 0;(i < 5);(i += 1)){let a = 0;}", forLoopLiteral.String());
     }
 
     struct FunctionParameterTest {

@@ -449,11 +449,28 @@ public class Evaluator {
     }
 
     private static IObject evalForLoopLiteral(ForLoopLiteral node, Environment environment) {
-        // Environment enclosedEnvironment = Environment.NewEnclosedEnvironment(environment);
-        // LetStatement[] letStatements = node.DeclareStatement;
-        // IExpression[] conditionalExpressions = node.ConditionalExpression;
-        // IStatement[] valueChangeStatements = node.ValueChangeStatement;
-        // BlockStatement blockStatement = node.Body;
+        Environment enclosedEnvironment = Environment.NewEnclosedEnvironment(environment);
+        LetStatement letStatement = node.DeclareStatement;
+        IExpression conditionalExpression = node.ConditionalExpression;
+        IStatement valueChangeStatement = node.ValueChangeStatement;
+        BlockStatement blockStatement = node.Body;
+
+        Eval(letStatement, enclosedEnvironment);
+
+        while (true) {
+            IObject evalConditionResult = Eval(conditionalExpression, enclosedEnvironment);
+            if (evalConditionResult.Type() == ObjectType.BOOLEAN_OBJ) {
+                if (!((BooleanObj)evalConditionResult).Value) {
+                    break;
+                }
+
+                Eval(blockStatement, enclosedEnvironment);
+                Eval(valueChangeStatement, enclosedEnvironment);
+            } else {
+                NewError($"Expected bool from for loop conditionals. Got={evalConditionResult.Type()}");
+            }
+        }
+        
         // foreach (LetStatement letStatement in letStatements) {
         //     Console.WriteLine(letStatement.String());
         //     Eval(letStatement, enclosedEnvironment);
