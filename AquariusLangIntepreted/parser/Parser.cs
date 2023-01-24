@@ -258,7 +258,10 @@ public class Parser {
     }
 
     private IExpression parseExpression(int precedence) {
+        // Console.WriteLine($"Get prefixParseFns for currToken.Type: {currToken.Type}");
         bool hasKey = prefixParseFns.TryGetValue(currToken.Type, out PrefixParseFn prefixParseFn);
+        
+        // Console.WriteLine($"prefixParseFn: {prefixParseFn}");
 
         if (prefixParseFn == null) {
             noPrefixParseFnError(currToken.Type);
@@ -266,6 +269,9 @@ public class Parser {
         }
 
         IExpression leftExp = prefixParseFn();
+        
+        // Console.WriteLine($"leftExp: {leftExp.String()}");
+
 
         while (!peekTokenIs(TokenType.SEMICOLON) && precedence < peekPrecedence()) {
             InfixParseFn infixParseFn = infixParseFns[peekToken.Type];
@@ -477,9 +483,17 @@ public class Parser {
             return null;
         }
 
-        forLoopLiteral.DeclareStatements = parseStatementList(TokenType.SEMICOLON);
-        forLoopLiteral.ConditionalExpressions = parseExpressionList(TokenType.SEMICOLON);
+        /*
+         * Reason for passing false to checkEndToken param:
+         *   Semicolon can't be found during the end of those functions. They get skipped through nextToken() during the way.
+         *  So there's no point check for them.
+         */
+        forLoopLiteral.DeclareStatements = parseStatementList(TokenType.SEMICOLON, false); 
+        nextToken();
+        forLoopLiteral.ConditionalExpressions = parseExpressionList(TokenType.SEMICOLON, false);
+        nextToken();
         forLoopLiteral.ValueChangeStatements = parseStatementList(TokenType.RPAREN);
+        nextToken();
         forLoopLiteral.Body = parseBlockStatement();
 
         return forLoopLiteral;
@@ -564,7 +578,7 @@ public class Parser {
         return array;
     }
 
-    private IStatement[] parseStatementList(string endTokenType) {
+    private IStatement[] parseStatementList(string endTokenType, bool checkEndToken = true) {
         List<IStatement> list = new List<IStatement>();
         if (peekTokenIs(endTokenType)) {
             nextToken();
@@ -578,18 +592,24 @@ public class Parser {
             nextToken();
             list.Add(parseStatement());
         }
-        
-        if (!expectPeek(endTokenType)) {
-            Console.WriteLine("Is null.");
-            return null;
+
+        if (checkEndToken) {
+            if (!expectPeek(endTokenType)) {
+                return null;
+            }
         }
-        
+
         nextToken();
 
         return list.ToArray();
     }
 
-    private IExpression[] parseExpressionList(string endTokenType) {
+    // private IExpression[] parseExpressionStatementList(string endTokenType = null) {
+    //     List<IExpression> list = new List<IExpression>();
+    //
+    // }
+
+    private IExpression[] parseExpressionList(string endTokenType, bool checkEndToken = true) {
         List<IExpression> list = new List<IExpression>();
 
         if (peekTokenIs(endTokenType)) {
@@ -606,8 +626,10 @@ public class Parser {
             list.Add(parseExpression((int)Precedence.OperatorPrecedence.LOWEST));
         }
 
-        if (!expectPeek(endTokenType)) {
-            return null;
+        if (checkEndToken) {
+            if (!expectPeek(endTokenType)) {
+                return null;
+            }
         }
 
         return list.ToArray();
