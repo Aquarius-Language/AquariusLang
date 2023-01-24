@@ -140,6 +140,56 @@ public class ReturnStatement : IStatement {
     }
 }
 
+// /// <summary>
+// /// let x = 13; // Let statement.
+// /// x = 12; // Assign statement.
+// /// </summary>
+// public class AssignStatement : IStatement {
+//     private Token token; // the token.LET token
+//     private string identifierNameName;
+//     private IExpression value; // The expression that produces the value.
+//
+//     public AssignStatement(Token token) {
+//         this.token = token;
+//     }
+//
+//     public string TokenLiteral() {
+//         return token.Literal;
+//     }
+//
+//     public string String() {
+//         StringBuilder builder = new StringBuilder();
+//         builder.Append(identifierNameName)
+//             .Append(" = ");
+//         
+//         if (value != null) {
+//             builder.Append(value.String());
+//         }
+//
+//         builder.Append(';');
+//
+//         return builder.ToString();
+//     }
+//
+//     public void StatementNode() {
+//     }
+//
+//     public Token Token {
+//         get => token;
+//         set => token = value;
+//     }
+//
+//     public string IdentifierName {
+//         get => identifierNameName;
+//         set => identifierNameName = value;
+//     }
+//
+//     public IExpression Value {
+//         get => value;
+//         set => this.value = value;
+//     }
+// }
+
 /// <summary>
 /// let x = 5; // Let statement.
 /// x + 10; // Expression statement.

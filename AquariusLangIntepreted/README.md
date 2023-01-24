@@ -13,7 +13,7 @@ To implement:
 
 1. For loop, while loop.
 2. Floating point numbers.
-3. Variable re-assignment.
+3. Variable re-assignment. (Implemented. Added to Evaluator.assignVariableVal().)
 4. Use "Visitor pattern" to replace "type checking using switch case" under Evaluator.Eval().
 5. ~~String keys are saved as hashcode/int (.GetHashCode()) in dictionary for Hashmap type in Aquarius lang.
    The hashcode version of the string and int values might happen to have collisions of same value. To fix
@@ -23,3 +23,4 @@ To implement:
 6. Make numbers available as part of identifiers(variable names).
 7. Implement ||, &&, <=, >=...
 8. Implement else if (elif)...
+9. Ignore comments.

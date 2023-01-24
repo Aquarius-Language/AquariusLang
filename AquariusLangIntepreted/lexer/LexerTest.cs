@@ -25,6 +25,8 @@ public class LexerTest {
             let five = 5;
             let ten = 10;
 
+            ten = ""10"";
+
             let add = fn(x, y) {
               x + y;
             };
@@ -57,6 +59,10 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "ten"},
             new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "10"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "ten"},
+            new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},
+            new ExpectedTest(){ExpectedType = TokenType.STRING,    ExpectedLiteral = "10"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
             new ExpectedTest(){ExpectedType = TokenType.LET,       ExpectedLiteral = "let"},
             new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "add"},

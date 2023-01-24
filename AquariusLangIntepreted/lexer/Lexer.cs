@@ -39,10 +39,23 @@ public class Lexer {
                 }
                 break;
             case '+':
-                token = newToken(TokenType.PLUS, ch);
+                if (peekChar() == '+') {
+                    char _ch = ch;
+                    readChar();
+                    string literal = new string(new[] { _ch, ch });
+                    token = newToken(TokenType.PLUS_PLUS, literal);
+                } else {
+                    token = newToken(TokenType.PLUS, ch);
+                }
                 break;
             case '-':
-                token = newToken(TokenType.MINUS, ch);
+                if (peekChar() == '-') {
+                    char _ch = ch;
+                    string literal = new string(new[] { _ch, ch });
+                    token = newToken(TokenType.MINUS_MINUS, literal);
+                } else {
+                    token = newToken(TokenType.MINUS, ch);
+                }
                 break;
             case '!':
                 // Two-character token: '!='.

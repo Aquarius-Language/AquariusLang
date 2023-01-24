@@ -80,6 +80,16 @@ public class Evaluator {
             
             case NodeTypeMapValue.InfixMapValue:
                 InfixExpression _node = (InfixExpression)node;
+
+                Type leftType = _node.Left.GetType();
+                if (leftType == typeof(Identifier) && _node.Operator == "=") {
+                    assignVariableVal(_node, environment, out IObject error);
+                    if (error != null) {
+                        return error;
+                    }
+                    break;
+                }
+                
                 IObject _left = Eval(_node.Left, environment);
                 if (isError(_left)) {
                     return _left;
@@ -220,7 +230,7 @@ public class Evaluator {
         if (left.Type() == ObjectType.INTEGER_OBJ && right.Type() == ObjectType.INTEGER_OBJ) {
             return evalIntegerInfixExpression(_operator, left, right);
         }
-
+        
         switch (_operator) {
             case "==":
                 return nativeBoolToBoolObj(left == right);
@@ -276,6 +286,19 @@ public class Evaluator {
         return result.ToArray();
     }
 
+    private static void assignVariableVal(InfixExpression node, Environment environment, out IObject error) {
+        Identifier leftIdent = (Identifier)node.Left;
+                    
+        IObject val = Eval(node.Right, environment);
+        if (isError(val)) {
+            error = val;
+        }
+
+        environment.Set(leftIdent.Value, val);
+
+        error = null;
+    }
+
     private static IObject applyFunction(IObject fn, IObject[] args) {
         if (fn is FunctionObj functionObj) {
             Environment extendedEnv = extendFunctionEnv(functionObj, args);
@@ -287,6 +310,8 @@ public class Evaluator {
 
         return NewError($"Not a function: {fn.Type()}");
     }
+    
+    // private static void reassignVariable()
 
     private static IObject evalIdentifier(Identifier node, Environment environment) {
         // Looking up built-in functions.

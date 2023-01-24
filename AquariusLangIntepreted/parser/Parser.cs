@@ -12,13 +12,14 @@ public static class Precedence {
     /// </summary>
     public enum OperatorPrecedence {
         LOWEST = 1,
-        EQUALS = 2,
-        LESS_GREATER = 3,
-        SUM = 4,
-        PRODUCT = 5,
-        PREFIX = 6,
-        CALL = 7,
-        INDEX = 8, //  array[index]. Index (left bracket) should have highest precedence of all.
+        ASSIGN = 2,
+        EQUALS = 3,
+        LESS_GREATER = 4,
+        SUM = 5,
+        PRODUCT = 6,
+        PREFIX = 7,
+        CALL = 8,
+        INDEX = 9, //  array[index]. Index (left bracket) should have highest precedence of all.
     }
 
     /// <summary>
@@ -26,6 +27,7 @@ public static class Precedence {
     /// peekPrecedence() and  curPrecedence().
     /// </summary>
     private static Dictionary<string, OperatorPrecedence> precedencesMap = new() {
+        {TokenType.ASSIGN, OperatorPrecedence.ASSIGN},
         {TokenType.EQ, OperatorPrecedence.EQUALS},
         {TokenType.NOT_EQ, OperatorPrecedence.EQUALS},
         {TokenType.LT, OperatorPrecedence.LESS_GREATER},
@@ -114,7 +116,8 @@ public class Parser {
         parser.registerInfix(TokenType.NOT_EQ, parser.parseInfixExpression);
         parser.registerInfix(TokenType.LT, parser.parseInfixExpression);
         parser.registerInfix(TokenType.GT, parser.parseInfixExpression);
-        
+        parser.registerInfix(TokenType.ASSIGN, parser.parseInfixExpression);
+
         parser.registerInfix(TokenType.LPAREN, parser.parseCallExpression);
         parser.registerInfix(TokenType.LBRACKET, parser.parseIndexExpression);
         
@@ -123,6 +126,19 @@ public class Parser {
         parser.nextToken();
 
         return parser;
+    }
+    
+    public AbstractSyntaxTree ParseAST() {
+        List<IStatement> statements = new List<IStatement>();
+        while (!currTokenIs(TokenType.EOF)) {
+            IStatement statement = parseStatement();
+            if (statement != null) {
+                statements.Add(statement);
+            }
+            nextToken();
+        }
+        AbstractSyntaxTree ast = new AbstractSyntaxTree(statements.ToArray());
+        return ast;
     }
 
     private void nextToken() {
@@ -171,25 +187,14 @@ public class Parser {
         errors.Add(msg);
     }
 
-    public AbstractSyntaxTree ParseAST() {
-        List<IStatement> statements = new List<IStatement>();
-        while (!currTokenIs(TokenType.EOF)) {
-            IStatement statement = parseStatement();
-            if (statement != null) {
-                statements.Add(statement);
-            }
-            nextToken();
-        }
-        AbstractSyntaxTree ast = new AbstractSyntaxTree(statements.ToArray());
-        return ast;
-    }
-
     private IStatement parseStatement() {
         switch (currToken.Type) {
             case TokenType.LET:
                 return parseLetStatement();
             case TokenType.RETURN:
                 return parseReturnStatement();
+            // case TokenType.IDENT:
+                // return parseVarAssignStatement();
             default:
                 return parseExpressionStatement();
         }
@@ -224,6 +229,25 @@ public class Parser {
         return statement;
     }
 
+    // private AssignStatement parseVarAssignStatement() {
+    //     AssignStatement statement = new AssignStatement(currToken);
+    //     if (!expectPeek(TokenType.ASSIGN)) {
+    //         return null;
+    //     }
+    //
+    //     statement.IdentifierName = currToken.Literal;
+    //     
+    //     nextToken();
+    //     
+    //     statement.Value = parseExpression((int)Precedence.OperatorPrecedence.LOWEST);
+    //
+    //     if (peekTokenIs(TokenType.SEMICOLON)) {
+    //         nextToken();
+    //     }
+    //
+    //     return statement;
+    // }
+
     private ReturnStatement parseReturnStatement() {
         ReturnStatement statement = new ReturnStatement(currToken);
         nextToken();
@@ -252,6 +276,7 @@ public class Parser {
 
     private IExpression parseExpression(int precedence) {
         bool hasKey = prefixParseFns.TryGetValue(currToken.Type, out PrefixParseFn prefixParseFn);
+
         if (prefixParseFn == null) {
             noPrefixParseFnError(currToken.Type);
             return null;

@@ -21,6 +21,9 @@ public struct TokenType {
     public const string GT = ">";
     public const string EQ     = "==";
     public const string NOT_EQ = "!=";
+    public const string PLUS_PLUS = "++"; 
+    public const string MINUS_MINUS = "--"; 
+        
     // Delimiters
     public const string COMMA     = ",";
     public const string SEMICOLON = ";";
@@ -36,6 +39,7 @@ public struct TokenType {
     public const string IF       = "IF";
     public const string ELSE     = "ELSE";
     public const string RETURN   = "RETURN";
+    public const string FOR   = "FOR";
 
     public const string STRING = "STRING";
     public const string LBRACKET = "[";
@@ -58,6 +62,7 @@ public struct TokenLookup {
         {"if",     TokenType.IF},
         {"else",   TokenType.ELSE},
         {"return", TokenType.RETURN},
+        {"for",    TokenType.FOR},
     };
 
     /// <summary>
