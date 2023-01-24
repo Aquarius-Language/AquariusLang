@@ -506,10 +506,18 @@ public class Evaluator {
                  * If the for loop is inside a function, this can instantiate a return value, break
                  * out of this for loop, and return the value out of the function.
                  */
-                if (result is ReturnValueObj returnValueObj) {
-                    return returnValueObj.Value;
+                if (result != null) {
+                    if (result.Type() == ObjectType.RETURN_VALUE_OBJ) {
+                        return unwrapReturnValue(result);
+                    } else if (result.Type() != ObjectType.NULL_OBJ) {
+                        /*
+                         * If is nested for loop, the value returned from inner for loop will be the unwrapped
+                         * value from the ReturnValueObj.
+                         */
+                        return result;
+                    }
                 }
-                
+
                 Eval(valueChangeStatement, enclosedEnvironment);
             } else {
                 NewError($"Expected bool from for loop conditionals. Got={evalConditionResult.Type()}");
