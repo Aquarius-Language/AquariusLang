@@ -243,6 +243,27 @@ public class EvaluatorTest {
             Assert.True(testIntegerObject(testEval(test.input), test.expected));
         }
     }
+    
+    
+    struct VariableReassignmentTest {
+        public string input;
+        public object expectedValue;
+    }
+    [Fact]
+    public void TestVariableReassignment() {
+        VariableReassignmentTest[] tests = {
+            new() { input = "let a = 14; a = a + 1; a;", expectedValue = 15 },
+            new() { input = "let b = \"Hello, world!\"; b = \"Wow!\"; b;", expectedValue = "Wow!"},
+        };
+        foreach (var test in tests) {
+            IObject evalResult = testEval(test.input);
+            if (evalResult.Type() == ObjectType.INTEGER_OBJ) {
+                Assert.True(testIntegerObject(evalResult, (int?)test.expectedValue));
+            } else if (evalResult.Type() == ObjectType.STRING_OBJ) {
+                Assert.True(testStringObject(evalResult, (string?)test.expectedValue));
+            }
+        }
+    }
 
     [Fact]
     public void TestFunctionObject() {
@@ -514,6 +535,19 @@ public class EvaluatorTest {
             return true;
         }
         _testOutputHelper.WriteLine($"Object is not IntegerObj. Got={obj}");
+        return false;
+    }
+
+    private bool testStringObject(IObject obj, string? expected) {
+        if (obj is StringObj stringObj) {
+            if (stringObj.Value != expected) {
+                _testOutputHelper.WriteLine($"Object has wrong value. Got={stringObj.Value}, want={expected}");
+                return false;
+            }
+
+            return true;
+        }
+        _testOutputHelper.WriteLine($"Object is not StringObj. Got={obj}");
         return false;
     }
 }

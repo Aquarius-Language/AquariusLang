@@ -21,8 +21,8 @@ public struct TokenType {
     public const string GT = ">";
     public const string EQ     = "==";
     public const string NOT_EQ = "!=";
-    public const string PLUS_PLUS = "++"; 
-    public const string MINUS_MINUS = "--"; 
+    public const string PLUS_EQ = "+="; 
+    public const string MINUS_EQ = "-="; 
         
     // Delimiters
     public const string COMMA     = ",";

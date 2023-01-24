@@ -140,55 +140,6 @@ public class ReturnStatement : IStatement {
     }
 }
 
-// /// <summary>
-// /// let x = 13; // Let statement.
-// /// x = 12; // Assign statement.
-// /// </summary>
-// public class AssignStatement : IStatement {
-//     private Token token; // the token.LET token
-//     private string identifierNameName;
-//     private IExpression value; // The expression that produces the value.
-//
-//     public AssignStatement(Token token) {
-//         this.token = token;
-//     }
-//
-//     public string TokenLiteral() {
-//         return token.Literal;
-//     }
-//
-//     public string String() {
-//         StringBuilder builder = new StringBuilder();
-//         builder.Append(identifierNameName)
-//             .Append(" = ");
-//         
-//         if (value != null) {
-//             builder.Append(value.String());
-//         }
-//
-//         builder.Append(';');
-//
-//         return builder.ToString();
-//     }
-//
-//     public void StatementNode() {
-//     }
-//
-//     public Token Token {
-//         get => token;
-//         set => token = value;
-//     }
-//
-//     public string IdentifierName {
-//         get => identifierNameName;
-//         set => identifierNameName = value;
-//     }
-//
-//     public IExpression Value {
-//         get => value;
-//         set => this.value = value;
-//     }
-// }
 
 /// <summary>
 /// let x = 5; // Let statement.
@@ -499,7 +450,7 @@ public class InfixExpression : IExpression {
     }
 }
 
-class IfExpression : IExpression {
+public class IfExpression : IExpression {
     private Token token;  // The 'if' token.
     private IExpression condition;
     private BlockStatement consequence; // Series of statements under "if".
@@ -565,7 +516,93 @@ class IfExpression : IExpression {
     }
 }
 
-class FunctionLiteral : IExpression {
+/// <summary>
+/// LetStatements: for (let i = 0, let j = 1;....
+/// ConditionalExpressions: for (...; i < a, j > b; ...
+/// ValueChangeStatements: for (...; ...; i++, j--)...
+/// </summary>
+public class ForLoopLiteral : IExpression {
+    private Token token;
+    private IStatement[] declareStatements;
+    private IExpression[] conditionalExpressions;
+    private IStatement[] valueChangeStatements;
+    private BlockStatement body;
+
+    public ForLoopLiteral(Token token) {
+        this.token = token;
+    }
+
+    public ForLoopLiteral(Token token, IStatement[] declareStatements, IExpression[] conditionalExpressions, IStatement[] valueChangeStatements, BlockStatement body) {
+        this.token = token;
+        this.declareStatements = declareStatements;
+        this.conditionalExpressions = conditionalExpressions;
+        this.valueChangeStatements = valueChangeStatements;
+        this.body = body;
+    }
+
+    public string TokenLiteral() {
+        return token.Literal;
+    }
+
+    public string String() {
+        StringBuilder builder = new StringBuilder();
+        builder.Append(TokenLiteral())
+            .Append('(');
+
+        List<string> declareStatementsLiteral = new List<string>();
+        foreach (IStatement declareStatement in declareStatements) {
+            declareStatementsLiteral.Append(declareStatement.String());
+        }
+
+        List<string> conditionalExpressionsLiteral = new List<string>();
+        foreach (IExpression conditionalExpression in conditionalExpressions) {
+            conditionalExpressionsLiteral.Append(conditionalExpression.String());
+        }
+
+        List<string> valueChangeStatementsLiteral = new List<string>();
+        foreach (IStatement valueChangeStatement in valueChangeStatements) {
+            valueChangeStatementsLiteral.Append(valueChangeStatement.String());
+        }
+
+        builder.Append(string.Join(", ", declareStatementsLiteral))
+            .Append(string.Join(", ", conditionalExpressionsLiteral))
+            .Append(string.Join(", ", valueChangeStatementsLiteral))
+            .Append(')')
+            .Append(body.String());
+
+        return builder.ToString();
+    }
+
+    public void ExpressionNode() {
+    }
+
+    public Token Token {
+        get => token;
+        set => token = value;
+    }
+
+    public IStatement[] DeclareStatements {
+        get => declareStatements;
+        set => declareStatements = value;
+    }
+
+    public IExpression[] ConditionalExpressions {
+        get => conditionalExpressions;
+        set => conditionalExpressions = value;
+    }
+
+    public IStatement[] ValueChangeStatements {
+        get => valueChangeStatements;
+        set => valueChangeStatements = value;
+    }
+
+    public BlockStatement Body {
+        get => body;
+        set => body = value;
+    }
+}
+
+public class FunctionLiteral : IExpression {
     private Token token; // The 'fn' token.
     private Identifier[] parameters;
     private BlockStatement body;

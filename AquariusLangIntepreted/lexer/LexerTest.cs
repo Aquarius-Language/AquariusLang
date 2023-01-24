@@ -47,6 +47,8 @@ public class LexerTest {
             ""foo bar""
             [1, 2];
             {""foo"": ""bar""}
+
+            for (let i = 0; i < 5; i+=1) {}
         ";
         
         ExpectedTest[] tests = new [] {
@@ -139,6 +141,23 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.STRING,    ExpectedLiteral = "foo"},
             new ExpectedTest(){ExpectedType = TokenType.COLON,    ExpectedLiteral = ":"},
             new ExpectedTest(){ExpectedType = TokenType.STRING,    ExpectedLiteral = "bar"},
+            new ExpectedTest(){ExpectedType = TokenType.RBRACE,    ExpectedLiteral = "}"},
+            new ExpectedTest(){ExpectedType = TokenType.FOR,    ExpectedLiteral = "for"},
+            new ExpectedTest(){ExpectedType = TokenType.LPAREN,    ExpectedLiteral = "("},
+            new ExpectedTest(){ExpectedType = TokenType.LET,    ExpectedLiteral = "let"},
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,    ExpectedLiteral = "i"},
+            new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},
+            new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "0"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,    ExpectedLiteral = "i"},
+            new ExpectedTest(){ExpectedType = TokenType.LT,    ExpectedLiteral = "<"},
+            new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "5"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,    ExpectedLiteral = "i"},
+            new ExpectedTest(){ExpectedType = TokenType.PLUS_EQ,    ExpectedLiteral = "+="},
+            new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "1"},
+            new ExpectedTest(){ExpectedType = TokenType.RPAREN,    ExpectedLiteral = ")"},
+            new ExpectedTest(){ExpectedType = TokenType.LBRACE,    ExpectedLiteral = "{"},
             new ExpectedTest(){ExpectedType = TokenType.RBRACE,    ExpectedLiteral = "}"},
             new ExpectedTest(){ExpectedType = TokenType.EOF,       ExpectedLiteral = ""},
         };

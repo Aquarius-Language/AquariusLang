@@ -351,6 +351,39 @@ public class ParserTest {
         Assert.Equal(testInfixExpression(bodyStatement.Expression, "x", "+", "y"), true);
     }
 
+    [Fact]
+    public void TestForLoopLiteralParsing() {
+        string input = @"
+        for (let i = 0; i < 5; i++) {
+            let a = 0;
+        }
+        ";
+        Lexer lexer = Lexer.NewInstance(input);
+        Parser parser = Parser.NewInstance(lexer);
+        AbstractSyntaxTree tree = parser.ParseAST();
+        
+        Assert.NotNull(tree);
+        Assert.NotNull(tree.Statements[0]);
+
+        
+        Assert.NotNull(tree.Statements[0]);
+        
+        Assert.IsType<ExpressionStatement>(tree.Statements[0]);
+        ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
+        Assert.NotNull(statement);
+
+        Assert.IsType<ForLoopLiteral>(statement.Expression);
+        ForLoopLiteral forLoopLiteral = (ForLoopLiteral)statement.Expression;
+        Assert.NotNull(forLoopLiteral);
+        
+        Assert.NotNull(forLoopLiteral.DeclareStatements);
+        Assert.NotNull(forLoopLiteral.ConditionalExpressions);
+        Assert.NotNull(forLoopLiteral.ValueChangeStatements);
+        Assert.NotNull(forLoopLiteral.Body);
+
+        // _testOutputHelper.WriteLine(tree.Statements[0].String());
+    }
+
     struct FunctionParameterTest {
         public string input;
         public string[] expectedParams;

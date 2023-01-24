@@ -82,25 +82,27 @@ public class Evaluator {
                 InfixExpression _node = (InfixExpression)node;
 
                 Type leftType = _node.Left.GetType();
-                if (leftType == typeof(Identifier) && _node.Operator == "=") {
-                    assignVariableVal(_node, environment, out IObject error);
+                if (leftType == typeof(Identifier)) {
+                    assignVariableVal(_node, _node.Operator, environment, out IObject error);
+                    
                     if (error != null) {
                         return error;
                     }
+                    
                     break;
-                }
-                
-                IObject _left = Eval(_node.Left, environment);
-                if (isError(_left)) {
-                    return _left;
-                }
+                } else {
+                    IObject _left = Eval(_node.Left, environment);
+                    if (isError(_left)) {
+                        return _left;
+                    }
 
-                IObject _right = Eval(_node.Right, environment);
-                if (isError(_right)) {
-                    return _right;
-                }
+                    IObject _right = Eval(_node.Right, environment);
+                    if (isError(_right)) {
+                        return _right;
+                    }
 
-                return evalInfixExpression(_node.Operator, _left, _right);
+                    return evalInfixExpression(_node.Operator, _left, _right);
+                }
             
             case NodeTypeMapValue.IfMapValue:
                 return evalIfExpression((IfExpression)node, environment);
@@ -286,15 +288,36 @@ public class Evaluator {
         return result.ToArray();
     }
 
-    private static void assignVariableVal(InfixExpression node, Environment environment, out IObject error) {
+    private static void assignVariableVal(InfixExpression node, string _operator, Environment environment, out IObject error) {
         Identifier leftIdent = (Identifier)node.Left;
-                    
+
         IObject val = Eval(node.Right, environment);
         if (isError(val)) {
             error = val;
         }
+        
+        switch (_operator) {
+            case "=":
+                environment.Set(leftIdent.Value, val);
+                break;
+            case "+=":
+                if (val is IntegerObj integerObj) {
+                    IObject identVal = evalIdentifier(leftIdent, environment);
+                    if (identVal is IntegerObj identValInt) {
+                        environment.Set(leftIdent.Value, new IntegerObj(identValInt.Value + integerObj.Value));
+                    } else {
+                        error = NewError($"Incorrect left operand type for INT +=: {identVal.GetType()}");
+                    }
+                } else if (val is StringObj stringObj) {
+                    // TODO string concatenation.
+                    error = NewError("String as left operand type for += string concatenation not implemented yet.");
+                }
+                break;
+            default:
+                error = NewError($"Expected assignment operator to variable. Incorrect given: {_operator}");
+                break;
+        }
 
-        environment.Set(leftIdent.Value, val);
 
         error = null;
     }

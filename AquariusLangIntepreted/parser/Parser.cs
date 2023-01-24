@@ -12,14 +12,15 @@ public static class Precedence {
     /// </summary>
     public enum OperatorPrecedence {
         LOWEST = 1,
-        ASSIGN = 2,
-        EQUALS = 3,
-        LESS_GREATER = 4,
-        SUM = 5,
-        PRODUCT = 6,
-        PREFIX = 7,
-        CALL = 8,
-        INDEX = 9, //  array[index]. Index (left bracket) should have highest precedence of all.
+        PLUS_EQ = 2,
+        ASSIGN = 3,
+        EQUALS = 4,
+        LESS_GREATER = 5,
+        SUM = 6,
+        PRODUCT = 7,
+        PREFIX = 8,
+        CALL = 9,
+        INDEX = 10, //  array[index].
     }
 
     /// <summary>
@@ -38,6 +39,7 @@ public static class Precedence {
         {TokenType.ASTERISK, OperatorPrecedence.PRODUCT},
         {TokenType.LPAREN, OperatorPrecedence.CALL},
         {TokenType.LBRACKET, OperatorPrecedence.INDEX},
+        {TokenType.PLUS_EQ, OperatorPrecedence.PLUS_EQ},
     };
 
     public static int PrecedenceFor(string tokenType) {
@@ -102,6 +104,7 @@ public class Parser {
         parser.registerPrefix(TokenType.FALSE, parser.parseBoolean);
         parser.registerPrefix(TokenType.LPAREN, parser.parseGroupedExpression);
         parser.registerPrefix(TokenType.IF, parser.parseIfExpression);
+        parser.registerPrefix(TokenType.FOR, parser.parseForLoopLiteral);
         parser.registerPrefix(TokenType.FUNCTION, parser.parseFunctionLiteral);
         parser.registerPrefix(TokenType.STRING, parser.parseStringLiteral);
         parser.registerPrefix(TokenType.LBRACKET, parser.parseArrayLiteral);
@@ -120,7 +123,8 @@ public class Parser {
 
         parser.registerInfix(TokenType.LPAREN, parser.parseCallExpression);
         parser.registerInfix(TokenType.LBRACKET, parser.parseIndexExpression);
-        
+        parser.registerInfix(TokenType.PLUS_EQ, parser.parseInfixExpression);
+
         // Read two tokens, so curToken and peekToken are both set.
         parser.nextToken();
         parser.nextToken();
@@ -193,8 +197,6 @@ public class Parser {
                 return parseLetStatement();
             case TokenType.RETURN:
                 return parseReturnStatement();
-            // case TokenType.IDENT:
-                // return parseVarAssignStatement();
             default:
                 return parseExpressionStatement();
         }
@@ -228,25 +230,6 @@ public class Parser {
 
         return statement;
     }
-
-    // private AssignStatement parseVarAssignStatement() {
-    //     AssignStatement statement = new AssignStatement(currToken);
-    //     if (!expectPeek(TokenType.ASSIGN)) {
-    //         return null;
-    //     }
-    //
-    //     statement.IdentifierName = currToken.Literal;
-    //     
-    //     nextToken();
-    //     
-    //     statement.Value = parseExpression((int)Precedence.OperatorPrecedence.LOWEST);
-    //
-    //     if (peekTokenIs(TokenType.SEMICOLON)) {
-    //         nextToken();
-    //     }
-    //
-    //     return statement;
-    // }
 
     private ReturnStatement parseReturnStatement() {
         ReturnStatement statement = new ReturnStatement(currToken);
@@ -484,11 +467,51 @@ public class Parser {
         return block;
     }
 
-    public IExpression parseStringLiteral() {
+    private IExpression parseStringLiteral() {
         return new StringLiteral(currToken, currToken.Literal);
     }
 
-    public IExpression parseFunctionLiteral() {
+    private IExpression parseForLoopLiteral() {
+        ForLoopLiteral forLoopLiteral = new ForLoopLiteral(currToken);
+        if (!expectPeek(TokenType.LPAREN)) {
+            return null;
+        }
+
+        forLoopLiteral.DeclareStatements = parseStatementList(TokenType.SEMICOLON);
+        forLoopLiteral.ConditionalExpressions = parseExpressionList(TokenType.SEMICOLON);
+        forLoopLiteral.ValueChangeStatements = parseStatementList(TokenType.RPAREN);
+        forLoopLiteral.Body = parseBlockStatement();
+
+        return forLoopLiteral;
+    }
+
+    // private LetStatement[] parseForLoopLetStatements() {
+    //     List<LetStatement> letStatements = new List<LetStatement>();
+    //     while (true) {
+    //         if (expectPeek(TokenType.LET)) {
+    //             letStatements.Append(parseLetStatement());
+    //             if (expectPeek(TokenType.COMMA)) {
+    //                 nextToken();
+    //                 if (!expectPeek(TokenType.LET)) {
+    //                     peekError(TokenType.LET);
+    //                     return null;
+    //                 }
+    //             }
+    //         } else {
+    //             break;
+    //         }
+    //         nextToken();
+    //     }
+    //
+    //     return letStatements.ToArray();
+    // }
+
+    // private IExpression[] parseForLoopConditionalExpressions() {
+    //     List<IExpression> conditionalExpressions = new List<IExpression>();
+    //     
+    // }
+
+    private IExpression parseFunctionLiteral() {
         FunctionLiteral functionLiteral = new FunctionLiteral(currToken);
         if (!expectPeek(TokenType.LPAREN)) {
             return null;
@@ -505,7 +528,7 @@ public class Parser {
         return functionLiteral;
     }
 
-    public Identifier[] parseFunctionParameters() {
+    private Identifier[] parseFunctionParameters() {
         List<Identifier> identifiers = new List<Identifier>();
         if (peekTokenIs(TokenType.RPAREN)) {
             nextToken();
@@ -539,6 +562,31 @@ public class Parser {
         ArrayLiteral array = new ArrayLiteral(currToken);
         array.Elements = parseExpressionList(TokenType.RBRACKET);
         return array;
+    }
+
+    private IStatement[] parseStatementList(string endTokenType) {
+        List<IStatement> list = new List<IStatement>();
+        if (peekTokenIs(endTokenType)) {
+            nextToken();
+            return list.ToArray();
+        }
+        nextToken();
+        list.Add(parseStatement());
+
+        while (peekTokenIs(TokenType.COMMA)) {
+            nextToken();
+            nextToken();
+            list.Add(parseStatement());
+        }
+        
+        if (!expectPeek(endTokenType)) {
+            Console.WriteLine("Is null.");
+            return null;
+        }
+        
+        nextToken();
+
+        return list.ToArray();
     }
 
     private IExpression[] parseExpressionList(string endTokenType) {
