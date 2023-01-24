@@ -41,6 +41,7 @@ public class Environment {
     }
 
     public IObject Set(string name, IObject val) {
+        // Console.WriteLine("Assign to var.");
         store[name] = val;
         return val;
     }

@@ -179,7 +179,8 @@ public class Evaluator {
                 return evalHashLiteral((HashLiteral)node, environment);
             
             case NodeTypeMapValue.ForMapValue:
-                return evalForLoopLiteral((ForLoopLiteral)node, environment);
+                evalForLoopLiteral((ForLoopLiteral)node, environment);
+                break;
         }
 
         return null;
@@ -448,7 +449,7 @@ public class Evaluator {
         return new HashObj(pairs);
     }
 
-    private static IObject evalForLoopLiteral(ForLoopLiteral node, Environment environment) {
+    private static void evalForLoopLiteral(ForLoopLiteral node, Environment environment) {
         Environment enclosedEnvironment = Environment.NewEnclosedEnvironment(environment);
         LetStatement letStatement = node.DeclareStatement;
         IExpression conditionalExpression = node.ConditionalExpression;
@@ -469,34 +470,16 @@ public class Evaluator {
             } else {
                 NewError($"Expected bool from for loop conditionals. Got={evalConditionResult.Type()}");
             }
+
+            string letStatementVarName = letStatement.Name.Value;
+            IObject letStatementVar = enclosedEnvironment.Get(letStatementVarName, out bool hasVar);
+            enclosedEnvironment = Environment.NewEnclosedEnvironment(environment);
+            /*
+             * Value saved to variable of which was declared inside parentheses (ex. "func (let i = 0;...") of for loop,
+             * should have its value kept during each loop. Other variables declared inside body ({}) should be cleared out. 
+             */
+            enclosedEnvironment.Set(letStatementVarName, letStatementVar); 
         }
-        
-        // foreach (LetStatement letStatement in letStatements) {
-        //     Console.WriteLine(letStatement.String());
-        //     Eval(letStatement, enclosedEnvironment);
-        // }
-        // foreach (IExpression conditionalExpression in conditionalExpressions) {
-        //     Console.WriteLine(conditionalExpression.GetType());
-        // }
-        // while (true) {
-        //     IObject[] evalConditionResults = evalExpressions(conditionalExpressions, enclosedEnvironment);
-        //     foreach (IObject evalConditionResult in evalConditionResults) {
-        //         if (evalConditionResult is BooleanLiteral evalConditionResultBool) {
-        //             if (!evalConditionResultBool.Value) {
-        //                 break;
-        //             }
-        //         } else {
-        //             return NewError($"For loop condition not bool result: {evalConditionResult.Inspect()}");
-        //         }
-        //     }
-        //
-        //     Eval(blockStatement, enclosedEnvironment);
-        //     
-        //     foreach (IStatement valueChangeStatement in valueChangeStatements) {
-        //         Eval(valueChangeStatement, enclosedEnvironment);
-        //     }
-        // }
-        return null;
     }
 
     /// <summary>
