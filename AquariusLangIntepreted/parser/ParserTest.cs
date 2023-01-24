@@ -203,6 +203,10 @@ public class ParserTest {
             new() { input = "true == true", leftValue = true, _operator = "==", rightValue = true },
             new() { input = "true != false", leftValue = true, _operator = "!=", rightValue = false },
             new() { input = "false == false", leftValue = false, _operator = "==", rightValue = false },
+            new() { input = "3 <= 4", leftValue = 3, _operator = "<=", rightValue = 4 },
+            new() { input = "8 >= 6", leftValue = 8, _operator = ">=", rightValue = 6 },
+            new() { input = "true && false", leftValue = true, _operator = "&&", rightValue = false },
+            new() { input = "false || true", leftValue = false, _operator = "||", rightValue = true },
         };
         foreach (var test in tests) {
             Lexer lexer = Lexer.NewInstance(test.input);
@@ -252,12 +256,15 @@ public class ParserTest {
             new() { input = "add(a + b + c * d / f + g)", expected = "add((((a + b) + ((c * d) / f)) + g))", },
             new() { input = "a * [1, 2, 3, 4][b * c] * d", expected = "((a * ([1, 2, 3, 4][(b * c)])) * d)", },
             new() { input = "add(a * b[2], b[1], 2 * [1, 2][1])", expected = "add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))", },
+            new() { input = "a += 3 + 4", expected = "(a += (3 + 4))", },
+            new() { input = "a <= 5 - 6", expected = "(a <= (5 - 6))", },
+            new() { input = "true && 5 < 6", expected = "(true && (5 < 6))", },
         };
         foreach (var test in tests) {
             Lexer lexer = Lexer.NewInstance(test.input);
             Parser parser = Parser.NewInstance(lexer);
             AbstractSyntaxTree tree = parser.ParseAST();
-            Assert.NotEqual(true, checkParserErrors(parser));
+            Assert.False(checkParserErrors(parser));
             string actual = tree.String();
             Assert.Equal(test.expected, actual);
         }

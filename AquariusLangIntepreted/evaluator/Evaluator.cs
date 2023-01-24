@@ -394,6 +394,10 @@ public class Evaluator {
                 return nativeBoolToBoolObj(leftVal < rightVal);
             case ">":
                 return nativeBoolToBoolObj(leftVal > rightVal);
+            case "<=":
+                return nativeBoolToBoolObj(leftVal <= rightVal);
+            case ">=":
+                return nativeBoolToBoolObj(leftVal >= rightVal);
             case "==":
                 return nativeBoolToBoolObj(leftVal == rightVal);
             case "!=":

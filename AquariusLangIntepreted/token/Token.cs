@@ -19,6 +19,8 @@ public struct TokenType {
     public const string SLASH    = "/";
     public const string LT = "<";
     public const string GT = ">";
+    public const string GT_ET = ">=";
+    public const string LT_ET = "<=";
     public const string EQ     = "==";
     public const string NOT_EQ = "!=";
     public const string PLUS_EQ = "+="; 

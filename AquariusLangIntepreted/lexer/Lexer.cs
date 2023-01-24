@@ -71,10 +71,22 @@ public class Lexer {
                 token = newToken(TokenType.ASTERISK, ch);
                 break;
             case '<':
-                token = newToken(TokenType.LT, ch);
+                if (peekChar() == '=') {
+                    readChar();
+                    string literal = "<=";
+                    token = newToken(TokenType.LT_ET, literal);
+                } else {
+                    token = newToken(TokenType.LT, ch);
+                }
                 break;
             case '>':
-                token = newToken(TokenType.GT, ch);
+                if (peekChar() == '=') {
+                    readChar();
+                    string literal = ">=";
+                    token = newToken(TokenType.GT_ET, literal);
+                } else {
+                    token = newToken(TokenType.GT, ch);
+                }
                 break;
             case ';':
                 token = newToken(TokenType.SEMICOLON, ch);

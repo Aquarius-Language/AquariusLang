@@ -34,6 +34,8 @@ public static class Precedence {
         {TokenType.NOT_EQ, OperatorPrecedence.EQUALS},
         {TokenType.LT, OperatorPrecedence.LESS_GREATER},
         {TokenType.GT, OperatorPrecedence.LESS_GREATER},
+        {TokenType.LT_ET, OperatorPrecedence.LESS_GREATER},
+        {TokenType.GT_ET, OperatorPrecedence.LESS_GREATER},
         {TokenType.PLUS, OperatorPrecedence.SUM},
         {TokenType.MINUS, OperatorPrecedence.SUM},
         {TokenType.SLASH, OperatorPrecedence.PRODUCT},
@@ -123,6 +125,8 @@ public class Parser {
         parser.registerInfix(TokenType.NOT_EQ, parser.parseInfixExpression);
         parser.registerInfix(TokenType.LT, parser.parseInfixExpression);
         parser.registerInfix(TokenType.GT, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.LT_ET, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.GT_ET, parser.parseInfixExpression);
         parser.registerInfix(TokenType.ASSIGN, parser.parseInfixExpression);
 
         parser.registerInfix(TokenType.LPAREN, parser.parseCallExpression);
