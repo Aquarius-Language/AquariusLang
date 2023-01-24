@@ -14,13 +14,14 @@ public static class Precedence {
         LOWEST = 1,
         PLUS_EQ = 2,
         ASSIGN = 3,
-        EQUALS = 4,
-        LESS_GREATER = 5,
-        SUM = 6,
-        PRODUCT = 7,
-        PREFIX = 8,
-        CALL = 9,
-        INDEX = 10, //  array[index].
+        AND_AND = 4,
+        EQUALS = 5,
+        LESS_GREATER = 6,
+        SUM = 7,
+        PRODUCT = 8,
+        PREFIX = 9,
+        CALL = 10,
+        INDEX = 11, //  array[index].
     }
 
     /// <summary>
@@ -40,6 +41,8 @@ public static class Precedence {
         {TokenType.LPAREN, OperatorPrecedence.CALL},
         {TokenType.LBRACKET, OperatorPrecedence.INDEX},
         {TokenType.PLUS_EQ, OperatorPrecedence.PLUS_EQ},
+        {TokenType.AND_AND, OperatorPrecedence.AND_AND},
+        {TokenType.OR_OR, OperatorPrecedence.AND_AND},
     };
 
     public static int PrecedenceFor(string tokenType) {
@@ -124,6 +127,8 @@ public class Parser {
         parser.registerInfix(TokenType.LPAREN, parser.parseCallExpression);
         parser.registerInfix(TokenType.LBRACKET, parser.parseIndexExpression);
         parser.registerInfix(TokenType.PLUS_EQ, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.AND_AND, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.OR_OR, parser.parseInfixExpression);
 
         // Read two tokens, so curToken and peekToken are both set.
         parser.nextToken();
@@ -555,73 +560,6 @@ public class Parser {
         array.Elements = parseExpressionList(TokenType.RBRACKET);
         return array;
     }
-
-    private LetStatement[] parseLetStatementList(string endTokenType, bool checkEndToken = true) {
-        List<LetStatement> list = new List<LetStatement>();
-        if (peekTokenIs(endTokenType)) {
-            nextToken();
-            return list.ToArray();
-        }
-        nextToken();
-        IStatement statement = parseStatement();
-        if (statement is LetStatement letStatement) {
-            list.Add(letStatement);
-        } else {
-            errors.Add($"Error: Expected LetStatement. Got={statement}");
-        }
-
-        while (peekTokenIs(TokenType.COMMA)) {
-            nextToken();
-            nextToken();
-            statement = parseStatement();
-            if (statement is LetStatement _letStatement) {
-                list.Add(_letStatement);
-            } else {
-                errors.Add($"Error: Expected LetStatement. Got={statement}");
-            }
-        }
-
-        if (checkEndToken) {
-            if (!expectPeek(endTokenType)) {
-                return null;
-            }
-        }
-
-        nextToken();
-
-        return list.ToArray();
-    }
-
-    private IStatement[] parseStatementList(string endTokenType, bool checkEndToken = true) {
-        List<IStatement> list = new List<IStatement>();
-        if (peekTokenIs(endTokenType)) {
-            nextToken();
-            return list.ToArray();
-        }
-        nextToken();
-        list.Add(parseStatement());
-
-        while (peekTokenIs(TokenType.COMMA)) {
-            nextToken();
-            nextToken();
-            list.Add(parseStatement());
-        }
-
-        if (checkEndToken) {
-            if (!expectPeek(endTokenType)) {
-                return null;
-            }
-        }
-
-        nextToken();
-
-        return list.ToArray();
-    }
-
-    // private IExpression[] parseExpressionStatementList(string endTokenType = null) {
-    //     List<IExpression> list = new List<IExpression>();
-    //
-    // }
 
     private IExpression[] parseExpressionList(string endTokenType, bool checkEndToken = true) {
         List<IExpression> list = new List<IExpression>();

@@ -22,7 +22,9 @@ public struct TokenType {
     public const string EQ     = "==";
     public const string NOT_EQ = "!=";
     public const string PLUS_EQ = "+="; 
-    public const string MINUS_EQ = "-="; 
+    public const string MINUS_EQ = "-=";
+    public const string AND_AND = "&&";
+    public const string OR_OR = "||";
         
     // Delimiters
     public const string COMMA     = ",";

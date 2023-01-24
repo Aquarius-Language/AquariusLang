@@ -11,8 +11,8 @@ namespace AquariusLang.evaluator;
 /// just create the object once and re-use it in every encounter.
 /// </summary>
 public struct RepeatedPrimitives {
-    public static readonly NullObj NULL = new ();
-    public static readonly BooleanObj TRUE = new (true);
+    public static readonly NullObj NULL = new();
+    public static readonly BooleanObj TRUE = new(true);
     public static readonly BooleanObj FALSE = new(false);
 }
 
@@ -262,6 +262,18 @@ public class Evaluator {
                 return nativeBoolToBoolObj(left == right);
             case "!=":
                 return nativeBoolToBoolObj(left != right);
+            case "&&":
+                if (left is BooleanObj _left && right is BooleanObj _right) {
+                    return nativeBoolToBoolObj(_left.Value && _right.Value);
+                }
+                return NewError(
+                    $"Two operands are not both boolean for && operator: {left.Inspect()}{_operator}{right.Inspect()}");
+            case "||":
+                if (left is BooleanObj __left && right is BooleanObj __right) {
+                    return nativeBoolToBoolObj(__left.Value || __right.Value);
+                }
+                return NewError(
+                    $"Two operands are not both boolean for || operator: {left.Inspect()}{_operator}{right.Inspect()}");
         }
 
         if (left.Type() == ObjectType.STRING_OBJ && right.Type() == ObjectType.STRING_OBJ) {

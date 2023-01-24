@@ -76,6 +76,12 @@ public class EvaluatorTest {
             new () {input = "(1 < 2) == false", expected = false},
             new () {input = "(1 > 2) == true", expected = false},
             new () {input = "(1 > 2) == false", expected = true},
+            new () {input = "true && false", expected = false},
+            new () {input = "true || false", expected = true},
+            new () {input = "false || false", expected = false},
+            new () {input = "false && false", expected = false},
+            new () {input = "true && true", expected = true},
+            new () {input = "true && false", expected = false},
         };
 
         foreach (var test in tests) {

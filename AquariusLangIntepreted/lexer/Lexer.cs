@@ -110,6 +110,28 @@ public class Lexer {
             case ':':
                 token = newToken(TokenType.COLON, ch);
                 break;
+            case '&':
+                char peekedChar = peekChar();
+                if (peekedChar == '&') {
+                    char _ch = ch;
+                    readChar();
+                    string literal = new string(new[] { _ch, ch });
+                    token = newToken(TokenType.AND_AND, literal);
+                } else if (peekedChar == ' ') {
+                    // TODO Implement Binary And '&' feature.
+                }
+                break;
+            case '|':
+                char _peekedChar = peekChar();
+                if (_peekedChar == '|') {
+                    char _ch = ch;
+                    readChar();
+                    string literal = new string(new[] { _ch, ch });
+                    token = newToken(TokenType.OR_OR, literal);
+                } else if (_peekedChar == ' ') {
+                    // TODO Implement Binary Or '|' feature.
+                }
+                break;
             case (char)0:
                 token = newToken(TokenType.EOF, "");
                 break;

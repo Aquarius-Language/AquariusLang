@@ -65,7 +65,8 @@ public class Builtins {
 
                return new ArrayObj(newElements);
            }) 
-        }, {"print", new BuiltinObj(args => {
+        }, {
+            "print", new BuiltinObj(args => {
             for (var i = 0; i < args.Length; i++) {
                 Console.Write(args[i].Inspect());
                 if (i < args.Length - 1) {

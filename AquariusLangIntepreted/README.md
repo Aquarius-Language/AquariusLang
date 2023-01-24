@@ -13,21 +13,26 @@ To implement:
 
 1. While loop.
 2. Floating point numbers.
-3Use "Visitor pattern" to replace "type checking using switch case" under Evaluator.Eval().
-3. ~~String keys are saved as hashcode/int (.GetHashCode()) in dictionary for Hashmap type in Aquarius lang.
-   The hashcode version of the string and int values might happen to have collisions of same value. To fix
-   that, can use linked lists as values for the hashmap. (learnt from Algorithm course in university)~~
-   Turns out there's no need to do that, since HashKey instance contains "type" member as string. Therefore,
-   the hashmap in the language can differentiate between two instances with different types but same hash int values.
+3. Use "Visitor pattern" to replace "type checking using switch case" under Evaluator.Eval(). (for performance enhancement)
 4. Make numbers available as part of identifiers(variable names).
 5. Implement ||, &&, <=, >=...
 6. Implement else if (elif)...
 7. Ignore comments.
+8. Value re-assignment to array and hashmap; pass them by reference to functions.
+9. "break" from loops.
+10. "return" out of function from loop.
+11. Implement "outer" and "local" variables for environments. (to fix local variable problems in loop)
+12. Add "for loop example unit testing" when the problems for for loop are fixed.
 
 Finished implementing:
 
 1. Variable re-assignment. Added to Evaluator.assignVariableVal().
 2. For loop. Added to Evaluator.evalForLoopLiteral() and.parseForLoopLiteral().  (global and local issues not completely done yet)
+3. ~~String keys are saved as hashcode/int (.GetHashCode()) in dictionary for Hashmap type in Aquarius lang.
+   The hashcode version of the string and int values might happen to have collisions of same value. To fix
+   that, can use linked lists as values for the hashmap. (learnt from Algorithm course in university)~~
+   Turns out there's no need to do that, since HashKey instance contains "type" member as string. Therefore,
+   the hashmap in the language can differentiate between two instances with different types but same hash int values.
 
 SUGGESTIONS WHEN IMPLEMENTING NEW FEATURES:
 

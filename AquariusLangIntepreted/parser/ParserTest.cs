@@ -76,6 +76,28 @@ public class ParserTest {
         }
     }
 
+    struct AndOrBoolTest {
+        public string input;
+        public string expected;
+    }
+    [Fact]
+    public void TestAndOrBooleanOperations() {
+        AndOrBoolTest[] tests = {
+            new(){input = "true || false", expected = "(true || false)"},
+            new(){input = "true && false", expected = "(true && false)"}
+        };
+
+        foreach (AndOrBoolTest test in tests) {
+            Lexer lexer = Lexer.NewInstance(test.input);
+            Parser parser = Parser.NewInstance(lexer);
+            AbstractSyntaxTree tree = parser.ParseAST();
+            
+            Assert.Single(tree.Statements);
+            Assert.IsType<ExpressionStatement>(tree.Statements[0]);
+            Assert.Equal(test.expected, tree.String());
+        }
+    }
+
     [Fact]
     public void TestIdentifierExpression() {
         string input = "foobar;";

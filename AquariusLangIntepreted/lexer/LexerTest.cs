@@ -49,6 +49,9 @@ public class LexerTest {
             {""foo"": ""bar""}
 
             for (let i = 0; i < 5; i+=1) {}
+
+            true && true;
+            false || false;
         ";
         
         ExpectedTest[] tests = new [] {
@@ -159,6 +162,14 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.RPAREN,    ExpectedLiteral = ")"},
             new ExpectedTest(){ExpectedType = TokenType.LBRACE,    ExpectedLiteral = "{"},
             new ExpectedTest(){ExpectedType = TokenType.RBRACE,    ExpectedLiteral = "}"},
+            new ExpectedTest(){ExpectedType = TokenType.TRUE, ExpectedLiteral = "true"},
+            new ExpectedTest(){ExpectedType = TokenType.AND_AND, ExpectedLiteral = "&&"},
+            new ExpectedTest(){ExpectedType = TokenType.TRUE, ExpectedLiteral = "true"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            new ExpectedTest(){ExpectedType = TokenType.FALSE, ExpectedLiteral = "false"},
+            new ExpectedTest(){ExpectedType = TokenType.OR_OR, ExpectedLiteral = "||"},
+            new ExpectedTest(){ExpectedType = TokenType.FALSE, ExpectedLiteral = "false"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
             new ExpectedTest(){ExpectedType = TokenType.EOF,       ExpectedLiteral = ""},
         };
         
