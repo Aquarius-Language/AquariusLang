@@ -44,6 +44,7 @@ public struct TokenType {
     public const string ELSE     = "ELSE";
     public const string RETURN   = "RETURN";
     public const string FOR   = "FOR";
+    public const string BREAK = "BREAK";
 
     public const string STRING = "STRING";
     public const string LBRACKET = "[";
@@ -67,6 +68,7 @@ public struct TokenLookup {
         {"else",   TokenType.ELSE},
         {"return", TokenType.RETURN},
         {"for",    TokenType.FOR},
+        {"break",    TokenType.BREAK},
     };
 
     /// <summary>

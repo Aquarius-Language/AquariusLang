@@ -380,39 +380,62 @@ public class ParserTest {
         Assert.Equal(testInfixExpression(bodyStatement.Expression, "x", "+", "y"), true);
     }
 
+    struct ForLoopLiteralTest {
+        public string input;
+        public string expected;
+    }
     [Fact]
     public void TestForLoopLiteralParsing() {
-        string input = @"
-        for (let i = 0; i < 5; i+=1) {
-            let a = 0;
+        ForLoopLiteralTest[] tests = { 
+            new () { 
+                input = @"
+                for (let i = 0; i < 5; i+=1) {
+                    let a = 0;
+                }
+                ", 
+                expected = "for((let i = 0)(i < 5)(i += 1)){(let a = 0)}"
+            }, 
+            new () {
+                input = @"
+                        for(let a = 5; a < 10; a+=1) {
+                            for (let b = 0; b < 5; b+=1){
+                                if (a > 6) {
+                                    break;
+                                }
+                            }
+                        } ",
+                expected = "for((let a = 5)(a < 10)(a += 1)){for((let b = 0)(b < 5)(b += 1)){if(a > 6) {(break)}}}"
+            }
+        };
+        foreach (ForLoopLiteralTest test in tests) {
+            Lexer lexer = Lexer.NewInstance(test.input);
+            Parser parser = Parser.NewInstance(lexer);
+            AbstractSyntaxTree tree = parser.ParseAST();
+        
+            Assert.NotNull(tree);
+            Assert.NotNull(tree.Statements[0]);
+
+        
+            Assert.NotNull(tree.Statements[0]);
+        
+            Assert.IsType<ExpressionStatement>(tree.Statements[0]);
+            ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
+            Assert.NotNull(statement);
+
+            Assert.IsType<ForLoopLiteral>(statement.Expression);
+            ForLoopLiteral forLoopLiteral = (ForLoopLiteral)statement.Expression;
+            Assert.NotNull(forLoopLiteral);
+        
+            Assert.NotNull(forLoopLiteral.DeclareStatement);
+            Assert.NotNull(forLoopLiteral.ConditionalExpression);
+            Assert.NotNull(forLoopLiteral.ValueChangeStatement);
+            Assert.NotNull(forLoopLiteral.Body);
+
+            _testOutputHelper.WriteLine(forLoopLiteral.String());
+        
+            Assert.Equal(test.expected, forLoopLiteral.String());
         }
-        ";
-        Lexer lexer = Lexer.NewInstance(input);
-        Parser parser = Parser.NewInstance(lexer);
-        AbstractSyntaxTree tree = parser.ParseAST();
-        
-        Assert.NotNull(tree);
-        Assert.NotNull(tree.Statements[0]);
 
-        
-        Assert.NotNull(tree.Statements[0]);
-        
-        Assert.IsType<ExpressionStatement>(tree.Statements[0]);
-        ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
-        Assert.NotNull(statement);
-
-        Assert.IsType<ForLoopLiteral>(statement.Expression);
-        ForLoopLiteral forLoopLiteral = (ForLoopLiteral)statement.Expression;
-        Assert.NotNull(forLoopLiteral);
-        
-        Assert.NotNull(forLoopLiteral.DeclareStatement);
-        Assert.NotNull(forLoopLiteral.ConditionalExpression);
-        Assert.NotNull(forLoopLiteral.ValueChangeStatement);
-        Assert.NotNull(forLoopLiteral.Body);
-
-        _testOutputHelper.WriteLine(forLoopLiteral.String());
-        
-        Assert.Equal("for(let i = 0;(i < 5);(i += 1)){let a = 0;}", forLoopLiteral.String());
     }
 
     struct FunctionParameterTest {

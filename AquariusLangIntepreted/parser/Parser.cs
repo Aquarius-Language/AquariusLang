@@ -208,6 +208,8 @@ public class Parser {
                 return parseLetStatement();
             case TokenType.RETURN:
                 return parseReturnStatement();
+            case TokenType.BREAK:
+                return parseBreakStatement();
             default:
                 return parseExpressionStatement();
         }
@@ -247,6 +249,16 @@ public class Parser {
         nextToken();
         statement.ReturnValue = parseExpression((int)Precedence.OperatorPrecedence.LOWEST);
         
+        if (peekTokenIs(TokenType.SEMICOLON)) {
+            nextToken();
+        }
+
+        return statement;
+    }
+
+    private BreakStatement parseBreakStatement() {
+        BreakStatement statement = new BreakStatement(currToken);
+        nextToken();
         if (peekTokenIs(TokenType.SEMICOLON)) {
             nextToken();
         }

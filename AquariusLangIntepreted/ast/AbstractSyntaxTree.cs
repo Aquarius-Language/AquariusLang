@@ -64,7 +64,9 @@ public class LetStatement : IStatement {
 
     public string String() {
         StringBuilder builder = new StringBuilder();
-        builder.Append(TokenLiteral())
+        builder
+            .Append('(')
+            .Append(TokenLiteral())
             .Append(' ')
             .Append(name.String())
             .Append(" = ");
@@ -73,7 +75,7 @@ public class LetStatement : IStatement {
             builder.Append(value.String());
         }
 
-        builder.Append(';');
+        builder.Append(")");
 
         return builder.ToString();
     }
@@ -117,12 +119,12 @@ public class ReturnStatement : IStatement {
     public string String() {
         StringBuilder builder = new StringBuilder();
 
-        builder.Append(TokenLiteral() + " ");
+        builder.Append('(' + TokenLiteral() + " ");
         if (returnValue != null) {
             builder.Append(returnValue.String());
         }
 
-        builder.Append(';');
+        builder.Append(")");
 
         return builder.ToString();
     }
@@ -138,6 +140,30 @@ public class ReturnStatement : IStatement {
     public IExpression ReturnValue {
         get => returnValue;
         set => returnValue = value;
+    }
+}
+
+public class BreakStatement : IStatement {
+    private Token token;
+
+    public BreakStatement(Token token) {
+        this.token = token;
+    }
+
+    public string TokenLiteral() {
+        return token.Literal;
+    }
+
+    public string String() {
+        return '(' + token.Literal + ')';
+    }
+
+    public void StatementNode() {
+    }
+
+    public Token Token {
+        get => token;
+        set => token = value;
     }
 }
 
@@ -483,7 +509,9 @@ public class IfExpression : IExpression {
             .Append("if")
             .Append(condition.String())
             .Append(' ')
-            .Append(consequence.String());
+            .Append('{')
+            .Append(consequence.String())
+            .Append('}');
 
         if (alternative != null) {
             builder.Append("else ")
@@ -551,7 +579,6 @@ public class ForLoopLiteral : IExpression {
             .Append('(')
             .Append(declareStatement.String())
             .Append(conditionalExpression.String())
-            .Append(';')
             .Append(valueChangeStatement.String())
             .Append(')')
             .Append('{')
