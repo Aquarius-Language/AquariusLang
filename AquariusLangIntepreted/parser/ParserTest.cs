@@ -354,7 +354,7 @@ public class ParserTest {
     [Fact]
     public void TestForLoopLiteralParsing() {
         string input = @"
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 5; i+=1) {
             let a = 0;
         }
         ";
@@ -376,12 +376,14 @@ public class ParserTest {
         ForLoopLiteral forLoopLiteral = (ForLoopLiteral)statement.Expression;
         Assert.NotNull(forLoopLiteral);
         
-        Assert.NotNull(forLoopLiteral.DeclareStatements);
-        Assert.NotNull(forLoopLiteral.ConditionalExpressions);
-        Assert.NotNull(forLoopLiteral.ValueChangeStatements);
+        Assert.NotNull(forLoopLiteral.DeclareStatement);
+        Assert.NotNull(forLoopLiteral.ConditionalExpression);
+        Assert.NotNull(forLoopLiteral.ValueChangeStatement);
         Assert.NotNull(forLoopLiteral.Body);
 
-        // _testOutputHelper.WriteLine(tree.Statements[0].String());
+        _testOutputHelper.WriteLine(forLoopLiteral.String());
+        
+        Assert.Equal("for(let i = 0;(i < 5);(i += 1)){(a = 0)}", forLoopLiteral.String());
     }
 
     struct FunctionParameterTest {

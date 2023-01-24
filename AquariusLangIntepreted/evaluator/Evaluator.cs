@@ -25,6 +25,7 @@ public class Evaluator {
         {typeof(LetStatement), NodeTypeMapValue.LetMapValue},
         {typeof(IntegerLiteral), NodeTypeMapValue.IntMapValue},
         {typeof(BooleanLiteral), NodeTypeMapValue.BoolMapValue},
+        {typeof(ForLoopLiteral), NodeTypeMapValue.ForMapValue},
         {typeof(PrefixExpression), NodeTypeMapValue.PrefixMapValue},
         {typeof(InfixExpression), NodeTypeMapValue.InfixMapValue},
         {typeof(IfExpression), NodeTypeMapValue.IfMapValue},
@@ -176,6 +177,9 @@ public class Evaluator {
             
             case NodeTypeMapValue.HashMapValue:
                 return evalHashLiteral((HashLiteral)node, environment);
+            
+            case NodeTypeMapValue.ForMapValue:
+                return evalForLoopLiteral((ForLoopLiteral)node, environment);
         }
 
         return null;
@@ -444,6 +448,40 @@ public class Evaluator {
         return new HashObj(pairs);
     }
 
+    private static IObject evalForLoopLiteral(ForLoopLiteral node, Environment environment) {
+        // Environment enclosedEnvironment = Environment.NewEnclosedEnvironment(environment);
+        // LetStatement[] letStatements = node.DeclareStatement;
+        // IExpression[] conditionalExpressions = node.ConditionalExpression;
+        // IStatement[] valueChangeStatements = node.ValueChangeStatement;
+        // BlockStatement blockStatement = node.Body;
+        // foreach (LetStatement letStatement in letStatements) {
+        //     Console.WriteLine(letStatement.String());
+        //     Eval(letStatement, enclosedEnvironment);
+        // }
+        // foreach (IExpression conditionalExpression in conditionalExpressions) {
+        //     Console.WriteLine(conditionalExpression.GetType());
+        // }
+        // while (true) {
+        //     IObject[] evalConditionResults = evalExpressions(conditionalExpressions, enclosedEnvironment);
+        //     foreach (IObject evalConditionResult in evalConditionResults) {
+        //         if (evalConditionResult is BooleanLiteral evalConditionResultBool) {
+        //             if (!evalConditionResultBool.Value) {
+        //                 break;
+        //             }
+        //         } else {
+        //             return NewError($"For loop condition not bool result: {evalConditionResult.Inspect()}");
+        //         }
+        //     }
+        //
+        //     Eval(blockStatement, enclosedEnvironment);
+        //     
+        //     foreach (IStatement valueChangeStatement in valueChangeStatements) {
+        //         Eval(valueChangeStatement, enclosedEnvironment);
+        //     }
+        // }
+        return null;
+    }
+
     /// <summary>
     ///     Create a new environment (local scope) for inside the function. Values of variables
     /// from paramters get passed into this newly created environment.
@@ -551,5 +589,6 @@ public class Evaluator {
         ArrayMapValue,
         IndexMapValue,
         HashMapValue,
+        ForMapValue,
     }
 }

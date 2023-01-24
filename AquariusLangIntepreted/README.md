@@ -27,3 +27,8 @@ To implement:
 Finished implementing:
 
 1. Variable re-assignment. (Implemented. Added to Evaluator.assignVariableVal().)
+
+SUGGESTIONS WHEN IMPLEMENTING NEW FEATURES:
+
+- Be VERY CAREFUL about when to call nextTokens(). I missed few nextTokens() call when I was implementing for loop parsing.
+  But they seem to get fixed when I added those function calls.

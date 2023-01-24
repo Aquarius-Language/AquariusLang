@@ -64,7 +64,8 @@ public class LetStatement : IStatement {
 
     public string String() {
         StringBuilder builder = new StringBuilder();
-        builder.Append(TokenLiteral() + " ")
+        builder.Append(TokenLiteral())
+            .Append(' ')
             .Append(name.String())
             .Append(" = ");
         
@@ -523,20 +524,20 @@ public class IfExpression : IExpression {
 /// </summary>
 public class ForLoopLiteral : IExpression {
     private Token token;
-    private IStatement[] declareStatements;
-    private IExpression[] conditionalExpressions;
-    private IStatement[] valueChangeStatements;
+    private LetStatement declareStatement;
+    private IExpression conditionalExpression;
+    private IStatement valueChangeStatement;
     private BlockStatement body;
 
     public ForLoopLiteral(Token token) {
         this.token = token;
     }
 
-    public ForLoopLiteral(Token token, IStatement[] declareStatements, IExpression[] conditionalExpressions, IStatement[] valueChangeStatements, BlockStatement body) {
+    public ForLoopLiteral(Token token, LetStatement declareStatement, IExpression conditionalExpression, IStatement valueChangeStatement, BlockStatement body) {
         this.token = token;
-        this.declareStatements = declareStatements;
-        this.conditionalExpressions = conditionalExpressions;
-        this.valueChangeStatements = valueChangeStatements;
+        this.declareStatement = declareStatement;
+        this.conditionalExpression = conditionalExpression;
+        this.valueChangeStatement = valueChangeStatement;
         this.body = body;
     }
 
@@ -547,28 +548,15 @@ public class ForLoopLiteral : IExpression {
     public string String() {
         StringBuilder builder = new StringBuilder();
         builder.Append(TokenLiteral())
-            .Append('(');
-
-        List<string> declareStatementsLiteral = new List<string>();
-        foreach (IStatement declareStatement in declareStatements) {
-            declareStatementsLiteral.Append(declareStatement.String());
-        }
-
-        List<string> conditionalExpressionsLiteral = new List<string>();
-        foreach (IExpression conditionalExpression in conditionalExpressions) {
-            conditionalExpressionsLiteral.Append(conditionalExpression.String());
-        }
-
-        List<string> valueChangeStatementsLiteral = new List<string>();
-        foreach (IStatement valueChangeStatement in valueChangeStatements) {
-            valueChangeStatementsLiteral.Append(valueChangeStatement.String());
-        }
-
-        builder.Append(string.Join(", ", declareStatementsLiteral))
-            .Append(string.Join(", ", conditionalExpressionsLiteral))
-            .Append(string.Join(", ", valueChangeStatementsLiteral))
+            .Append('(')
+            .Append(declareStatement.String())
+            .Append(conditionalExpression.String())
+            .Append(';')
+            .Append(valueChangeStatement.String())
             .Append(')')
-            .Append(body.String());
+            .Append('{')
+            .Append(body.String())
+            .Append('}');
 
         return builder.ToString();
     }
@@ -581,19 +569,19 @@ public class ForLoopLiteral : IExpression {
         set => token = value;
     }
 
-    public IStatement[] DeclareStatements {
-        get => declareStatements;
-        set => declareStatements = value;
+    public LetStatement DeclareStatement {
+        get => declareStatement;
+        set => declareStatement = value;
     }
 
-    public IExpression[] ConditionalExpressions {
-        get => conditionalExpressions;
-        set => conditionalExpressions = value;
+    public IExpression ConditionalExpression {
+        get => conditionalExpression;
+        set => conditionalExpression = value;
     }
 
-    public IStatement[] ValueChangeStatements {
-        get => valueChangeStatements;
-        set => valueChangeStatements = value;
+    public IStatement ValueChangeStatement {
+        get => valueChangeStatement;
+        set => valueChangeStatement = value;
     }
 
     public BlockStatement Body {

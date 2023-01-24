@@ -482,19 +482,46 @@ public class Parser {
         if (!expectPeek(TokenType.LPAREN)) {
             return null;
         }
+        nextToken();
+        
+        forLoopLiteral.DeclareStatement = parseLetStatement();
+        // Console.WriteLine($"DeclareStatement: {forLoopLiteral.DeclareStatement.TokenLiteral()}");
+        nextToken();
 
-        /*
-         * Reason for passing false to checkEndToken param:
-         *   Semicolon can't be found during the end of those functions. They get skipped through nextToken() during the way.
-         *  So there's no point check for them.
-         */
-        forLoopLiteral.DeclareStatements = parseStatementList(TokenType.SEMICOLON, false); 
+        forLoopLiteral.ConditionalExpression = parseExpression((int)Precedence.OperatorPrecedence.LOWEST);
+        // Console.WriteLine($"ConditionalExpression type: {forLoopLiteral.ConditionalExpression.GetType()}");
+        // Console.WriteLine($"ConditionalExpression: {forLoopLiteral.ConditionalExpression.TokenLiteral()}");
         nextToken();
-        forLoopLiteral.ConditionalExpressions = parseExpressionList(TokenType.SEMICOLON, false);
         nextToken();
-        forLoopLiteral.ValueChangeStatements = parseStatementList(TokenType.RPAREN);
+
+        forLoopLiteral.ValueChangeStatement = parseStatement();
         nextToken();
+
         forLoopLiteral.Body = parseBlockStatement();
+        
+        // /*
+        //  * Reason for passing false to checkEndToken param:
+        //  *   Semicolon can't be found during the end of those functions. They get skipped through nextToken() during the way.
+        //  *  So there's no point check for them.
+        //  */
+        // Console.WriteLine($"Current token 0: {currToken}");
+        // Console.WriteLine($"Next token 0: {peekToken}");
+        // forLoopLiteral.DeclareStatement = parseLetStatementList(TokenType.SEMICOLON, false); 
+        // Console.WriteLine($"DeclareStatements length: {forLoopLiteral.DeclareStatement.Length}");
+        // Console.WriteLine($"Current token 1: {currToken}");
+        // Console.WriteLine($"Next token 1: {peekToken}");
+        // Console.WriteLine($"STRING 1: {forLoopLiteral.DeclareStatement[0].String()}");
+        // // nextToken();
+        // nextToken();
+        // forLoopLiteral.ConditionalExpression = parseExpressionList(TokenType.SEMICOLON, false);
+        // Console.WriteLine($"ConditionalExpressions length: {forLoopLiteral.ConditionalExpression.Length}");
+        // Console.WriteLine($"Current token 2: {currToken}");
+        // Console.WriteLine($"Next token 2: {peekToken}");
+        // Console.WriteLine($"STRING 2: {forLoopLiteral.ConditionalExpression[0].String()}");
+        // nextToken();
+        // forLoopLiteral.ValueChangeStatement = parseStatementList(TokenType.RPAREN);
+        // // nextToken();
+        // forLoopLiteral.Body = parseBlockStatement();
 
         return forLoopLiteral;
     }
@@ -576,6 +603,42 @@ public class Parser {
         ArrayLiteral array = new ArrayLiteral(currToken);
         array.Elements = parseExpressionList(TokenType.RBRACKET);
         return array;
+    }
+
+    private LetStatement[] parseLetStatementList(string endTokenType, bool checkEndToken = true) {
+        List<LetStatement> list = new List<LetStatement>();
+        if (peekTokenIs(endTokenType)) {
+            nextToken();
+            return list.ToArray();
+        }
+        nextToken();
+        IStatement statement = parseStatement();
+        if (statement is LetStatement letStatement) {
+            list.Add(letStatement);
+        } else {
+            errors.Add($"Error: Expected LetStatement. Got={statement}");
+        }
+
+        while (peekTokenIs(TokenType.COMMA)) {
+            nextToken();
+            nextToken();
+            statement = parseStatement();
+            if (statement is LetStatement _letStatement) {
+                list.Add(_letStatement);
+            } else {
+                errors.Add($"Error: Expected LetStatement. Got={statement}");
+            }
+        }
+
+        if (checkEndToken) {
+            if (!expectPeek(endTokenType)) {
+                return null;
+            }
+        }
+
+        nextToken();
+
+        return list.ToArray();
     }
 
     private IStatement[] parseStatementList(string endTokenType, bool checkEndToken = true) {
