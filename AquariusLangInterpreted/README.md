@@ -74,3 +74,8 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
 - Wrapper for PyTorch?
 - Calculus math calculations as part of language's operators?
 - Wrapper for desktop GUI library.
+- Maybe wrapper for sokol.h: https://github.com/floooh/sokol, a cross-platform library.
+- Or maybe wrapper for Raylib.
+- Or maybe Magnum Graphics: https://magnum.graphics/showcase/
+- Bindings for SFML/SDL2.
+- Bindings for MonoGame. (might actually be a good idea)
