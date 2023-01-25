@@ -34,7 +34,7 @@ public class Utils {
             return val;
         }
 
-        if (literal[literal.Length - 1] == 'f') {
+        if (literal[literal.Length - 1] == 'd') {
             string subStr = literal.Remove(literal.Length - 1, 1);
             success = double.TryParse(subStr, out val);
             if (success) {

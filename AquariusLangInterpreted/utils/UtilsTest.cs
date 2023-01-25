@@ -20,6 +20,9 @@ public class UtilsTest {
             if (test.expected is float _test) {
                 float? val = Utils.StringToFloat(test.input);
                 Assert.Equal(test.expected, val);
+            } else if (test.expected is double __test) {
+                double? val = Utils.StringToDouble(test.input);
+                Assert.Equal(test.expected, val);
             }
         }
     } 
