@@ -16,7 +16,7 @@ public class Environment {
     }
 
     /// <summary>
-    /// Recursively finding variables from outter scope if the current scope doesn't have the variable.
+    /// Keep finding variables from outter scope if the current scope doesn't have the variable.
     /// Search until no more outter scopes are available.
     /// </summary>
     /// <param name="name"></param>
@@ -40,9 +40,7 @@ public class Environment {
         return null;
     }
 
-    public IObject Set(string name, IObject val) {
-        // Console.WriteLine("Assign to var.");
+    public void Set(string name, IObject val) {
         store[name] = val;
-        return val;
     }
 }

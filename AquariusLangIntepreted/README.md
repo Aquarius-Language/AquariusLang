@@ -54,7 +54,7 @@ SUGGESTIONS AND NOTES WHEN IMPLEMENTING NEW FEATURES:
 - Sometimes when adding new operators but it's not showing up in search for prefix/infix callbacks, make sure if they're being 
   referenced under Parser.precedencesMap.
 
-Possible future features to put into considerations:
+POSSIBLE FUTURE FEATURES TO PUT INTO CONSIDERATIONS:
 
 - Embedding Git functionality as standard library.
 - Interop with multiple languages.

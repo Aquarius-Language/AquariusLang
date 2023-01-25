@@ -154,6 +154,32 @@ public class EvaluatorTest {
         }
     }
 
+    struct VarReassignmentTest {
+        public string input;
+        public int expected;
+    }
+
+    [Fact]
+    public void TestVarReassignments() {
+        VarReassignmentTest[] tests = {
+            new () {input = "let a = 0; a = 5; a;", expected = 5},
+            new () {
+            input = @"
+                    let a = ""Wow!"";
+                    let func = fn(){for(let a = 5; a < 10; a+=1) {for (let b = 0; b < 5; b+=1){if (a > 6) {return a;}}}}
+                    a = func();
+                    a;
+                    ",
+            expected = 7
+            },
+        };
+        foreach (VarReassignmentTest test in tests) {
+            IObject result = testEval(test.input);
+            Assert.IsType<IntegerObj>(result);
+            Assert.True(testIntegerObject(result, test.expected));
+        }
+    }
+
     struct ReturnStatementTest {
         public string input;
         public int expected;
