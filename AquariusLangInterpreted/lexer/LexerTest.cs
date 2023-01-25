@@ -63,6 +63,9 @@ public class LexerTest {
 
             12 >= 5;
             4 <= 18;
+
+            a *= 38;
+            b /= a;
         ";
         
         ExpectedTest[] tests = new [] {
@@ -197,6 +200,14 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "4"},
             new ExpectedTest(){ExpectedType = TokenType.LT_ET,    ExpectedLiteral = "<="},
             new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "18"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,    ExpectedLiteral = "a"},
+            new ExpectedTest(){ExpectedType = TokenType.ASTERISK_EQ,    ExpectedLiteral = "*="},
+            new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "38"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,    ExpectedLiteral = "b"},
+            new ExpectedTest(){ExpectedType = TokenType.SLASH_EQ,    ExpectedLiteral = "/="},
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,    ExpectedLiteral = "a"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
             new ExpectedTest(){ExpectedType = TokenType.EOF,       ExpectedLiteral = ""},
         };

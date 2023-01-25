@@ -72,10 +72,22 @@ public class Lexer {
                 }
                 break;
             case '/':
-                token = newToken(TokenType.SLASH, ch);
+                if (peekChar() == '=') {
+                    readChar();
+                    string literal = "/=";
+                    token = newToken(TokenType.SLASH_EQ, literal);
+                } else {
+                    token = newToken(TokenType.SLASH, ch);
+                }
                 break;
             case '*':
-                token = newToken(TokenType.ASTERISK, ch);
+                if (peekChar() == '=') {
+                    readChar();
+                    string literal = "*=";
+                    token = newToken(TokenType.ASTERISK_EQ, literal);
+                } else {
+                    token = newToken(TokenType.ASTERISK, ch);
+                }
                 break;
             case '<':
                 if (peekChar() == '=') {

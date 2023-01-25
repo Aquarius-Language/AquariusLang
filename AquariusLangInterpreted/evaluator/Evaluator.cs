@@ -121,6 +121,8 @@ public class Evaluator {
                                 } else {
                                     return NewError($"Incorrect left operand type for STRING +=: {identVal.Type()}");
                                 }
+                            } else {
+                                return NewError($"{_right.Type()} as right operand type for += doesn't exist.");
                             }
                         } else {
                             return NewError($"Left operand for += operator not identifier. Got={_node.Left.GetType()}");
@@ -135,11 +137,43 @@ public class Evaluator {
                                 } else {
                                     return NewError($"Incorrect left operand type for INT -=: {identVal.Type()}");
                                 }
-                            } else if (_right.Type() == ObjectType.STRING_OBJ) {
-                                return NewError("String as left operand type for -= string concatenation doesn't exist.");
+                            } else {
+                                return NewError($"{_right.Type()} as right operand type for -= doesn't exist.");
                             }
                         } else {
                             return NewError($"Left operand for -= operator not identifier. Got={_node.Left.GetType()}");
+                        }
+                        break;
+                    case "*=":
+                        if (_node.Left is Identifier ___leftIdent) {
+                            if (_right.Type() == ObjectType.INTEGER_OBJ) {
+                                IObject identVal = evalIdentifier(___leftIdent, environment);
+                                if (identVal.Type() == ObjectType.INTEGER_OBJ) {
+                                    environment.Set(___leftIdent.Value, new IntegerObj(((IntegerObj)identVal).Value * ((IntegerObj)_right).Value));
+                                } else {
+                                    return NewError($"Incorrect left operand type for INT *=: {identVal.Type()}");
+                                }
+                            } else {
+                                return NewError($"{_right.Type()} as right operand type for *= doesn't exist.");
+                            }
+                        } else {
+                            return NewError($"Left operand for *= operator not identifier. Got={_node.Left.GetType()}");
+                        }
+                        break;
+                    case "/=":
+                        if (_node.Left is Identifier ____leftIdent) {
+                            if (_right.Type() == ObjectType.INTEGER_OBJ) {
+                                IObject identVal = evalIdentifier(____leftIdent, environment);
+                                if (identVal.Type() == ObjectType.INTEGER_OBJ) {
+                                    environment.Set(____leftIdent.Value, new IntegerObj(((IntegerObj)identVal).Value / ((IntegerObj)_right).Value));
+                                } else {
+                                    return NewError($"Incorrect left operand type for INT *=: {identVal.Type()}");
+                                }
+                            }  else {
+                                return NewError($"{_right.Type()} as right operand type for /= doesn't exist.");
+                            }
+                        } else {
+                            return NewError($"Left operand for *= operator not identifier. Got={_node.Left.GetType()}");
                         }
                         break;
                     default:

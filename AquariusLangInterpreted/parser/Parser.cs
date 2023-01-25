@@ -44,6 +44,8 @@ public static class Precedence {
         {TokenType.LBRACKET, OperatorPrecedence.INDEX},
         {TokenType.PLUS_EQ, OperatorPrecedence.PLUS_EQ},
         {TokenType.MINUS_EQ, OperatorPrecedence.PLUS_EQ},
+        {TokenType.ASTERISK_EQ, OperatorPrecedence.PLUS_EQ},
+        {TokenType.SLASH_EQ, OperatorPrecedence.PLUS_EQ},
         {TokenType.AND_AND, OperatorPrecedence.AND_AND},
         {TokenType.OR_OR, OperatorPrecedence.AND_AND},
     };
@@ -133,6 +135,8 @@ public class Parser {
         parser.registerInfix(TokenType.LBRACKET, parser.parseIndexExpression);
         parser.registerInfix(TokenType.PLUS_EQ, parser.parseInfixExpression);
         parser.registerInfix(TokenType.MINUS_EQ, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.ASTERISK_EQ, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.SLASH_EQ, parser.parseInfixExpression);
         parser.registerInfix(TokenType.AND_AND, parser.parseInfixExpression);
         parser.registerInfix(TokenType.OR_OR, parser.parseInfixExpression);
 

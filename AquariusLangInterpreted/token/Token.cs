@@ -25,6 +25,8 @@ public struct TokenType {
     public const string NOT_EQ = "!=";
     public const string PLUS_EQ = "+="; 
     public const string MINUS_EQ = "-=";
+    public const string ASTERISK_EQ = "*=";
+    public const string SLASH_EQ = "/=";
     public const string AND_AND = "&&";
     public const string OR_OR = "||";
         

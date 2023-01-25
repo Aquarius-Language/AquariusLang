@@ -49,15 +49,17 @@ public class EvaluatorTest {
         }
     }
 
-    struct IntIncrementDecrementTest {
+    struct IntPlusMinusMultDivEqualsTest {
         public string input;
         public int expected;
     }
     [Fact]
     public void TestIntIncrementDecrement() {
-        IntIncrementDecrementTest[] tests = {
+        IntPlusMinusMultDivEqualsTest[] tests = {
             new() {input = "let a = 5; a += 10; a;", expected = 15},
-            new() {input = "let b = 25; b -= 5; b -= 19; b;", expected = 1}
+            new() {input = "let b = 25; b -= 5; b -= 19; b;", expected = 1},
+            new() {input = "let c = 1; c *= 5; c;", expected = 5},
+            new() {input = "let d = 20; d /= 4; d;", expected = 5},
         };
         foreach (var test in tests) {
             IObject evaluated = testEval(test.input);

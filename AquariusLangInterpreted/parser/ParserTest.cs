@@ -258,6 +258,8 @@ public class ParserTest {
             new() { input = "add(a * b[2], b[1], 2 * [1, 2][1])", expected = "add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))", },
             new() { input = "a += 3 + 4", expected = "(a += (3 + 4))", },
             new() { input = "a <= 5 - 6", expected = "(a <= (5 - 6))", },
+            new() { input = "a *= 5 - 6", expected = "(a *= (5 - 6))", },
+            new() { input = "a /= 5 - 6", expected = "(a /= (5 - 6))", },
             new() { input = "true && 5 < 6", expected = "(true && (5 < 6))", },
         };
         foreach (var test in tests) {
