@@ -477,7 +477,7 @@ public class Parser {
                 return null;
             }
             nextToken();
-            alternativeConditions.Append(parseExpression((int)Precedence.OperatorPrecedence.LOWEST));
+            alternativeConditions.Add(parseExpression((int)Precedence.OperatorPrecedence.LOWEST));
             if (!expectPeek(TokenType.RPAREN)) {
                 return null;
             }
@@ -486,10 +486,11 @@ public class Parser {
                 return null;
             }
 
-            alternatives.Append(parseBlockStatement());
+            alternatives.Add(parseBlockStatement());
         }
 
         if (alternatives.Count > 0) {
+            expression.AlternativeConditions = alternativeConditions.ToArray();
             expression.Alternatives = alternatives.ToArray();
         }
 

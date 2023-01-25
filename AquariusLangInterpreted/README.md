@@ -68,6 +68,7 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
   But they seem to get fixed when I added those function calls.
 - Sometimes when adding new operators but it's not showing up in search for prefix/infix callbacks, make sure if they're being 
   referenced under Parser.precedencesMap.
+- List.Append() doesn't add item to list. It returns new instance of list with added item. Use .Add() instead.
 
 <h3>POSSIBLE FUTURE FEATURES TO PUT INTO CONSIDERATIONS:</h3>
 

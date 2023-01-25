@@ -4,6 +4,10 @@ let b = true;
 let result = fn() {
     if (a) {
         return 12;
+    } elif (10 > 12) {
+        return true;
+    } elif (b) {
+        return "YES!";
     } else {
         return "Wow!";
     }

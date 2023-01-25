@@ -529,6 +529,17 @@ public class IfExpression : IExpression {
             .Append(consequence.String())
             .Append('}');
 
+        if (alternativeConditions != null) {
+            for (var i = 0; i < alternativeConditions.Length; i++) {
+                builder.Append("elif")
+                    .Append(alternativeConditions[i].String())
+                    .Append(' ')
+                    .Append('{')
+                    .Append(alternatives[i].String())
+                    .Append('}');
+            }
+        }
+
         if (lastResort != null) {
             builder.Append("else ")
                 .Append('{')

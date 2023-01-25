@@ -360,6 +360,8 @@ public class ParserTest {
                 a;
             } elif (x == y) {
                 y;
+            } elif (x != y) {
+                j;
             } else {
                 b;
             }
@@ -383,6 +385,22 @@ public class ParserTest {
         ExpressionStatement consequence = (ExpressionStatement)expression.Consequence.Statements[0];
         
         Assert.True(testIdentifier(consequence.Expression, "a"));
+
+        Assert.NotNull(expression.AlternativeConditions);
+        Assert.NotNull(expression.Alternatives);
+
+        Assert.Equal(2, expression.Alternatives.Length);
+        Assert.Equal(2, expression.AlternativeConditions.Length);
+
+        Assert.True(testInfixExpression(expression.AlternativeConditions[0], "x", "==", "y"));
+        Assert.IsType<ExpressionStatement>(expression.Alternatives[0].Statements[0]);
+        ExpressionStatement alternative1 = (ExpressionStatement)expression.Alternatives[0].Statements[0];
+        Assert.True(testIdentifier(alternative1.Expression, "y"));
+        
+        Assert.True(testInfixExpression(expression.AlternativeConditions[1], "x", "!=", "y"));
+        Assert.IsType<ExpressionStatement>(expression.Alternatives[1].Statements[0]);
+        ExpressionStatement alternative2 = (ExpressionStatement)expression.Alternatives[1].Statements[0];
+        Assert.True(testIdentifier(alternative2.Expression, "j"));
         
         Assert.Single(expression.LastResort.Statements);
         
