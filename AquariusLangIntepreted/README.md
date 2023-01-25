@@ -18,16 +18,15 @@ To implement:
 5. Implement else if (elif)...
 6. Ignore comments.
 7. Value re-assignment to array and hashmap; pass them by reference to functions.
-8. "break" statement out of loops.
-9. Implement "outer" and "local" variables for environments. (to fix local variable problems in loop)
-10. Add "for loop example unit testing" when the problems for for loop are fixed.
-11. Make for loop still work even when no few statements in parenthesis. ex. for(; i < 10; i+=1){}
-12. Binary and, or (|, &)
-13. String concatenate with int.
-14. *=, /=.
-15. Prevent re-declaring variables that already exist.
-16. Importing other files as modules.
-17. exit() to exit application.
+8. Implement "outer" and "local" variables for environments. (to fix local variable problems in loop)
+9. Add "for loop example unit testing" when the problems for for loop are fixed.
+10. Make for loop still work even when no few statements in parenthesis. ex. for(; i < 10; i+=1){}
+11. Binary and, or (|, &)
+12. String concatenate with int.
+13. *=, /=.
+14. Prevent re-declaring variables that already exist.
+15. Importing other files as modules.
+16. exit() to exit application.
 
 Finished implementing:
 
@@ -40,6 +39,7 @@ Finished implementing:
    the hashmap in the language can differentiate between two instances with different types but same hash int values.
 4. Implement ||, &&, <=, >=...
 5. "return" out of function from loop. (added inside Evaluator.evalForLoopLiteral())
+6. "break" statement out of loops. (added inside Evaluator.evalForLoopLiteral())
 
 SUGGESTIONS AND NOTES WHEN IMPLEMENTING NEW FEATURES:
 
