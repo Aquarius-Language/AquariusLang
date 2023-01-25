@@ -30,6 +30,10 @@ public static class Interpreter {
             }
 
             IObject evaluated = Evaluator.Eval(tree, environment);
+            
+            /*
+             * Note: C#'s null shouldn't be printed out; but NullObj needs to be printed out.
+             */
             if (evaluated != null) {
                 Console.WriteLine(evaluated.Inspect());
             }
