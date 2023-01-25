@@ -128,7 +128,7 @@ public class EvaluatorTest {
         public object expected;
     }
     [Fact]
-    public void TestIfElseExpressions() {
+    public void TestIfElifElseExpressions() {
         IfElseTest[] tests = {
             new () {input = "if (true) { 10 }", expected = 10},
             new () {input = "if (false) { 10 }", expected = null},
@@ -137,6 +137,27 @@ public class EvaluatorTest {
             new () {input = "if (1 > 2) { 10 }", expected = null},
             new () {input = "if (1 > 2) { 10 } else { 20 }", expected = 20},
             new () {input = "if (1 < 2) { 10 } else { 20 }", expected = 10},
+            new () {
+                input = @"
+                        let a = false;
+                        let b = true;
+
+                        let result = fn() {
+                            if (a) {
+                                return 12;
+                            } elif (10 > 12) {
+                                return true;
+                            } elif (b) {
+                                return ""YES!"";
+                            } else {
+                                return ""Wow!"";
+                            }
+                        }();
+
+                        result;
+                        ",
+                expected = "YES!"
+            },
         };
         foreach (var test in tests) {
             IObject evaluated = testEval(test.input);
@@ -144,6 +165,8 @@ public class EvaluatorTest {
             if (test.expected is int) {
                 int integer = (int)test.expected;
                 Assert.True(testIntegerObject(evaluated, integer));
+            } else if (test.expected is string) {
+                Assert.True(testStringObject(evaluated, (string?)test.expected));
             } else {
                 /*
 				 When a conditional doesn’t evaluate to a value it’s supposed to

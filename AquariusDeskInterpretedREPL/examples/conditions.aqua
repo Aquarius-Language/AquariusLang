@@ -7,7 +7,11 @@ let result = fn() {
     } elif (10 > 12) {
         return true;
     } elif (b) {
-        return "YES!";
+        let var = "";
+        for (let i = 0; i < 3; i+=1) {
+            var += "YES!";
+        }
+        return var;
     } else {
         return "Wow!";
     }

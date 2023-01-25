@@ -15,24 +15,23 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
 2. Floating point numbers.
 3. Use "Visitor pattern" to replace "type checking using switch case" under Evaluator.Eval(). (for performance enhancement)
 4. Make numbers available as part of identifiers, such as (let hello123 = "Hello").
-5. Implement else if (elif)...
-6. Value re-assignment to array and hashmap's elements.
-7. pass array and hashmap by reference to functions.
-8. Add "for loop example unit testing" when the problems for for loop are fixed.
-9. Make for loop still work even when no few statements in parenthesis. ex. for(; i < 10; i+=1){}
-10. Binary and, or (|, &)
-11. String concatenate with int.
-12. *=, /=.
-13. Unit testing for break statement, once inner and outer variables' scope problem's fixed.
-14. Prevent re-declaring variables that already exist.
-15. Importing other files as modules.
-16. exit() to exit application.
-17. Make more types (even custom types) available as hashmap keys.
-18. NullObj type values should be printable. Therefore, implement a void type to tell which are not printable.
-19. Make variables not re-declarable within same environment that owns it.
-20. Design cross-platform DevOps-related libraries.
-21. Design some new syntax combined with libffi library to make calling C-API possible.
-22. Some objects have array ([]) members. But most of their instantiation are passed from list converted to array.
+5. Value re-assignment to array and hashmap's elements.
+6. pass array and hashmap by reference to functions.
+7. Add "for loop example unit testing" when the problems for for loop are fixed.
+8. Make for loop still work even when no few statements in parenthesis. ex. for(; i < 10; i+=1){}
+9. Binary and, or (|, &)
+10. String concatenate with int.
+11. *=, /=.
+12. Unit testing for break statement, once inner and outer variables' scope problem's fixed.
+13. Prevent re-declaring variables that already exist.
+14. Importing other files as modules.
+15. exit() to exit application.
+16. Make more types (even custom types) available as hashmap keys.
+17. NullObj type values should be printable. Therefore, implement a void type to tell which are not printable.
+18. Make variables not re-declarable within same environment that owns it.
+19. Design cross-platform DevOps-related libraries.
+20. Design some new syntax combined with libffi library to make calling C-API possible.
+21. Some objects have array ([]) members. But most of their instantiation are passed from list converted to array.
     Maybe, just change them all to lists, might reduce the time cost of data structure conversion.
 
 <h3>FINISHED IMPLEMENTING:</h3>
@@ -50,6 +49,7 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
 7. Implement "outer" and "local" variables for environments. (by adding Environment.Create(), Environment.owned etc...)
 8. Ignore comments. '#' for single-line comment and "##" for multi-line comments. (added into Lexer.skipComments())
 9. Print out the illegal token for "No prefix parse function for ILLEGAL found." (added by setting inside Parser.noPrefixFnParse())
+10. Implement else if (elif)... (added by modifying Parser.parseIfExpression(), Evaluator.evalIfExpression()...)
 
 <h3>BUGS TO FIX:</h3>
 

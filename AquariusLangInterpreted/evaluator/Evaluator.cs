@@ -331,11 +331,29 @@ public class Evaluator {
 
         if (isTruthy(condition)) {
             return Eval(ifExpression.Consequence, environment);
-        } else if (ifExpression.LastResort != null) {
-            return Eval(ifExpression.LastResort, environment);
-        } else {
-            return RepeatedPrimitives.NULL;
         }
+
+        IExpression[] ifExpressionAlternativeConditions = ifExpression.AlternativeConditions;
+
+        if (ifExpressionAlternativeConditions != null) {
+            BlockStatement[] ifExpressionAlternatives = ifExpression.Alternatives;
+            for (var i = 0; i < ifExpressionAlternativeConditions.Length; i++) {
+                IObject _condition = Eval(ifExpressionAlternativeConditions[i], environment);
+                if (isError(_condition)) {
+                    return _condition;
+                }
+
+                if (isTruthy(_condition)) {
+                    return Eval(ifExpressionAlternatives[i], environment);
+                }
+            }
+        }
+        
+        if (ifExpression.LastResort != null) {
+            return Eval(ifExpression.LastResort, environment);
+        } 
+        
+        return RepeatedPrimitives.NULL;
     }
 
     private static IObject[] evalExpressions(IExpression[] expressions, Environment environment) {

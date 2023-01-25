@@ -3,7 +3,7 @@
 let func = fn() {
     for (let i = 0; i < 5; i+=1) {
         for (let j = 0; j < 5; j+=1) {
-            a += i;                                
+            a += i;                             
         }
     }
 }
@@ -14,15 +14,25 @@ print(a);
 
 
 let b = "Hello";
-let func = fn(){
+let _func = fn(){
     b += " World!";
 }
-func();
+_func();
 
 print(b);
 
 
 let c = 5;
-let func = fn(){c = 10;}
-func();
+let __func = fn(){
+    c = 10;
+}
+__func();
 print(c);
+
+let d = true;
+let ___func = fn() {
+    # "d" here is local variable, since it's declared inside this function's scope.
+    let d = false; 
+}
+___func();
+print(d);
