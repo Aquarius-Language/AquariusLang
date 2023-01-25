@@ -1,7 +1,7 @@
 ﻿Stuffs implemented from "Writing an Interpreter in Go" book:
     ~ page 189.
 
-IMPORTANT!:
+<h3>IMPORTANT!:</h3>
 - Statement and expression nodes under AbstractSyntaxTree.cs needs to be class. 
 Because they implement from IStatement and IExpression interfaces. Structs are
 bad for type casting (polymorphism).
@@ -9,7 +9,7 @@ bad for type casting (polymorphism).
 so they can be used as dictionary keys. Otherwise, it'll not work as dictionary keys. (Maybe because class instances are pointers to heap?)
 Extra advantage of this: since HashKey doesn't have complicated types nor polymorphic members, it also might boost performance.
 
-FEATURES TO IMPLEMENT:
+<h3>FEATURES TO IMPLEMENT:</h3>
 
 1. While loop.
 2. Floating point numbers.
@@ -31,13 +31,7 @@ FEATURES TO IMPLEMENT:
 18. NullObj type values should be printable. Therefore, implement a void type to tell which are not printable.
 19. Make variables not re-declarable within same environment that owns it.
 
-BUGS TO FIX:
-
-1. Fix no error printed out for "for (let i = 0; i < len(array); i+=1) {print(array[i])}" if "array" array variable is not declared.
-2. Fix "++" typo cannot be caught in debug log. (ex. for (let i = 0; i < 5; i++)...)
-3. AquariusDeskInterpretedREPL/examples/var_scope.aqua prints an extra "null" at the end. Figure out why.
-
-FINISHED IMPLEMENTING:
+<h3>FINISHED IMPLEMENTING:</h3>
 
 1. Variable re-assignment. Added to Evaluator.assignVariableVal().
 2. For loop. Added to Evaluator.evalForLoopLiteral() and.parseForLoopLiteral().  (global and local issues not completely done yet)
@@ -53,14 +47,25 @@ FINISHED IMPLEMENTING:
 8. Ignore comments. '#' for single-line comment and "##" for multi-line comments. (added into Lexer.skipComments())
 9. Print out the illegal token for "No prefix parse function for ILLEGAL found." (added by setting inside Parser.noPrefixFnParse())
 
-SUGGESTIONS AND NOTES WHEN IMPLEMENTING NEW FEATURES:
+<h3>BUGS TO FIX:</h3>
+
+1. Fix no error printed out for "for (let i = 0; i < len(array); i+=1) {print(array[i])}" if "array" array variable is not declared.
+2. Fix "++" typo cannot be caught in debug log. (ex. for (let i = 0; i < 5; i++)...)
+
+
+<h3>BUGS FIXED:</h3>
+
+1. (AquariusDeskInterpretedREPL/examples/var_scope.aqua prints an extra "null" at the end. Figure out why.) - "print()" originally 
+   returns NullObj instead of null. Changed to null. 
+
+<h3>SUGGESTIONS AND NOTES WHEN IMPLEMENTING NEW FEATURES:</h3>
 
 - Be VERY CAREFUL about when to call nextTokens(). I missed few nextTokens() call when I was implementing for loop parsing.
   But they seem to get fixed when I added those function calls.
 - Sometimes when adding new operators but it's not showing up in search for prefix/infix callbacks, make sure if they're being 
   referenced under Parser.precedencesMap.
 
-POSSIBLE FUTURE FEATURES TO PUT INTO CONSIDERATIONS:
+<h3>POSSIBLE FUTURE FEATURES TO PUT INTO CONSIDERATIONS:</h3>
 
 - Embedding Git functionality as standard library.
 - Interop with multiple languages.

@@ -75,7 +75,7 @@ public class Builtins {
             }
             Console.WriteLine();
 
-            return RepeatedPrimitives.NULL;
+            return null;
         })}
     };
     
