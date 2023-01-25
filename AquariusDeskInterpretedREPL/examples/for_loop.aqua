@@ -1,0 +1,22 @@
+﻿let a = "";
+a = fn() {
+    for (let j = 0; j <= 10; j += 2) {
+        a += "XD!";
+        if (j == 4){
+            a += "Wow!";
+            return a;
+        }
+    }
+}();
+print(a);
+
+
+let b = 0;
+for (let j = 0; j <= 10; j += 2) {
+    b -= 2;
+    if (j == 8){
+        b -= 10;
+        break;
+    }
+}
+print(b);

@@ -9,7 +9,7 @@ bad for type casting (polymorphism).
 so they can be used as dictionary keys. Otherwise, it'll not work as dictionary keys. (Maybe because class instances are pointers to heap?)
 Extra advantage of this: since HashKey doesn't have complicated types nor polymorphic members, it also might boost performance.
 
-<h3>FEATURES TO IMPLEMENT:</h3>
+<h3>TODO (SUCH AS FEATURES TO IMPLEMENT):</h3>
 
 1. While loop.
 2. Floating point numbers.
@@ -17,24 +17,21 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
 4. Make numbers available as part of identifiers, such as (let hello123 = "Hello").
 5. Value re-assignment to array and hashmap's elements.
 6. pass array and hashmap by reference to functions.
-7. Add "for loop example unit testing" when the problems for for loop are fixed.
-8. Make for loop still work even when no few statements in parenthesis. ex. for(; i < 10; i+=1){}
-9. Binary and, or (|, &)
-10. String concatenate with int.
-11. *=, /=.
-12. Unit testing for break statement, once inner and outer variables' scope problem's fixed.
-13. Prevent re-declaring variables that already exist.
-14. Importing other files as modules.
-15. exit() to exit application.
-16. Make more types (even custom types) available as hashmap keys.
-17. NullObj type values should be printable. Therefore, implement a void type to tell which are not printable.
-18. Make variables not re-declarable within same environment that owns it.
-19. Design cross-platform DevOps-related libraries.
-20. Design some new syntax combined with libffi library to make calling C-API possible.
-21. Some objects have array ([]) members. But most of their instantiation are passed from list converted to array.
+7. Make for loop still work even when no few statements in parenthesis. ex. for(; i < 10; i+=1){}
+8. Binary and, or (|, &)
+9. String concatenate with int.
+10. *=, /=.
+11. Prevent re-declaring variables that already exist.
+12. Importing other files as modules.
+13. exit() to exit application.
+14. Make more types (even custom types) available as hashmap keys.
+15. Make variables not re-declarable within same environment that owns it.
+16. Design cross-platform DevOps-related libraries. For making easier build scripts.
+17. Design some new syntax combined with libffi library to make calling C-API possible.
+18. Some objects have array ([]) members. But most of their instantiation are passed from list converted to array.
     Maybe, just change them all to lists, might reduce the time cost of data structure conversion.
 
-<h3>FINISHED IMPLEMENTING:</h3>
+<h3>FINISHED TODO:</h3>
 
 1. Variable re-assignment. Added to Evaluator.assignVariableVal().
 2. For loop. Added to Evaluator.evalForLoopLiteral() and.parseForLoopLiteral().  (global and local issues not completely done yet)
@@ -50,6 +47,10 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
 8. Ignore comments. '#' for single-line comment and "##" for multi-line comments. (added into Lexer.skipComments())
 9. Print out the illegal token for "No prefix parse function for ILLEGAL found." (added by setting inside Parser.noPrefixFnParse())
 10. Implement else if (elif)... (added by modifying Parser.parseIfExpression(), Evaluator.evalIfExpression()...)
+11. Add "for loop example unit testing" when the problems for for loop are fixed.
+12. Unit testing for break statement, once inner and outer variables' scope problem's fixed.
+13. ~~NullObj type values should be printable. Therefore, implement a void type to tell which are not printable.~~ Turns out
+    implementing this is unnecessary. NullObj should be printable.
 
 <h3>BUGS TO FIX:</h3>
 
@@ -74,7 +75,7 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
 
 - Embedding Git functionality as standard library.
 - Interop with multiple languages.
-- Libgccjit or WASI or compiling to DLL (possibly using Zigs) for JIT compiling.
+- Libgccjit or WASI or compiling to DLL (possibly using Zigs? Or maybe Cython?) for JIT or AOT compiling.
 - Maybe make a wrapper and library for Wicked Engine?
 - Wrapper for PyTorch?
 - Calculus math calculations as part of language's operators?

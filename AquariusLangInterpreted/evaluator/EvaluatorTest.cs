@@ -123,6 +123,59 @@ public class EvaluatorTest {
         }
     }
 
+    struct ForLoopTest {
+        public string input;
+        public object expected;
+    }
+
+    [Fact]
+    public void TestEvalForLoop() {
+        ForLoopTest[] tests = {
+            new () {
+                input = 
+                    @"
+                    # This one tests for break statement in for loop.
+                    let a = 0;
+                    for (let j = 0; j <= 10; j += 2) {
+                        a += 2;
+                        if (j == 8){
+                            a += 10;
+                            break;
+                        }
+                    }
+                    a;
+                    ",
+                expected = 20,
+            },
+            new () {
+                input = 
+                    @"
+                    # This one tests for return statement in for loop.
+                    let a = """";
+                    a = fn() {
+                        for (let j = 0; j <= 10; j += 2) {
+                            a += ""XD!"";
+                            if (j == 4){
+                                a += ""Wow!"";
+                                return a;
+                            }
+                        }
+                    }();
+                    a;
+                    ",
+                expected = "XD!XD!XD!Wow!",
+            }
+        };
+        foreach (ForLoopTest test in tests) {
+            IObject result = testEval(test.input);
+            if (result.Type() == ObjectType.INTEGER_OBJ) {
+                Assert.Equal(test.expected, ((IntegerObj)result).Value);
+            } else if (result.Type() == ObjectType.STRING_OBJ) {
+                Assert.Equal(test.expected, ((StringObj)result).Value);
+            }
+        }
+    }
+
     struct IfElseTest {
         public string input;
         public object expected;
