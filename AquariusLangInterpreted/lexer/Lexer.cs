@@ -23,10 +23,17 @@ public class Lexer {
             Type = TokenType.ILLEGAL,
             Literal = ""
         };
-        
-        skipWhitespace();
 
+        /*
+         * There might be whitespaces before and after comments.
+         */
+        skipWhitespace();
+        
         switch (ch) {
+            case '#':
+                skipComments();
+                return NextToken();
+
             case '=':
                 if (peekChar() == '=') {
                     readChar();
@@ -171,6 +178,25 @@ public class Lexer {
         }
 
         return input.Substring(lastPos, position - lastPos);
+    }
+
+    private void skipComments() {
+        if (ch == '#') {
+            if (peekChar() != '#') {
+                while (ch != '\n' && ch != 0) {
+                    readChar();
+                }
+            } else {
+                readChar();
+                readChar();
+                while (ch != '#' && peekChar() != '#') {
+                    readChar();
+                }
+                readChar();
+                readChar();
+                readChar();
+            }
+        }
     }
 
     private void skipWhitespace() {

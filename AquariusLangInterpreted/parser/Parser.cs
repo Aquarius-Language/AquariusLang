@@ -197,8 +197,8 @@ public class Parser {
         errors.Add(msg);
     }
 
-    private void noPrefixParseFnError(string tokenType) {
-        string msg = $"No prefix parse function for {tokenType} found.";
+    private void noPrefixParseFnError(Token token) {
+        string msg = $"No prefix parse function for {token.Type}({token.Literal}) found.";
         errors.Add(msg);
     }
 
@@ -287,7 +287,7 @@ public class Parser {
         // Console.WriteLine($"prefixParseFn: {prefixParseFn}");
 
         if (prefixParseFn == null) {
-            noPrefixParseFnError(currToken.Type);
+            noPrefixParseFnError(currToken);
             return null;
         }
 

@@ -14,22 +14,22 @@ FEATURES TO IMPLEMENT:
 1. While loop.
 2. Floating point numbers.
 3. Use "Visitor pattern" to replace "type checking using switch case" under Evaluator.Eval(). (for performance enhancement)
-4. Make numbers available as part of identifiers(variable names).
+4. Make numbers available as part of identifiers, such as (let hello123 = "Hello").
 5. Implement else if (elif)...
-6. Ignore comments.
-7. Value re-assignment to array and hashmap's elements.
-8. pass array and hashmap by reference to functions.
-9. Add "for loop example unit testing" when the problems for for loop are fixed.
-10. Make for loop still work even when no few statements in parenthesis. ex. for(; i < 10; i+=1){}
-11. Binary and, or (|, &)
-12. String concatenate with int.
-13. *=, /=.
-14. Unit testing for break statement, once inner and outer variables' scope problem's fixed.
-15. Prevent re-declaring variables that already exist.
-16. Importing other files as modules.
-17. exit() to exit application.
-18. Make more types (even custom types) available as hashmap keys.
-19. NullObj type values should be printable. Therefore, implement a void type to tell which are not printable.
+8. Value re-assignment to array and hashmap's elements.
+9. pass array and hashmap by reference to functions.
+10. Add "for loop example unit testing" when the problems for for loop are fixed.
+11. Make for loop still work even when no few statements in parenthesis. ex. for(; i < 10; i+=1){}
+12. Binary and, or (|, &)
+13. String concatenate with int.
+14. *=, /=.
+15. Unit testing for break statement, once inner and outer variables' scope problem's fixed.
+16. Prevent re-declaring variables that already exist.
+17. Importing other files as modules.
+18. exit() to exit application.
+19. Make more types (even custom types) available as hashmap keys.
+20. NullObj type values should be printable. Therefore, implement a void type to tell which are not printable.
+21. Make variables not re-declarable within same environment that owns it.
 
 BUGS TO FIX:
 
@@ -49,7 +49,9 @@ FINISHED IMPLEMENTING:
 4. Implement ||, &&, <=, >=...
 5. "return" out of function from loop. (added inside Evaluator.evalForLoopLiteral())
 6. "break" statement out of loops. (added inside Evaluator.evalForLoopLiteral())
-7. Implement "outer" and "local" variables for environments. (to fix local variable problems in loop)
+7. Implement "outer" and "local" variables for environments. (by adding Environment.Create(), Environment.owned etc...)
+8. Ignore comments. '#' for single-line comment and "##" for multi-line comments. (added into Lexer.skipComments())
+9. Print out the illegal token for "No prefix parse function for ILLEGAL found." (added by setting inside Parser.noPrefixFnParse())
 
 SUGGESTIONS AND NOTES WHEN IMPLEMENTING NEW FEATURES:
 

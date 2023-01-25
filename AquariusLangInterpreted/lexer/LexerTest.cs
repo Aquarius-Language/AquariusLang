@@ -32,7 +32,7 @@ public class LexerTest {
             };
 
             let result = add(five, ten);
-            !-/*5;
+            !-*/5;
             5 < 10 > 5;
 
             if (5 < 10) {
@@ -47,9 +47,14 @@ public class LexerTest {
             ""foo bar""
             [1, 2];
             {""foo"": ""bar""}
-
+            
+            # This is a comment.
             for (let i = 0; i < 5; i+=1) {}
 
+            ##
+            This is also a comment.
+            This should be ignored.
+            ##
             true && true;
             false || false;
 
@@ -100,8 +105,8 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
             new ExpectedTest(){ExpectedType = TokenType.BANG,      ExpectedLiteral = "!"},
             new ExpectedTest(){ExpectedType = TokenType.MINUS,     ExpectedLiteral = "-"},
+            new ExpectedTest(){ExpectedType = TokenType.ASTERISK,     ExpectedLiteral = "*"},
             new ExpectedTest(){ExpectedType = TokenType.SLASH,     ExpectedLiteral = "/"},
-            new ExpectedTest(){ExpectedType = TokenType.ASTERISK,  ExpectedLiteral = "*"},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "5"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "5"},

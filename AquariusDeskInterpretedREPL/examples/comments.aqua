@@ -1,0 +1,19 @@
+﻿let func = fn(){
+    # This is a comment.
+    for(let a = 5; a < 10; a+=1) {
+        for (let b = 0; b < 5; b+=1) {
+            if (a > 6) {
+                return a;
+            }
+        }
+    }
+}
+print(func());
+
+##
+This is also a comment.
+This should be ignored.
+##
+
+#print(true && true);
+print(false || false);
