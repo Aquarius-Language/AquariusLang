@@ -78,4 +78,4 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
 - Or maybe wrapper for Raylib.
 - Or maybe Magnum Graphics: https://magnum.graphics/showcase/
 - Bindings for SFML/SDL2.
-- Bindings for MonoGame. (might actually be a good idea)
+- Bindings for MonoGame. (might actually be a good idea) MonoGame course: https://www.youtube.com/watch?v=r5dM0_J7KuY&list=PLV27bZtgVIJqoeHrQq6Mt_S1-Fvq_zzGZ
