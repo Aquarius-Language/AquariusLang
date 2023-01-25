@@ -481,7 +481,8 @@ public class IfExpression : IExpression {
     private Token token;  // The 'if' token.
     private IExpression condition;
     private BlockStatement consequence; // Series of statements under "if".
-    private BlockStatement alternative; // Series of statements under "else".
+    private BlockStatement[] alternatives; // Series of statements under "elif"s.
+    private BlockStatement lastResort; // Series of statements under "else".
 
     public IfExpression(Token token) {
         this.token = token;
@@ -493,11 +494,19 @@ public class IfExpression : IExpression {
         this.consequence = consequence;
     }
 
-    public IfExpression(Token token, IExpression condition, BlockStatement consequence, BlockStatement alternative) {
+    public IfExpression(Token token, IExpression condition, BlockStatement consequence, BlockStatement[] alternatives) {
         this.token = token;
         this.condition = condition;
         this.consequence = consequence;
-        this.alternative = alternative;
+        this.alternatives = alternatives;
+    }
+
+    public IfExpression(Token token, IExpression condition, BlockStatement consequence, BlockStatement[] alternatives, BlockStatement lastResort) {
+        this.token = token;
+        this.condition = condition;
+        this.consequence = consequence;
+        this.alternatives = alternatives;
+        this.lastResort = lastResort;
     }
 
     public string TokenLiteral() {
@@ -513,9 +522,11 @@ public class IfExpression : IExpression {
             .Append(consequence.String())
             .Append('}');
 
-        if (alternative != null) {
+        if (lastResort != null) {
             builder.Append("else ")
-                .Append(alternative.String());
+                .Append('{')
+                .Append(lastResort.String())
+                .Append('}');
         }
 
         return builder.ToString();
@@ -531,17 +542,22 @@ public class IfExpression : IExpression {
 
     public IExpression Condition {
         get => condition;
-        set => condition = value ?? throw new ArgumentNullException(nameof(value));
+        set => condition = value;
     }
 
     public BlockStatement Consequence {
         get => consequence;
-        set => consequence = value ?? throw new ArgumentNullException(nameof(value));
+        set => consequence = value;
     }
 
-    public BlockStatement Alternative {
-        get => alternative;
-        set => alternative = value ?? throw new ArgumentNullException(nameof(value));
+    public BlockStatement[] Alternatives {
+        get => alternatives;
+        set => alternatives = value;
+    }
+
+    public BlockStatement LastResort {
+        get => lastResort;
+        set => lastResort = value;
     }
 }
 

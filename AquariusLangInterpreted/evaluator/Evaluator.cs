@@ -331,8 +331,8 @@ public class Evaluator {
 
         if (isTruthy(condition)) {
             return Eval(ifExpression.Consequence, environment);
-        } else if (ifExpression.Alternative != null) {
-            return Eval(ifExpression.Alternative, environment);
+        } else if (ifExpression.LastResort != null) {
+            return Eval(ifExpression.LastResort, environment);
         } else {
             return RepeatedPrimitives.NULL;
         }

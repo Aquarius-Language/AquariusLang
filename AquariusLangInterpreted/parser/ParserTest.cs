@@ -319,7 +319,7 @@ public class ParserTest {
         Assert.IsType(typeof(ExpressionStatement), expression.Consequence.Statements[0]);
         ExpressionStatement consequenceStatement = (ExpressionStatement)expression.Consequence.Statements[0];
         Assert.Equal(testIdentifier(consequenceStatement.Expression, "x"), true);
-        Assert.Null(expression.Alternative);
+        Assert.Null(expression.Alternatives);
     }
 
     [Fact]
@@ -328,28 +328,28 @@ public class ParserTest {
         Lexer lexer = Lexer.NewInstance(input);
         Parser parser = Parser.NewInstance(lexer);
         AbstractSyntaxTree tree = parser.ParseAST();
-        Assert.NotEqual(checkParserErrors(parser), true);
-        Assert.Equal(tree.Statements.Length, 1);
+        Assert.False(checkParserErrors(parser));
+        Assert.Single(tree.Statements);
         
-        Assert.IsType(typeof(ExpressionStatement), tree.Statements[0]);
+        Assert.IsType<ExpressionStatement>(tree.Statements[0]);
         ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
         
-        Assert.IsType(typeof(IfExpression), statement.Expression);
+        Assert.IsType<IfExpression>(statement.Expression);
         IfExpression expression = (IfExpression)statement.Expression;
         
-        Assert.Equal(testInfixExpression(expression.Condition, "x", "<", "y"), true);
-        Assert.Equal(expression.Consequence.Statements.Length, 1);
+        Assert.True(testInfixExpression(expression.Condition, "x", "<", "y"));
+        Assert.Single(expression.Consequence.Statements);
         
-        Assert.IsType(typeof(ExpressionStatement), expression.Consequence.Statements[0]);
+        Assert.IsType<ExpressionStatement>(expression.Consequence.Statements[0]);
         ExpressionStatement consequence = (ExpressionStatement)expression.Consequence.Statements[0];
         
-        Assert.Equal(testIdentifier(consequence.Expression, "x"), true);
+        Assert.True(testIdentifier(consequence.Expression, "x"));
         
-        Assert.Equal(expression.Alternative.Statements.Length, 1);
+        Assert.Single(expression.LastResort.Statements);
         
-        Assert.IsType(typeof(ExpressionStatement), expression.Alternative.Statements[0]);
-        ExpressionStatement alternative = (ExpressionStatement)expression.Alternative.Statements[0];
-        Assert.Equal(testIdentifier(alternative.Expression, "y"), true);
+        Assert.IsType<ExpressionStatement>(expression.LastResort.Statements[0]);
+        ExpressionStatement alternative = (ExpressionStatement)expression.LastResort.Statements[0];
+        Assert.True(testIdentifier(alternative.Expression, "y"));
     }
 
     [Fact]
@@ -358,26 +358,26 @@ public class ParserTest {
         Lexer lexer = Lexer.NewInstance(input);
         Parser parser = Parser.NewInstance(lexer);
         AbstractSyntaxTree tree = parser.ParseAST();
-        Assert.NotEqual(checkParserErrors(parser), true);
-        Assert.Equal(tree.Statements.Length, 1);
+        Assert.False(checkParserErrors(parser));
+        Assert.Single(tree.Statements);
         
-        Assert.IsType(typeof(ExpressionStatement), tree.Statements[0]);
+        Assert.IsType<ExpressionStatement>(tree.Statements[0]);
         ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
         
-        Assert.IsType(typeof(FunctionLiteral), statement.Expression);
+        Assert.IsType<FunctionLiteral>(statement.Expression);
         FunctionLiteral functionLiteral = (FunctionLiteral)statement.Expression;
         
-        Assert.Equal(functionLiteral.Parameters.Length, 2);
+        Assert.Equal(2, functionLiteral.Parameters.Length);
         
-        Assert.Equal(testLiteralExpression(functionLiteral.Parameters[0], "x"), true);
-        Assert.Equal(testLiteralExpression(functionLiteral.Parameters[1], "y"), true);
+        Assert.True(testLiteralExpression(functionLiteral.Parameters[0], "x"));
+        Assert.True(testLiteralExpression(functionLiteral.Parameters[1], "y"));
         
-        Assert.Equal(functionLiteral.Body.Statements.Length, 1);
+        Assert.Single(functionLiteral.Body.Statements);
         
-        Assert.IsType(typeof(ExpressionStatement), functionLiteral.Body.Statements[0]);
+        Assert.IsType<ExpressionStatement>(functionLiteral.Body.Statements[0]);
         ExpressionStatement bodyStatement = (ExpressionStatement)functionLiteral.Body.Statements[0];
         
-        Assert.Equal(testInfixExpression(bodyStatement.Expression, "x", "+", "y"), true);
+        Assert.True(testInfixExpression(bodyStatement.Expression, "x", "+", "y"));
     }
 
     struct ForLoopLiteralTest {

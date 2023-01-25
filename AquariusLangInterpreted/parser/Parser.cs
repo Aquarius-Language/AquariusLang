@@ -474,7 +474,7 @@ public class Parser {
                 return null;
             }
 
-            expression.Alternative = parseBlockStatement();
+            expression.LastResort = parseBlockStatement();
         }
 
         return expression;

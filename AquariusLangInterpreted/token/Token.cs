@@ -42,6 +42,7 @@ public struct TokenType {
     public const string FALSE    = "FALSE";
     public const string IF       = "IF";
     public const string ELSE     = "ELSE";
+    public const string ELSE_IF     = "ELIF";
     public const string RETURN   = "RETURN";
     public const string FOR   = "FOR";
     public const string BREAK = "BREAK";
@@ -66,9 +67,10 @@ public struct TokenLookup {
         {"false",  TokenType.FALSE},
         {"if",     TokenType.IF},
         {"else",   TokenType.ELSE},
+        {"elif",   TokenType.ELSE_IF},
         {"return", TokenType.RETURN},
         {"for",    TokenType.FOR},
-        {"break",    TokenType.BREAK},
+        {"break",  TokenType.BREAK},
     };
 
     /// <summary>

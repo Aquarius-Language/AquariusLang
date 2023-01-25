@@ -37,7 +37,10 @@ public class LexerTest {
 
             if (5 < 10) {
 	            return true;
-            } else {
+            } elif (false) {
+                return false;
+            }
+            else {
 	            return false;
             }
 
@@ -125,6 +128,15 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.RETURN,    ExpectedLiteral = "return"},
             new ExpectedTest(){ExpectedType = TokenType.TRUE,      ExpectedLiteral = "true"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            new ExpectedTest(){ExpectedType = TokenType.RBRACE,    ExpectedLiteral = "}"},
+            new ExpectedTest(){ExpectedType = TokenType.ELSE_IF,    ExpectedLiteral = "elif"},
+            new ExpectedTest(){ExpectedType = TokenType.LPAREN,    ExpectedLiteral = "("},
+            new ExpectedTest(){ExpectedType = TokenType.FALSE,    ExpectedLiteral = "false"},
+            new ExpectedTest(){ExpectedType = TokenType.RPAREN,    ExpectedLiteral = ")"},
+            new ExpectedTest(){ExpectedType = TokenType.LBRACE,    ExpectedLiteral = "{"},
+            new ExpectedTest(){ExpectedType = TokenType.RETURN,    ExpectedLiteral = "return"},
+            new ExpectedTest(){ExpectedType = TokenType.FALSE,    ExpectedLiteral = "false"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
             new ExpectedTest(){ExpectedType = TokenType.RBRACE,    ExpectedLiteral = "}"},
             new ExpectedTest(){ExpectedType = TokenType.ELSE,      ExpectedLiteral = "else"},
             new ExpectedTest(){ExpectedType = TokenType.LBRACE,    ExpectedLiteral = "{"},
