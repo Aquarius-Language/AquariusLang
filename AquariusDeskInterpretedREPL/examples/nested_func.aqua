@@ -1,0 +1,18 @@
+﻿let outerFunc = fn(a, b) {
+    let innerFunc = fn(_a, _b) {
+        for (let i = 0; i < 5; i+=2) {
+            _a += i;
+            _b += i;
+        }
+        return _a + _b;
+    }
+    let result = innerFunc(a, b);
+    print("Result 1:", result);
+    
+    result += 10;
+    
+    return result;
+}
+
+let result = outerFunc(12, 25);
+print("Result 2:", result);
