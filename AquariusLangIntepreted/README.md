@@ -25,10 +25,11 @@ FEATURES TO IMPLEMENT:
 12. Binary and, or (|, &)
 13. String concatenate with int.
 14. *=, /=.
-15. Prevent re-declaring variables that already exist.
-16. Importing other files as modules.
-17. exit() to exit application.
-18. Given more types (even custom types) to hashmap keys.
+15. Unit testing for break statement, once inner and outer variables' scope problem's fixed.
+16. Prevent re-declaring variables that already exist.
+17. Importing other files as modules.
+18. exit() to exit application.
+19. Make more types (even custom types) available as hashmap keys.
 
 BUGS TO FIX:
 
@@ -62,3 +63,4 @@ POSSIBLE FUTURE FEATURES TO PUT INTO CONSIDERATIONS:
 - Maybe make a wrapper and library for Wicked Engine?
 - Wrapper for PyTorch?
 - Calculus math calculations as part of language's operators?
+- Wrapper for desktop GUI library.
