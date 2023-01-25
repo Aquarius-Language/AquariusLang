@@ -25,6 +25,11 @@ public class LexerTest {
             let five = 5;
             let ten = 10;
 
+            let floatNum = 12.345f;
+            let doubleNum = 37.8d;
+
+            let j = 12.8f / 37.2d;
+
             ten = ""10"";
 
             let add = fn(x, y) {
@@ -67,22 +72,45 @@ public class LexerTest {
             a *= 38;
             b /= a;
         ";
-        
+
         ExpectedTest[] tests = new [] {
             new ExpectedTest(){ExpectedType = TokenType.LET,       ExpectedLiteral = "let"},
             new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "five"},
             new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "5"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.LET,       ExpectedLiteral = "let"},
             new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "ten"},
             new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "10"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
+            new ExpectedTest(){ExpectedType = TokenType.LET,       ExpectedLiteral = "let"},
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "floatNum"},
+            new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},
+            new ExpectedTest(){ExpectedType = TokenType.FLOAT,       ExpectedLiteral = "12.345f"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
+            new ExpectedTest(){ExpectedType = TokenType.LET,       ExpectedLiteral = "let"},
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "doubleNum"},
+            new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},
+            new ExpectedTest(){ExpectedType = TokenType.DOUBLE,       ExpectedLiteral = "37.8d"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
+            new ExpectedTest(){ExpectedType = TokenType.LET,       ExpectedLiteral = "let"},
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "j"},
+            new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},
+            new ExpectedTest(){ExpectedType = TokenType.FLOAT,       ExpectedLiteral = "12.8f"},
+            new ExpectedTest(){ExpectedType = TokenType.SLASH,       ExpectedLiteral = "/"},
+            new ExpectedTest(){ExpectedType = TokenType.DOUBLE,       ExpectedLiteral = "37.2d"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+
             new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "ten"},
             new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},
             new ExpectedTest(){ExpectedType = TokenType.STRING,    ExpectedLiteral = "10"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.LET,       ExpectedLiteral = "let"},
             new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "add"},
             new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},
@@ -99,6 +127,7 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
             new ExpectedTest(){ExpectedType = TokenType.RBRACE,    ExpectedLiteral = "}"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.LET,       ExpectedLiteral = "let"},
             new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "result"},
             new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},
@@ -109,18 +138,21 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "ten"},
             new ExpectedTest(){ExpectedType = TokenType.RPAREN,    ExpectedLiteral = ")"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.BANG,      ExpectedLiteral = "!"},
             new ExpectedTest(){ExpectedType = TokenType.MINUS,     ExpectedLiteral = "-"},
             new ExpectedTest(){ExpectedType = TokenType.ASTERISK,     ExpectedLiteral = "*"},
             new ExpectedTest(){ExpectedType = TokenType.SLASH,     ExpectedLiteral = "/"},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "5"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "5"},
             new ExpectedTest(){ExpectedType = TokenType.LT,        ExpectedLiteral = "<"},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "10"},
             new ExpectedTest(){ExpectedType = TokenType.GT,        ExpectedLiteral = ">"},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "5"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.IF,        ExpectedLiteral = "if"},
             new ExpectedTest(){ExpectedType = TokenType.LPAREN,    ExpectedLiteral = "("},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "5"},
@@ -131,6 +163,7 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.RETURN,    ExpectedLiteral = "return"},
             new ExpectedTest(){ExpectedType = TokenType.TRUE,      ExpectedLiteral = "true"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.RBRACE,    ExpectedLiteral = "}"},
             new ExpectedTest(){ExpectedType = TokenType.ELSE_IF,    ExpectedLiteral = "elif"},
             new ExpectedTest(){ExpectedType = TokenType.LPAREN,    ExpectedLiteral = "("},
@@ -140,21 +173,25 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.RETURN,    ExpectedLiteral = "return"},
             new ExpectedTest(){ExpectedType = TokenType.FALSE,    ExpectedLiteral = "false"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.RBRACE,    ExpectedLiteral = "}"},
             new ExpectedTest(){ExpectedType = TokenType.ELSE,      ExpectedLiteral = "else"},
             new ExpectedTest(){ExpectedType = TokenType.LBRACE,    ExpectedLiteral = "{"},
             new ExpectedTest(){ExpectedType = TokenType.RETURN,    ExpectedLiteral = "return"},
             new ExpectedTest(){ExpectedType = TokenType.FALSE,     ExpectedLiteral = "false"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.RBRACE,    ExpectedLiteral = "}"},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "10"},
             new ExpectedTest(){ExpectedType = TokenType.EQ,        ExpectedLiteral = "=="},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "10"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "10"},
             new ExpectedTest(){ExpectedType = TokenType.NOT_EQ,    ExpectedLiteral = "!="},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "9"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.STRING,    ExpectedLiteral = "foobar"},
             new ExpectedTest(){ExpectedType = TokenType.STRING,    ExpectedLiteral = "foo bar"},
             new ExpectedTest(){ExpectedType = TokenType.LBRACKET,  ExpectedLiteral = "["},
@@ -163,6 +200,7 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "2"},
             new ExpectedTest(){ExpectedType = TokenType.RBRACKET,  ExpectedLiteral = "]"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.LBRACE,    ExpectedLiteral = "{"},
             new ExpectedTest(){ExpectedType = TokenType.STRING,    ExpectedLiteral = "foo"},
             new ExpectedTest(){ExpectedType = TokenType.COLON,    ExpectedLiteral = ":"},
@@ -175,10 +213,12 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},
             new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "0"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.IDENT,    ExpectedLiteral = "i"},
             new ExpectedTest(){ExpectedType = TokenType.LT,    ExpectedLiteral = "<"},
             new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "5"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.IDENT,    ExpectedLiteral = "i"},
             new ExpectedTest(){ExpectedType = TokenType.PLUS_EQ,    ExpectedLiteral = "+="},
             new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "1"},
@@ -189,26 +229,32 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.AND_AND, ExpectedLiteral = "&&"},
             new ExpectedTest(){ExpectedType = TokenType.TRUE, ExpectedLiteral = "true"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.FALSE, ExpectedLiteral = "false"},
             new ExpectedTest(){ExpectedType = TokenType.OR_OR, ExpectedLiteral = "||"},
             new ExpectedTest(){ExpectedType = TokenType.FALSE, ExpectedLiteral = "false"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "12"},
             new ExpectedTest(){ExpectedType = TokenType.GT_ET,    ExpectedLiteral = ">="},
             new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "5"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "4"},
             new ExpectedTest(){ExpectedType = TokenType.LT_ET,    ExpectedLiteral = "<="},
             new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "18"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.IDENT,    ExpectedLiteral = "a"},
             new ExpectedTest(){ExpectedType = TokenType.ASTERISK_EQ,    ExpectedLiteral = "*="},
             new ExpectedTest(){ExpectedType = TokenType.INT,    ExpectedLiteral = "38"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.IDENT,    ExpectedLiteral = "b"},
             new ExpectedTest(){ExpectedType = TokenType.SLASH_EQ,    ExpectedLiteral = "/="},
             new ExpectedTest(){ExpectedType = TokenType.IDENT,    ExpectedLiteral = "a"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.EOF,       ExpectedLiteral = ""},
         };
         

@@ -10,6 +10,9 @@ public struct TokenType {
     public const string IDENT = "IDENT"; // add, foobar, x, y, ... etc identifiers.
 
     public const string INT = "INT";   // 1343456
+    public const string FLOAT = "FLOAT"; // 234.234f, 0.34124f...
+    public const string DOUBLE = "DOUBLE"; // 234.234d, 0.34124d...
+    
     // Operators
     public const string ASSIGN   = "=";
     public const string PLUS     = "+";

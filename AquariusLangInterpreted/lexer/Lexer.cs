@@ -166,9 +166,9 @@ public class Lexer {
                     string type = TokenLookup.LookupIdentifier(literal);
                     token = newToken(type, literal);
                     return token;
-                } else if (isDigit(ch)) { // Check if is number.
-                    string literal = readNumber();
-                    token = newToken(TokenType.INT, literal);
+                } else if (isDigit(ch)) { // Check if is number. (int, float, double...)
+                    string literal = readNumber(out string numberType);
+                    token = newToken(numberType, literal);
                     return token;
                 } else {
                     token = newToken(TokenType.ILLEGAL, ch);
@@ -245,12 +245,34 @@ public class Lexer {
         return input.Substring(lastPos, position - lastPos);
     }
 
-    private string readNumber() {
+    private string readNumber(out string numberType) {
         int lastPos = position;
-        while (isDigit(ch)) {
+
+        bool noDotEncounter = true;
+        while (isDigit(ch) || (ch == '.' && noDotEncounter)) {
+            if (ch == '.') {
+                noDotEncounter = false;
+            }
             readChar();
         }
 
+        if (noDotEncounter) {
+            numberType = TokenType.INT;
+        } else {
+            switch (ch) {
+                case 'f':
+                    numberType = TokenType.FLOAT;
+                    break;
+                case 'd':
+                    numberType = TokenType.DOUBLE;
+                    break;
+                default:
+                    numberType = TokenType.ILLEGAL;
+                    break;
+            }
+            readChar();
+        }
+        
         return input.Substring(lastPos, position - lastPos);
     }
 

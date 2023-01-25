@@ -11,6 +11,38 @@ public class Utils {
         result[target.Length] = item;
         return result;
     }
+
+    public static float? StringToFloat(string literal) {
+        bool success = float.TryParse(literal, out float val);
+        if (success) {
+            return val;
+        }
+
+        if (literal[literal.Length - 1] == 'f') {
+            string subStr = literal.Remove(literal.Length - 1, 1);
+            success = float.TryParse(subStr, out val);
+            if (success) {
+                return val;
+            }
+        }
+        return null;
+    }
+
+    public static double? StringToDouble(string literal) {
+        bool success = double.TryParse(literal, out double val);
+        if (success) {
+            return val;
+        }
+
+        if (literal[literal.Length - 1] == 'f') {
+            string subStr = literal.Remove(literal.Length - 1, 1);
+            success = double.TryParse(subStr, out val);
+            if (success) {
+                return val;
+            }
+        }
+        return null;
+    }
     
     public static bool TryCast<T>(object obj, out T result)
     {
