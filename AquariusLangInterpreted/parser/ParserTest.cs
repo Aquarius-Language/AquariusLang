@@ -152,7 +152,9 @@ public class ParserTest {
             new PrefixExpressionsTest() { input = "!foobar;", _operator = "!", value = "foobar" },
             new PrefixExpressionsTest() { input = "-foobar;", _operator = "-", value = "foobar" },
             new PrefixExpressionsTest() { input = "!true;", _operator = "!", value = true },
-            new PrefixExpressionsTest() { input = "!false;", _operator = "!", value = false }
+            new PrefixExpressionsTest() { input = "!false;", _operator = "!", value = false },
+            new PrefixExpressionsTest() { input = "-2.84f;", _operator = "-", value = 2.84f },
+            new PrefixExpressionsTest() { input = "-2.9d;", _operator = "-", value = 2.9 },
         };
 
         foreach (var test in tests) {
@@ -160,17 +162,17 @@ public class ParserTest {
             Parser parser = Parser.NewInstance(lexer);
             AbstractSyntaxTree tree = parser.ParseAST();
             
-            Assert.NotEqual(checkParserErrors(parser), true);
-            Assert.Equal(tree.Statements.Length, 1);
-            Assert.IsType(typeof(ExpressionStatement), tree.Statements[0]);
+            Assert.False(checkParserErrors(parser));
+            Assert.Single(tree.Statements);
+            Assert.IsType<ExpressionStatement>(tree.Statements[0]);
 
             ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
-            Assert.IsType(typeof(PrefixExpression), statement.Expression);
+            Assert.IsType<PrefixExpression>(statement.Expression);
             
             PrefixExpression expression = (PrefixExpression)statement.Expression;
             Assert.Equal(expression.Operator, test._operator);
             
-            Assert.Equal(testLiteralExpression(expression.Right, test.value), true);
+            Assert.True(testLiteralExpression(expression.Right, test.value));
         }
     }
 
@@ -261,6 +263,7 @@ public class ParserTest {
             new() { input = "a *= 5 - 6", expected = "(a *= (5 - 6))", },
             new() { input = "a /= 5 - 6", expected = "(a /= (5 - 6))", },
             new() { input = "true && 5 < 6", expected = "(true && (5 < 6))", },
+            new() { input = "2.3f * (5 + 5.d)", expected = "(2.3f * (5 + 5.d))", },
         };
         foreach (var test in tests) {
             Lexer lexer = Lexer.NewInstance(test.input);
@@ -773,9 +776,61 @@ public class ParserTest {
             return testIdentifier(expression, (string)expected);
         } else if (typeOfExpected == typeof(bool)) {
             return testBooleanLiteral(expression, (bool)expected);
+        } else if (typeOfExpected == typeof(float)) {
+            return testFloatLiteral(expression, (float)expected);
+        } else if (typeOfExpected == typeof(double)) {
+            return testDoubleLiteral(expression, (double)expected);
         }
         _testOutputHelper.WriteLine($"Type of expression not handled. Got={expression}");
         return false;
+    }
+
+    private bool testDoubleLiteral(IExpression expression, double value) {
+        if (expression.GetType() != typeof(DoubleLiteral)) {
+            _testOutputHelper.WriteLine($"expression not DoubleLiteral. Got = {expression}");
+            return false;
+        }
+
+        DoubleLiteral doubleLiteral = (DoubleLiteral)expression;
+
+        if (doubleLiteral.Value != value) {
+            _testOutputHelper.WriteLine($"doubleLiteral.Value not {value}. Got ={doubleLiteral.Value}");
+            return false;
+        }
+        
+        /*
+         * It's hard to compare TokenLiteral() for double. e.x. "2.4" != "2.4d".
+         */
+        // if (doubleLiteral.TokenLiteral() != value.ToString()) {
+        //     _testOutputHelper.WriteLine($"doubleLiteral.TokenLiteral() not {value}. Got = {doubleLiteral.TokenLiteral()}");
+        //     return false;
+        // }
+        
+        return true;
+    }
+
+    private bool testFloatLiteral(IExpression expression, float value) {
+        if (expression.GetType() != typeof(FloatLiteral)) {
+            _testOutputHelper.WriteLine($"expression not FloatLiteral. Got = {expression}");
+            return false;
+        }
+
+        FloatLiteral floatLiteral = (FloatLiteral)expression;
+
+        if (floatLiteral.Value != value) {
+            _testOutputHelper.WriteLine($"floatLiteral.Value not {value}. Got ={floatLiteral.Value}");
+            return false;
+        }
+        
+        /*
+         * It's hard to compare TokenLiteral() for float. e.x. "2.4" != "2.4f".
+         */
+        // if (floatLiteral.TokenLiteral() != value.ToString()) {
+        //     _testOutputHelper.WriteLine($"integerLiteral.TokenLiteral() incorrect. Got = {floatLiteral.TokenLiteral()}");
+        //     return false;
+        // }
+        
+        return true;
     }
 
     private bool testIntegerLiteral(IExpression expression, int value) {

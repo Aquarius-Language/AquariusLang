@@ -49,21 +49,32 @@ public class EvaluatorTest {
         }
     }
 
-    struct IntPlusMinusMultDivEqualsTest {
+    struct NumberPlusMinusMultDivEqualsTest {
         public string input;
-        public int expected;
+        public object expected;
     }
     [Fact]
-    public void TestIntIncrementDecrement() {
-        IntPlusMinusMultDivEqualsTest[] tests = {
+    public void TestNumberPlusMinusMultDivEquals() {
+        NumberPlusMinusMultDivEqualsTest[] tests = {
             new() {input = "let a = 5; a += 10; a;", expected = 15},
             new() {input = "let b = 25; b -= 5; b -= 19; b;", expected = 1},
             new() {input = "let c = 1; c *= 5; c;", expected = 5},
             new() {input = "let d = 20; d /= 4; d;", expected = 5},
+            new() {input = "let e = 25.4f; e /= 2.d; e;", expected = 12.7f},
+            new() {input = "let f = 18.3d; f *= 3; f;", expected = 54.9},
         };
         foreach (var test in tests) {
             IObject evaluated = testEval(test.input);
-            Assert.True(testIntegerObject(evaluated, test.expected));
+            if (test.expected is int _expected) {
+                Assert.IsType<IntegerObj>(evaluated);
+                Assert.True(testIntegerObject(evaluated, _expected));
+            } else if (test.expected is float __expected) {
+                Assert.IsType<FloatObj>(evaluated);
+                Assert.True(testFloatObject(evaluated, __expected, 2));
+            } else if (test.expected is double ___expected) {
+                Assert.IsType<DoubleObj>(evaluated);
+                Assert.True(testDoubleObject(evaluated, ___expected, 2));
+            }
         }
     }
 
@@ -763,6 +774,34 @@ public class EvaluatorTest {
             return true;
         }
         _testOutputHelper.WriteLine($"Object is not IntegerObj. Got={obj}");
+        return false;
+    }
+
+    private bool testFloatObject(IObject obj, float? expected, int roundPlace) {
+        if (obj is FloatObj floatObj) {
+            if (Math.Round(floatObj.Value, roundPlace) != Math.Round((float)expected, roundPlace)) {
+                _testOutputHelper.WriteLine($"Object has wrong value. Got={floatObj.Value}, want={expected}");
+                return false;
+            }
+
+            return true;
+        }
+        
+        _testOutputHelper.WriteLine($"Object is not FloatObj. Got={obj}");
+        return false;
+    }
+
+    private bool testDoubleObject(IObject obj, double? expected, int roundPlace) {
+        if (obj is DoubleObj doubleObj) {
+            if (Math.Round(doubleObj.Value, roundPlace) != Math.Round((double)expected, roundPlace)) {
+                _testOutputHelper.WriteLine($"Object has wrong value. Got={doubleObj.Value}, want={expected}");
+                return false;
+            }
+
+            return true;
+        }
+        
+        _testOutputHelper.WriteLine($"Object is not DoubleObj. Got={obj}");
         return false;
     }
 

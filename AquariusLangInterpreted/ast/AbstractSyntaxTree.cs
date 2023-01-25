@@ -359,6 +359,76 @@ public class IntegerLiteral : IExpression {
     }
 }
 
+public class FloatLiteral : IExpression {
+    private Token token;
+    private float value;
+
+    public FloatLiteral(Token token) {
+        this.token = token;
+    }
+
+    public FloatLiteral(Token token, float value) {
+        this.token = token;
+        this.value = value;
+    }
+
+    public string TokenLiteral() {
+        return token.Literal;
+    }
+
+    public string String() {
+        return token.Literal;
+    }
+
+    public void ExpressionNode() {
+    }
+
+    public Token Token {
+        get => token;
+        set => token = value;
+    }
+
+    public float Value {
+        get => value;
+        set => this.value = value;
+    }
+}
+
+public class DoubleLiteral : IExpression {
+    private Token token;
+    private double value;
+
+    public DoubleLiteral(Token token) {
+        this.token = token;
+    }
+
+    public DoubleLiteral(Token token, double value) {
+        this.token = token;
+        this.value = value;
+    }
+
+    public string TokenLiteral() {
+        return token.Literal;
+    }
+
+    public string String() {
+        return token.Literal;
+    }
+
+    public void ExpressionNode() {
+    }
+
+    public Token Token {
+        get => token;
+        set => token = value;
+    }
+
+    public double Value {
+        get => value;
+        set => this.value = value;
+    }
+}
+
 public class PrefixExpression : IExpression {
     private Token token; // The prefix token, e.g. !
     private string _operator;

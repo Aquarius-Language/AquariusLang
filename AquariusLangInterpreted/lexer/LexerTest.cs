@@ -23,7 +23,7 @@ public class LexerTest {
     public void TestNextToken() {
         string? input = @"
             let five = 5;
-            let ten = 10;
+            let ten = -10;
 
             let floatNum = 12.345f;
             let doubleNum = 37.8d;
@@ -83,6 +83,7 @@ public class LexerTest {
             new ExpectedTest(){ExpectedType = TokenType.LET,       ExpectedLiteral = "let"},
             new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "ten"},
             new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},
+            new ExpectedTest(){ExpectedType = TokenType.MINUS,       ExpectedLiteral = "-"},
             new ExpectedTest(){ExpectedType = TokenType.INT,       ExpectedLiteral = "10"},
             new ExpectedTest(){ExpectedType = TokenType.SEMICOLON, ExpectedLiteral = ";"},
             

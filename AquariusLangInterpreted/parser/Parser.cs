@@ -1,6 +1,7 @@
 ﻿using AquariusLang.ast;
 using AquariusLang.lexer;
 using AquariusLang.token;
+using AquariusLang.utils;
 
 namespace AquariusLang.parser;
 
@@ -106,6 +107,8 @@ public class Parser {
         parser.prefixParseFns = new Dictionary<string, PrefixParseFn>();
         parser.registerPrefix(TokenType.IDENT, parser.parseIdentifier);
         parser.registerPrefix(TokenType.INT, parser.parseIntegerLiteral);
+        parser.registerPrefix(TokenType.FLOAT, parser.parseFloatLiteral);
+        parser.registerPrefix(TokenType.DOUBLE, parser.parseDoubleLiteral);
         parser.registerPrefix(TokenType.BANG, parser.parsePrefixExpression);
         parser.registerPrefix(TokenType.MINUS, parser.parsePrefixExpression);
         parser.registerPrefix(TokenType.TRUE, parser.parseBoolean);
@@ -356,6 +359,30 @@ public class Parser {
 
         integerLiteral.Value = value;
         return integerLiteral;
+    }
+    
+    private IExpression parseFloatLiteral() {
+        FloatLiteral floatLiteral = new FloatLiteral(currToken);
+        float? value = Utils.StringToFloat(currToken.Literal);
+        if (value != null) {
+            floatLiteral.Value = (float)value;
+            return floatLiteral;
+        }
+        string msg = $"Could not parse{currToken.Literal} as float.";
+        errors.Add(msg);
+        return null;
+    }
+
+    private IExpression parseDoubleLiteral() {
+        DoubleLiteral doubleLiteral = new DoubleLiteral(currToken);
+        double? value = Utils.StringToDouble(currToken.Literal);
+        if (value != null) {
+            doubleLiteral.Value = (double)value;
+            return doubleLiteral;
+        }
+        string msg = $"Could not parse{currToken.Literal} as double.";
+        errors.Add(msg);
+        return null;
     }
 
 

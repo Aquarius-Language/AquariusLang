@@ -3,10 +3,12 @@ using AquariusLang.ast;
 
 namespace AquariusLang.Object;
 
-public struct ObjectType {
+public static class ObjectType {
     public const string NULL_OBJ  = "NULL";
     public const string ERROR_OBJ = "ERROR";
     public const string INTEGER_OBJ = "INTEGER";
+    public const string FLOAT_OBJ = "FLOAT";
+    public const string DOUBLE_OBJ = "DOUBLE";
     public const string BOOLEAN_OBJ = "BOOLEAN";
     public const string RETURN_VALUE_OBJ = "RETURN_VALUE";
     public const string BREAK_OBJ = "BREAK_OBJ";
@@ -15,11 +17,36 @@ public struct ObjectType {
     public const string BUILTIN_OBJ = "BUILTIN";
     public const string ARRAY_OBJ = "ARRAY";
     public const string HASH_OBJ = "HASH";
+
+    private const int is_number = 0;
+
+    /// <summary>
+    /// For faster lookup check if object type are certain group types. 
+    /// </summary>
+    private static Dictionary<string, int> typeGroupsLookup = new () {
+        {INTEGER_OBJ, is_number},
+        {FLOAT_OBJ, is_number},
+        {DOUBLE_OBJ, is_number},
+    };
+
+    public static bool IsNumber(string objectType) {
+        if (!typeGroupsLookup.ContainsKey(objectType)) {
+            return false;
+        }
+        return typeGroupsLookup[objectType] == is_number;
+    }
 }
 
 public interface IObject {
     string Type(); // Corresponds to ObjectType members.
     string Inspect();
+}
+
+/// <summary>
+/// Interface for getting value of number type objects. This can reduce if/else if/else conditions during evaluation.
+/// </summary>
+public interface INumberObj {
+    double GetNumValue();
 }
 
 public interface IHashable {
@@ -51,7 +78,7 @@ public struct HashKey {
     }
 }
 
-public class IntegerObj : IObject, IHashable {
+public class IntegerObj : IObject, INumberObj, IHashable {
     private int value;
 
     public IntegerObj(int value) {
@@ -66,13 +93,75 @@ public class IntegerObj : IObject, IHashable {
         return value.ToString();
     }
 
+    public HashKey HashKey() {
+        return new HashKey(Type(), value);
+    }
+
+    public double GetNumValue() {
+        return value;
+    }
+    
     public int Value {
         get => value;
         set => this.value = value;
     }
+}
+
+public class FloatObj : IObject, INumberObj, IHashable {
+    private float value;
+
+    public FloatObj(float value) {
+        this.value = value;
+    }
+
+    public string Type() {
+        return ObjectType.FLOAT_OBJ;
+    }
+
+    public string Inspect() {
+        return value.ToString();
+    }
 
     public HashKey HashKey() {
-        return new HashKey(Type(), value);
+        return new HashKey(Type(), value.GetHashCode());
+    }
+    
+    public double GetNumValue() {
+        return value;
+    }
+
+    public float Value {
+        get => value;
+        set => this.value = value;
+    }
+}
+
+public class DoubleObj : IObject, INumberObj, IHashable {
+    private double value;
+
+    public DoubleObj(double value) {
+        this.value = value;
+    }
+
+    public string Type() {
+        return ObjectType.DOUBLE_OBJ;
+    }
+
+    public string Inspect() {
+        return value.ToString();
+    }
+
+    public HashKey HashKey() {
+        return new HashKey(Type(), value.GetHashCode());
+    }
+    
+    public double GetNumValue() {
+        return value;
+    }
+
+    public double Value {
+        get => value;
+        set => this.value = value;
     }
 }
 

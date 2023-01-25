@@ -61,7 +61,7 @@ public struct TokenType {
 /// <summary>
 /// Utilities for looking up keywords and or identifiers for scanned string literals.
 /// </summary>
-public struct TokenLookup {
+public static class TokenLookup {
     /// <summary>
     /// keywords table maps corresponded to keywords constants above.
     /// </summary>

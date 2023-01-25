@@ -26,6 +26,8 @@ public class Evaluator {
         {typeof(BreakStatement), NodeTypeMapValue.BreakMapValue},
         {typeof(LetStatement), NodeTypeMapValue.LetMapValue},
         {typeof(IntegerLiteral), NodeTypeMapValue.IntMapValue},
+        {typeof(FloatLiteral), NodeTypeMapValue.FloatMapValue},
+        {typeof(DoubleLiteral), NodeTypeMapValue.DoubleMapValue},
         {typeof(BooleanLiteral), NodeTypeMapValue.BoolMapValue},
         {typeof(ForLoopLiteral), NodeTypeMapValue.ForMapValue},
         {typeof(PrefixExpression), NodeTypeMapValue.PrefixMapValue},
@@ -74,6 +76,12 @@ public class Evaluator {
             case NodeTypeMapValue.IntMapValue:
                 return new IntegerObj(((IntegerLiteral)node).Value);
             
+            case NodeTypeMapValue.FloatMapValue:
+                return new FloatObj(((FloatLiteral)node).Value);
+            
+            case NodeTypeMapValue.DoubleMapValue:
+                return new DoubleObj(((DoubleLiteral)node).Value);
+            
             case NodeTypeMapValue.BoolMapValue:
                 return nativeBoolToBoolObj(((BooleanLiteral)node).Value);
             
@@ -92,7 +100,6 @@ public class Evaluator {
                     return _left;
                 }
 
-
                 IObject _right = Eval(_node.Right, environment);
                 if (isError(_right)) {
                     return _right;
@@ -109,20 +116,32 @@ public class Evaluator {
                     case "+=":
                         if (_node.Left is Identifier _leftIdent) {
                             IObject identVal = evalIdentifier(_leftIdent, environment);
-                            if (_right.Type() == ObjectType.INTEGER_OBJ) {
-                                if (identVal.Type() == ObjectType.INTEGER_OBJ) {
-                                    environment.Set(_leftIdent.Value, new IntegerObj(((IntegerObj)identVal).Value + ((IntegerObj)_right).Value));
+                            string identType = identVal.Type();
+                            string rightType = _right.Type();
+                            if (ObjectType.IsNumber(rightType)) {
+                                if (ObjectType.IsNumber(identType)) {
+                                    switch (identType) {
+                                        case ObjectType.INTEGER_OBJ:
+                                            environment.Set(_leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value + ((INumberObj)_right).GetNumValue())));
+                                            break;
+                                        case ObjectType.FLOAT_OBJ:
+                                            environment.Set(_leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value + ((INumberObj)_right).GetNumValue())));
+                                            break;
+                                        case ObjectType.DOUBLE_OBJ:
+                                            environment.Set(_leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value + ((INumberObj)_right).GetNumValue()));
+                                            break;
+                                    }
                                 } else {
-                                    return NewError($"Incorrect left operand type for INT +=: {identVal.Type()}");
+                                    return NewError($"Incorrect left operand type for {identType} += NUMBER");
                                 }
-                            } else if (_right.Type() == ObjectType.STRING_OBJ) {
-                                if (identVal.Type() == ObjectType.STRING_OBJ) {
+                            } else if (rightType == ObjectType.STRING_OBJ) {
+                                if (identType == ObjectType.STRING_OBJ) {
                                     environment.Set(_leftIdent.Value, new StringObj(((StringObj)identVal).Value + ((StringObj)_right).Value));
                                 } else {
                                     return NewError($"Incorrect left operand type for STRING +=: {identVal.Type()}");
                                 }
                             } else {
-                                return NewError($"{_right.Type()} as right operand type for += doesn't exist.");
+                                return NewError($"{rightType} as right operand type for += doesn't exist.");
                             }
                         } else {
                             return NewError($"Left operand for += operator not identifier. Got={_node.Left.GetType()}");
@@ -130,12 +149,24 @@ public class Evaluator {
                         break;
                     case "-=":
                         if (_node.Left is Identifier __leftIdent) {
-                            if (_right.Type() == ObjectType.INTEGER_OBJ) {
-                                IObject identVal = evalIdentifier(__leftIdent, environment);
-                                if (identVal.Type() == ObjectType.INTEGER_OBJ) {
-                                    environment.Set(__leftIdent.Value, new IntegerObj(((IntegerObj)identVal).Value - ((IntegerObj)_right).Value));
+                            IObject identVal = evalIdentifier(__leftIdent, environment);
+                            string identType = identVal.Type();
+                            string rightType = _right.Type();
+                            if (ObjectType.IsNumber(rightType)) {
+                                if (ObjectType.IsNumber(identType)) {
+                                    switch (identType) {
+                                        case ObjectType.INTEGER_OBJ:
+                                            environment.Set(__leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value - ((INumberObj)_right).GetNumValue())));
+                                            break;
+                                        case ObjectType.FLOAT_OBJ:
+                                            environment.Set(__leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value - ((INumberObj)_right).GetNumValue())));
+                                            break;
+                                        case ObjectType.DOUBLE_OBJ:
+                                            environment.Set(__leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value - ((INumberObj)_right).GetNumValue()));
+                                            break;
+                                    }
                                 } else {
-                                    return NewError($"Incorrect left operand type for INT -=: {identVal.Type()}");
+                                    return NewError($"Incorrect left operand type for {identType} -= NUMBER");
                                 }
                             } else {
                                 return NewError($"{_right.Type()} as right operand type for -= doesn't exist.");
@@ -146,12 +177,24 @@ public class Evaluator {
                         break;
                     case "*=":
                         if (_node.Left is Identifier ___leftIdent) {
-                            if (_right.Type() == ObjectType.INTEGER_OBJ) {
-                                IObject identVal = evalIdentifier(___leftIdent, environment);
-                                if (identVal.Type() == ObjectType.INTEGER_OBJ) {
-                                    environment.Set(___leftIdent.Value, new IntegerObj(((IntegerObj)identVal).Value * ((IntegerObj)_right).Value));
+                            IObject identVal = evalIdentifier(___leftIdent, environment);
+                            string identType = identVal.Type();
+                            string rightType = _right.Type();
+                            if (ObjectType.IsNumber(rightType)) {
+                                if (ObjectType.IsNumber(identType)) {
+                                    switch (identType) {
+                                        case ObjectType.INTEGER_OBJ:
+                                            environment.Set(___leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value * ((INumberObj)_right).GetNumValue())));
+                                            break;
+                                        case ObjectType.FLOAT_OBJ:
+                                            environment.Set(___leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value * ((INumberObj)_right).GetNumValue())));
+                                            break;
+                                        case ObjectType.DOUBLE_OBJ:
+                                            environment.Set(___leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value * ((INumberObj)_right).GetNumValue()));
+                                            break;
+                                    }
                                 } else {
-                                    return NewError($"Incorrect left operand type for INT *=: {identVal.Type()}");
+                                    return NewError($"Incorrect left operand type for {identType} *= NUMBER");
                                 }
                             } else {
                                 return NewError($"{_right.Type()} as right operand type for *= doesn't exist.");
@@ -162,15 +205,27 @@ public class Evaluator {
                         break;
                     case "/=":
                         if (_node.Left is Identifier ____leftIdent) {
-                            if (_right.Type() == ObjectType.INTEGER_OBJ) {
-                                IObject identVal = evalIdentifier(____leftIdent, environment);
-                                if (identVal.Type() == ObjectType.INTEGER_OBJ) {
-                                    environment.Set(____leftIdent.Value, new IntegerObj(((IntegerObj)identVal).Value / ((IntegerObj)_right).Value));
+                            IObject identVal = evalIdentifier(____leftIdent, environment);
+                            string identType = identVal.Type();
+                            string rightType = _right.Type();
+                            if (ObjectType.IsNumber(rightType)) {
+                                if (ObjectType.IsNumber(identType)) {
+                                    switch (identType) {
+                                        case ObjectType.INTEGER_OBJ:
+                                            environment.Set(____leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value / ((INumberObj)_right).GetNumValue())));
+                                            break;
+                                        case ObjectType.FLOAT_OBJ:
+                                            environment.Set(____leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value / ((INumberObj)_right).GetNumValue())));
+                                            break;
+                                        case ObjectType.DOUBLE_OBJ:
+                                            environment.Set(____leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value / ((INumberObj)_right).GetNumValue()));
+                                            break;
+                                    }
                                 } else {
-                                    return NewError($"Incorrect left operand type for INT *=: {identVal.Type()}");
+                                    return NewError($"Incorrect left operand type for {identType} /= NUMBER");
                                 }
-                            }  else {
-                                return NewError($"{_right.Type()} as right operand type for /= doesn't exist.");
+                            } else {
+                                return NewError($"{_right.Type()} as right operand type for *= doesn't exist.");
                             }
                         } else {
                             return NewError($"Left operand for *= operator not identifier. Got={_node.Left.GetType()}");
@@ -696,7 +751,7 @@ public class Evaluator {
         } else if (obj == RepeatedPrimitives.FALSE) {
             return false;
         }
-
+        
         return true;
     }
 
@@ -711,6 +766,8 @@ public class Evaluator {
         BreakMapValue,
         LetMapValue,
         IntMapValue,
+        FloatMapValue,
+        DoubleMapValue,
         BoolMapValue,
         PrefixMapValue,
         InfixMapValue,
