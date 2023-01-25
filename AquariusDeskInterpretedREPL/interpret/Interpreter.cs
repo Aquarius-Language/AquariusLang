@@ -9,7 +9,7 @@ namespace AquariusREPL.interpret;
 
 public class Interpreter {
     const string PROMPT = ">> ";
-        
+
     /// <summary>
     /// Read, Evaluate, Print, Loop.
     /// </summary>
@@ -30,7 +30,7 @@ public class Interpreter {
             }
 
             IObject evaluated = Evaluator.Eval(tree, environment);
-            if (evaluated != null && evaluated != RepeatedPrimitives.NULL) {
+            if (evaluated != null) {
                 Console.WriteLine(evaluated.Inspect());
             }
         }

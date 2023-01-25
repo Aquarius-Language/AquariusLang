@@ -9,6 +9,7 @@ public struct ObjectType {
     public const string INTEGER_OBJ = "INTEGER";
     public const string BOOLEAN_OBJ = "BOOLEAN";
     public const string RETURN_VALUE_OBJ = "RETURN_VALUE";
+    public const string BREAK_OBJ = "BREAK_OBJ";
     public const string FUNCTION_OBJ = "FUNCTION";
     public const string STRING_OBJ = "STRING";
     public const string BUILTIN_OBJ = "BUILTIN";
@@ -157,6 +158,16 @@ public class ReturnValueObj : IObject {
     public IObject Value {
         get => value;
         set => this.value = value;
+    }
+}
+
+public class BreakObj : IObject {
+    public string Type() {
+        return ObjectType.BREAK_OBJ;
+    }
+
+    public string Inspect() {
+        return "break";
     }
 }
 

@@ -25,7 +25,9 @@ To implement:
 12. Binary and, or (|, &)
 13. String concatenate with int.
 14. *=, /=.
-15. Importing other files as modules.
+15. Prevent re-declaring variables that already exist.
+16. Importing other files as modules.
+17. exit() to exit application.
 
 Finished implementing:
 

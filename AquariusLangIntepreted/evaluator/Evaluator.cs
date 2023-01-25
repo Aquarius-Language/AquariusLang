@@ -14,6 +14,7 @@ public struct RepeatedPrimitives {
     public static readonly NullObj NULL = new();
     public static readonly BooleanObj TRUE = new(true);
     public static readonly BooleanObj FALSE = new(false);
+    public static readonly BreakObj BREAK = new BreakObj();
 }
 
 public class Evaluator {
@@ -22,6 +23,7 @@ public class Evaluator {
         {typeof(BlockStatement), NodeTypeMapValue.BlockMapValue},
         {typeof(ExpressionStatement), NodeTypeMapValue.ExpressMapValue},
         {typeof(ReturnStatement), NodeTypeMapValue.ReturnMapValue},
+        {typeof(BreakStatement), NodeTypeMapValue.BreakMapValue},
         {typeof(LetStatement), NodeTypeMapValue.LetMapValue},
         {typeof(IntegerLiteral), NodeTypeMapValue.IntMapValue},
         {typeof(BooleanLiteral), NodeTypeMapValue.BoolMapValue},
@@ -56,6 +58,9 @@ public class Evaluator {
                     return rtnObj;
                 }
                 return new ReturnValueObj(rtnObj);
+            
+            case NodeTypeMapValue.BreakMapValue:
+                return RepeatedPrimitives.BREAK;
             
             case NodeTypeMapValue.LetMapValue:
                 LetStatement letStatement = (LetStatement)node;
@@ -491,7 +496,10 @@ public class Evaluator {
         IStatement valueChangeStatement = node.ValueChangeStatement;
         BlockStatement blockStatement = node.Body;
 
-        Eval(letStatement, enclosedEnvironment);
+        IObject letStmtResult = Eval(letStatement, enclosedEnvironment);
+        if (isError(letStmtResult)) {
+            return letStmtResult;
+        }
 
         while (true) {
             IObject evalConditionResult = Eval(conditionalExpression, enclosedEnvironment);
@@ -501,6 +509,9 @@ public class Evaluator {
                 }
 
                 IObject result = Eval(blockStatement, enclosedEnvironment);
+                if (isError(result)) {
+                    return result;
+                }
 
                 /*
                  * If the for loop is inside a function, this can instantiate a return value, break
@@ -510,15 +521,26 @@ public class Evaluator {
                     if (result.Type() == ObjectType.RETURN_VALUE_OBJ) {
                         return unwrapReturnValue(result);
                     } else if (result.Type() != ObjectType.NULL_OBJ) {
+                        if (result.Type() == ObjectType.BREAK_OBJ) {
+                            /*
+                             * If is break, just break out of current loop and avoid returning break object to
+                             * outer loop. As if returned to outer loop, the outer loop will also return to its
+                             * further outer loop.
+                             */
+                            break;
+                        }
                         /*
                          * If is nested for loop, the value returned from inner for loop will be the unwrapped
                          * value from the ReturnValueObj.
                          */
                         return result;
-                    }
+                    } 
                 }
 
-                Eval(valueChangeStatement, enclosedEnvironment);
+                IObject valChangeResult = Eval(valueChangeStatement, enclosedEnvironment);
+                if (isError(valChangeResult)) {
+                    return valChangeResult;
+                }
             } else {
                 NewError($"Expected bool from for loop conditionals. Got={evalConditionResult.Type()}");
             }
@@ -631,6 +653,7 @@ public class Evaluator {
         BlockMapValue,
         ExpressMapValue,
         ReturnMapValue,
+        BreakMapValue,
         LetMapValue,
         IntMapValue,
         BoolMapValue,
