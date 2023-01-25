@@ -397,6 +397,77 @@ public class EvaluatorTest {
         Assert.True(testIntegerObject(testEval(input), 70));
     }
 
+    struct VariableScopeAndOwnershipTest {
+        public string input;
+        public object expected;
+    }
+    [Fact]
+    public void TestVariableScopeAndOwnership() {
+        VariableScopeAndOwnershipTest[] tests = {
+            new () {
+                input = 
+                    @"
+                    let a = 5;
+                    let func = fn(){let a = 10;}
+                    func();
+                    a;
+                    ",
+                expected = 5
+            },
+            new () {
+                input = 
+                    @"
+                    let a = 5;
+                    let func = fn(){a = 10;}
+                    func();
+                    a;
+                    ",
+                expected = 10
+            },
+            new () {
+                input = 
+                    @"
+                    let a = ""Hello"";
+                    let func = fn(){
+                        a += "" World!"";
+                    }
+                    func();
+                    a;
+                    ",
+                expected = "Hello World!",
+            },
+            new () {
+                input = 
+                    @"
+                    let a = 10;
+                    
+                    let func = fn() {
+                        for (let i = 0; i < 5; i+=1) {
+                            for (let j = 0; j < 5; j+=1) {
+                                a += i;                                
+                            }
+                        }
+                    }
+                    func();
+                    a;
+                    ",
+                expected = 60,
+            }
+        };
+        foreach (VariableScopeAndOwnershipTest test in tests) {
+            IObject result = testEval(test.input);
+            Assert.IsNotType<ErrorObj>(result);
+            switch (result.Type()) {
+                case ObjectType.INTEGER_OBJ:
+                    Assert.True(testIntegerObject(result, (int) test.expected));
+                    break;
+                case ObjectType.STRING_OBJ:
+                    Assert.True(testStringObject(result, (string) test.expected));
+                    break;
+            }
+        }
+    }
+
     [Fact]
     public void TestStringLiteral() {
         string input = "\"Hello World!\"";

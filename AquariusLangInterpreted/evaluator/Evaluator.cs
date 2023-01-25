@@ -68,7 +68,7 @@ public class Evaluator {
                 if (isError(letObj)) {
                     return letObj;
                 }
-                environment.Set(letStatement.Name.Value, letObj); // Saving value to variable.
+                environment.Create(letStatement.Name.Value, letObj); // Saving value to newly created variable.
                 break;
             
             case NodeTypeMapValue.IntMapValue:
@@ -108,16 +108,19 @@ public class Evaluator {
                         break;
                     case "+=":
                         if (_node.Left is Identifier _leftIdent) {
+                            IObject identVal = evalIdentifier(_leftIdent, environment);
                             if (_right.Type() == ObjectType.INTEGER_OBJ) {
-                                IObject identVal = evalIdentifier(_leftIdent, environment);
                                 if (identVal.Type() == ObjectType.INTEGER_OBJ) {
                                     environment.Set(_leftIdent.Value, new IntegerObj(((IntegerObj)identVal).Value + ((IntegerObj)_right).Value));
                                 } else {
                                     return NewError($"Incorrect left operand type for INT +=: {identVal.Type()}");
                                 }
                             } else if (_right.Type() == ObjectType.STRING_OBJ) {
-                                // TODO string concatenation.
-                                return NewError("String as left operand type for += string concatenation not implemented yet.");
+                                if (identVal.Type() == ObjectType.STRING_OBJ) {
+                                    environment.Set(_leftIdent.Value, new StringObj(((StringObj)identVal).Value + ((StringObj)_right).Value));
+                                } else {
+                                    return NewError($"Incorrect left operand type for STRING +=: {identVal.Type()}");
+                                }
                             }
                         } else {
                             return NewError($"Left operand for += operator not identifier. Got={_node.Left.GetType()}");
@@ -495,7 +498,7 @@ public class Evaluator {
         IExpression conditionalExpression = node.ConditionalExpression;
         IStatement valueChangeStatement = node.ValueChangeStatement;
         BlockStatement blockStatement = node.Body;
-
+        
         IObject letStmtResult = Eval(letStatement, enclosedEnvironment);
         if (isError(letStmtResult)) {
             return letStmtResult;
@@ -553,7 +556,7 @@ public class Evaluator {
              * Value saved to variable of which was declared inside parentheses (ex. "func (let i = 0;...") of for loop,
              * should have its value kept during each loop. Other variables declared inside body ({}) should be cleared out. 
              */
-            enclosedEnvironment.Set(letStatementVarName, letStatementVar); 
+            enclosedEnvironment.Create(letStatementVarName, letStatementVar); 
         }
 
         return null;
@@ -588,7 +591,7 @@ public class Evaluator {
         Environment environment = Environment.NewEnclosedEnvironment(fn.Env);
         
         for (var i = 0; i < fn.Parameters.Length; i++) {
-            environment.Set(fn.Parameters[i].Value, args[i]);
+            environment.Create(fn.Parameters[i].Value, args[i]);
         }
 
         return environment;

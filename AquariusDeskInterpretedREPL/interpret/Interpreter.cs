@@ -7,7 +7,7 @@ using Environment = AquariusLang.Object.Environment;
 
 namespace AquariusREPL.interpret; 
 
-public class Interpreter {
+public static class Interpreter {
     const string PROMPT = ">> ";
 
     /// <summary>

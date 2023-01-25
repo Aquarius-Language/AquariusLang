@@ -1,0 +1,28 @@
+﻿let a = 10;
+ 
+let func = fn() {
+    for (let i = 0; i < 5; i+=1) {
+        for (let j = 0; j < 5; j+=1) {
+            a += i;                                
+        }
+    }
+}
+
+func();
+
+print(a);
+
+
+let b = "Hello";
+let func = fn(){
+    b += " World!";
+}
+func();
+
+print(b);
+
+
+let c = 5;
+let func = fn(){c = 10;}
+func();
+print(c);
