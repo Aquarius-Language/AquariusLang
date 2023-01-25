@@ -52,7 +52,7 @@ public class Interpreter {
             return;
         }
         IObject evaluated = Evaluator.Eval(tree, environment);
-        if (evaluated != null && evaluated != RepeatedPrimitives.NULL) {
+        if (evaluated != null) {
             Console.WriteLine(evaluated.Inspect());
         }
     }

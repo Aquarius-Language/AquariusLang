@@ -9,7 +9,7 @@ bad for type casting (polymorphism).
 so they can be used as dictionary keys. Otherwise, it'll not work as dictionary keys. (Maybe because class instances are pointers to heap?)
 Extra advantage of this: since HashKey doesn't have complicated types nor polymorphic members, it also might boost performance.
 
-To implement:
+FEATURES TO IMPLEMENT:
 
 1. While loop.
 2. Floating point numbers.
@@ -17,18 +17,24 @@ To implement:
 4. Make numbers available as part of identifiers(variable names).
 5. Implement else if (elif)...
 6. Ignore comments.
-7. Value re-assignment to array and hashmap; pass them by reference to functions.
-8. Implement "outer" and "local" variables for environments. (to fix local variable problems in loop)
-9. Add "for loop example unit testing" when the problems for for loop are fixed.
-10. Make for loop still work even when no few statements in parenthesis. ex. for(; i < 10; i+=1){}
-11. Binary and, or (|, &)
-12. String concatenate with int.
-13. *=, /=.
-14. Prevent re-declaring variables that already exist.
-15. Importing other files as modules.
-16. exit() to exit application.
+7. Value re-assignment to array and hashmap's elements.
+8. pass array and hashmap by reference to functions.
+9. Implement "outer" and "local" variables for environments. (to fix local variable problems in loop)
+10. Add "for loop example unit testing" when the problems for for loop are fixed.
+11. Make for loop still work even when no few statements in parenthesis. ex. for(; i < 10; i+=1){}
+12. Binary and, or (|, &)
+13. String concatenate with int.
+14. *=, /=.
+15. Prevent re-declaring variables that already exist.
+16. Importing other files as modules.
+17. exit() to exit application.
+18. Given more types (even custom types) to hashmap keys.
 
-Finished implementing:
+BUGS TO FIX:
+
+1. Fix no error printed out for "for (let i = 0; i < len(array); i+=1) {print(array[i])}" if "array" array variable is not declared.
+
+FINISHED IMPLEMENTING:
 
 1. Variable re-assignment. Added to Evaluator.assignVariableVal().
 2. For loop. Added to Evaluator.evalForLoopLiteral() and.parseForLoopLiteral().  (global and local issues not completely done yet)
@@ -47,3 +53,12 @@ SUGGESTIONS AND NOTES WHEN IMPLEMENTING NEW FEATURES:
   But they seem to get fixed when I added those function calls.
 - Sometimes when adding new operators but it's not showing up in search for prefix/infix callbacks, make sure if they're being 
   referenced under Parser.precedencesMap.
+
+Possible future features to put into considerations:
+
+- Embedding Git functionality as standard library.
+- Interop with multiple languages.
+- Libgccjit or WASI or compiling to DLL (possibly using Zigs) for JIT compiling.
+- Maybe make a wrapper and library for Wicked Engine?
+- Wrapper for PyTorch?
+- Calculus math calculations as part of language's operators?
