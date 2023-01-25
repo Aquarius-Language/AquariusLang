@@ -81,6 +81,9 @@ public struct HashKey {
 public class IntegerObj : IObject, INumberObj, IHashable {
     private int value;
 
+    public IntegerObj() {
+    }
+
     public IntegerObj(int value) {
         this.value = value;
     }
@@ -100,7 +103,7 @@ public class IntegerObj : IObject, INumberObj, IHashable {
     public double GetNumValue() {
         return value;
     }
-    
+
     public int Value {
         get => value;
         set => this.value = value;
@@ -109,6 +112,9 @@ public class IntegerObj : IObject, INumberObj, IHashable {
 
 public class FloatObj : IObject, INumberObj, IHashable {
     private float value;
+
+    public FloatObj() {
+    }
 
     public FloatObj(float value) {
         this.value = value;
@@ -138,6 +144,9 @@ public class FloatObj : IObject, INumberObj, IHashable {
 
 public class DoubleObj : IObject, INumberObj, IHashable {
     private double value;
+
+    public DoubleObj() {
+    }
 
     public DoubleObj(double value) {
         this.value = value;

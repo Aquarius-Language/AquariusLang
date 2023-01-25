@@ -120,6 +120,9 @@ public class Evaluator {
                             string rightType = _right.Type();
                             if (ObjectType.IsNumber(rightType)) {
                                 if (ObjectType.IsNumber(identType)) {
+                                    /*
+                                     * Cast the number type to the identifier's number type, no matter whether the right operand's type is int, float, or double.
+                                     */
                                     switch (identType) {
                                         case ObjectType.INTEGER_OBJ:
                                             environment.Set(_leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value + ((INumberObj)_right).GetNumValue())));
@@ -369,10 +372,10 @@ public class Evaluator {
     }
 
     private static IObject evalInfixExpression(string _operator, IObject left, IObject right) {
-        if (left.Type() == ObjectType.INTEGER_OBJ && right.Type() == ObjectType.INTEGER_OBJ) {
-            return evalIntegerInfixExpression(_operator, left, right);
+        if (ObjectType.IsNumber(left.Type()) && ObjectType.IsNumber(right.Type())) {
+            return evalNumberInfixExpression(_operator, left, right);
         }
-        
+
         switch (_operator) {
             case "==":
                 return nativeBoolToBoolObj(left == right);
@@ -488,41 +491,77 @@ public class Evaluator {
     }
 
     private static IObject evalMinusPrefixOperatorExpression(IObject right) {
-        if (right.Type() != ObjectType.INTEGER_OBJ) {
+        if (!ObjectType.IsNumber(right.Type())) {
             return NewError($"Unknown operator: -{right.Type()}");
         }
 
-        int value = ((IntegerObj)right).Value;
-        return new IntegerObj(-value);
+        double value = ((INumberObj)right).GetNumValue();
+
+        switch (right.Type()) {
+            case ObjectType.INTEGER_OBJ:
+                return new IntegerObj((int)-value);
+            case ObjectType.FLOAT_OBJ:
+                return new FloatObj((float)-value);
+            case ObjectType.DOUBLE_OBJ:
+                return new DoubleObj(-value);
+        }
+
+        return null;
     }
 
-    private static IObject evalIntegerInfixExpression(string _operator, IObject left, IObject right) {
-        int leftVal = ((IntegerObj)left).Value;
-        int rightVal = ((IntegerObj)right).Value;
-        switch (_operator) {
-            case "+":
-                return new IntegerObj(leftVal + rightVal);
-            case "-":
-                return new IntegerObj(leftVal - rightVal);
-            case "*":
-                return new IntegerObj(leftVal * rightVal);
-            case "/":
-                return new IntegerObj(leftVal / rightVal);
-            case "<":
-                return nativeBoolToBoolObj(leftVal < rightVal);
-            case ">":
-                return nativeBoolToBoolObj(leftVal > rightVal);
-            case "<=":
-                return nativeBoolToBoolObj(leftVal <= rightVal);
-            case ">=":
-                return nativeBoolToBoolObj(leftVal >= rightVal);
-            case "==":
-                return nativeBoolToBoolObj(leftVal == rightVal);
-            case "!=":
-                return nativeBoolToBoolObj(leftVal != rightVal);
-            default:
-                return NewError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
+    private static IObject evalNumberInfixExpression(string _operator, IObject left, IObject right) {
+        INumberObj _left = (INumberObj)left;
+        INumberObj _right = (INumberObj)right;
+        string leftType = left.Type();
+        string rightType = right.Type();
+
+        /*
+         * Set the number object to return to type of biggest decimal range if one of them (left or right) is that type.
+         */
+        int type;
+        if (leftType == ObjectType.DOUBLE_OBJ || rightType == ObjectType.DOUBLE_OBJ) {
+            type = 2;
+        } else if (leftType == ObjectType.FLOAT_OBJ || rightType == ObjectType.FLOAT_OBJ) {
+            type = 1;
+        } else {
+            type = 0;
         }
+
+        return _operator switch {
+            "+" => type switch {
+                0 => new IntegerObj((int)(_left.GetNumValue() + _right.GetNumValue())),
+                1 => new FloatObj((float)(_left.GetNumValue() + _right.GetNumValue())),
+                2 => new DoubleObj(_left.GetNumValue() + _right.GetNumValue()),
+            },
+            "-" => type switch {
+                0 => new IntegerObj((int)(_left.GetNumValue() - _right.GetNumValue())),
+                1 => new FloatObj((float)(_left.GetNumValue() - _right.GetNumValue())),
+                2 => new DoubleObj(_left.GetNumValue() - _right.GetNumValue()),
+            },
+            "*" => type switch {
+                0 => new IntegerObj((int)(_left.GetNumValue() * _right.GetNumValue())),
+                1 => new FloatObj((float)(_left.GetNumValue() * _right.GetNumValue())),
+                2 => new DoubleObj(_left.GetNumValue() * _right.GetNumValue()),
+            },
+            "/" => type switch {
+                0 => new IntegerObj((int)(_left.GetNumValue() / _right.GetNumValue())),
+                1 => new FloatObj((float)(_left.GetNumValue() / _right.GetNumValue())),
+                2 => new DoubleObj(_left.GetNumValue() / _right.GetNumValue()),
+            },
+            /*
+             * Comparisons should be able to just all use double to do the operations.
+             */
+            "<" => nativeBoolToBoolObj(_left.GetNumValue() < _right.GetNumValue()),
+            ">" => nativeBoolToBoolObj(_left.GetNumValue() > _right.GetNumValue()),
+            "<=" => nativeBoolToBoolObj(_left.GetNumValue() <= _right.GetNumValue()),
+            ">=" => nativeBoolToBoolObj(_left.GetNumValue() >= _right.GetNumValue()),
+            /*
+             * TODO Beware of precision problems for double. Find a solution for this in the future.
+             */
+            "==" => nativeBoolToBoolObj(_left.GetNumValue() == _right.GetNumValue()),
+            "!=" => nativeBoolToBoolObj(_left.GetNumValue() != _right.GetNumValue()),
+            _ => NewError($"Unknown operator: {left.Type()} {_operator} {right.Type()}")
+        };
     }
 
     private static IObject evalBangOperatorExpression(IObject right) {

@@ -19,13 +19,13 @@ public class EvaluatorTest {
         _testOutputHelper = testOutputHelper;
     }
     
-    struct EvalIntegerTest {
+    struct EvalNumberTest {
         public string input;
-        public int expected;
+        public object expected;
     }
     [Fact]
-    public void TestEvalIntegerExpression() {
-        EvalIntegerTest[] tests = {
+    public void TestEvalNumberExpression() {
+        EvalNumberTest[] tests = {
             new () {input = "5", expected = 5},
             new () {input = "10", expected = 10},
             new () {input = "-5", expected = -5},
@@ -41,11 +41,25 @@ public class EvaluatorTest {
             new () {input = "3 * 3 * 3 + 10", expected = 37},
             new () {input = "3 * (3 * 3) + 10", expected = 37},
             new () {input = "(5 + 10 * 2 + 15 / 3) * 2 + -10", expected = 50},
+            new () {input = "(7.3f + 2.1f) * 2 + -10.2f", expected = 8.6f},
+            new () {input = "1.f / 5.f * 3 + 11", expected = 11.6f},
+            new () {input = "(7.3f + 2.1d) * 2 + -10.2f", expected = 8.6},
+            new () {input = "1.d / 5.f * 3 + 11", expected = 11.6},
+            new () {input = "1.f * 33 + 2", expected = 35.0f},
         };
 
         foreach (var test in tests) {
             IObject evaluated = testEval(test.input);
-            Assert.True(testIntegerObject(evaluated, test.expected));
+            if (test.expected is int _expected) {
+                Assert.IsType<IntegerObj>(evaluated);
+                Assert.True(testIntegerObject(evaluated, (int?)test.expected));
+            } else if (test.expected is float __expected) {
+                Assert.IsType<FloatObj>(evaluated);
+                Assert.True(testFloatObject(evaluated, (float?)test.expected, 2));
+            } else if (test.expected is double ___expected) {
+                Assert.IsType<DoubleObj>(evaluated);
+                Assert.True(testDoubleObject(evaluated, (double?)test.expected, 2));
+            }
         }
     }
 
@@ -89,12 +103,12 @@ public class EvaluatorTest {
             new () {input = "true", expected = true},
             new () {input = "false", expected = false},
             new () {input = "1 < 2", expected = true},
-            new () {input = "1 > 2", expected = false},
+            new () {input = "1 > 2.5f", expected = false},
             new () {input = "1 < 1", expected = false},
-            new () {input = "1 > 1", expected = false},
+            new () {input = "1 > 1.1d", expected = false},
             new () {input = "1 == 1", expected = true},
             new () {input = "1 != 1", expected = false},
-            new () {input = "1 == 2", expected = false},
+            new () {input = "1 == 2.f", expected = false},
             new () {input = "1 != 2", expected = true},
             new () {input = "true == true", expected = true},
             new () {input = "false == false", expected = true},
@@ -112,6 +126,11 @@ public class EvaluatorTest {
             new () {input = "true && true", expected = true},
             new () {input = "true && false", expected = false},
             new () {input = "!5 && false", expected = false},
+            new () {input = "123.301f < 123.302f", expected = true},
+            new () {input = "0.9d > 0.91d", expected = false},
+            new () {input = "1.111f > 1.11d", expected = true},
+            new () {input = "1.111f != 1.11d", expected = true},
+            new () {input = "1.111f != 1.111d", expected = true},
         };
 
         foreach (var test in tests) {
@@ -129,6 +148,7 @@ public class EvaluatorTest {
             new () {input = "!!true", expected = true},
             new () {input = "!!false", expected = false},
             new () {input = "!!5", expected = true},
+            new () {input = "!!6.3f", expected = true},
         };
         foreach (var test in tests) {
             IObject evaluated = testEval(test.input);
@@ -201,7 +221,7 @@ public class EvaluatorTest {
             new () {input = "if (1) { 10 }", expected = 10},
             new () {input = "if (1 < 2) { 10 }", expected = 10},
             new () {input = "if (1 > 2) { 10 }", expected = null},
-            new () {input = "if (1 > 2) { 10 } else { 20 }", expected = 20},
+            new () {input = "if (1 > 2) { 10 } else { 20.12f }", expected = 20.12f},
             new () {input = "if (1 < 2) { 10 } else { 20 }", expected = 10},
             new () {
                 input = @"
@@ -231,6 +251,8 @@ public class EvaluatorTest {
             if (test.expected is int) {
                 int integer = (int)test.expected;
                 Assert.True(testIntegerObject(evaluated, integer));
+            } else if (test.expected is float _expected) {
+                Assert.True(testFloatObject(evaluated, _expected, 2));
             } else if (test.expected is string) {
                 Assert.True(testStringObject(evaluated, (string?)test.expected));
             } else {
