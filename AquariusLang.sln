@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AquariusLangIntepreted", "AquariusLangIntepreted\AquariusLangIntepreted.csproj", "{34CB0693-A2DA-43EE-B232-015E60F474D0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AquariusLangInterpreted", "AquariusLangInterpreted\AquariusLangInterpreted.csproj", "{34CB0693-A2DA-43EE-B232-015E60F474D0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AquariusDeskInterpretedREPL", "AquariusDeskInterpretedREPL\AquariusDeskInterpretedREPL.csproj", "{9BEE5F92-ACC3-4753-A927-C780E7C1ADA9}"
 EndProject

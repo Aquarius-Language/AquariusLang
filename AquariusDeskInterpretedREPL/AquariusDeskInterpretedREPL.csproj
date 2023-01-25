@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AquariusLangIntepreted\AquariusLangIntepreted.csproj" />
+      <ProjectReference Include="..\AquariusLangInterpreted\AquariusLangInterpreted.csproj" />
     </ItemGroup>
 
 </Project>
