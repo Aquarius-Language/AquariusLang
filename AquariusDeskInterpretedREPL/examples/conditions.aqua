@@ -1,0 +1,12 @@
+﻿let a = false;
+let b = true;
+
+let result = fn() {
+    if (a) {
+        return 12;
+    } else {
+        return "Wow!";
+    }
+}();
+
+print(result);

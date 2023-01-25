@@ -481,7 +481,13 @@ public class IfExpression : IExpression {
     private Token token;  // The 'if' token.
     private IExpression condition;
     private BlockStatement consequence; // Series of statements under "if".
+    
+    /// <summary>
+    /// Indices for alternativeConditions map correspond with alternatives statements.
+    /// </summary>
+    private IExpression[] alternativeConditions;
     private BlockStatement[] alternatives; // Series of statements under "elif"s.
+    
     private BlockStatement lastResort; // Series of statements under "else".
 
     public IfExpression(Token token) {
@@ -501,10 +507,11 @@ public class IfExpression : IExpression {
         this.alternatives = alternatives;
     }
 
-    public IfExpression(Token token, IExpression condition, BlockStatement consequence, BlockStatement[] alternatives, BlockStatement lastResort) {
+    public IfExpression(Token token, IExpression condition, BlockStatement consequence, IExpression[] alternativeConditions, BlockStatement[] alternatives, BlockStatement lastResort) {
         this.token = token;
         this.condition = condition;
         this.consequence = consequence;
+        this.alternativeConditions = alternativeConditions;
         this.alternatives = alternatives;
         this.lastResort = lastResort;
     }
@@ -543,6 +550,11 @@ public class IfExpression : IExpression {
     public IExpression Condition {
         get => condition;
         set => condition = value;
+    }
+
+    public IExpression[] AlternativeConditions {
+        get => alternativeConditions;
+        set => alternativeConditions = value;
     }
 
     public BlockStatement Consequence {

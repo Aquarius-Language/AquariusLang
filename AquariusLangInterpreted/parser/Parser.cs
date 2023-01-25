@@ -468,7 +468,32 @@ public class Parser {
 
         expression.Consequence = parseBlockStatement();
 
-        if (peekTokenIs(TokenType.ELSE)) { // Else is optional.
+        List<IExpression> alternativeConditions = new List<IExpression>();
+        List<BlockStatement> alternatives = new List<BlockStatement>();
+        
+        while (peekTokenIs(TokenType.ELSE_IF)) { // "elif"s are optional.
+            nextToken();
+            if (!expectPeek(TokenType.LPAREN)) {
+                return null;
+            }
+            nextToken();
+            alternativeConditions.Append(parseExpression((int)Precedence.OperatorPrecedence.LOWEST));
+            if (!expectPeek(TokenType.RPAREN)) {
+                return null;
+            }
+            
+            if (!expectPeek(TokenType.LBRACE)) {
+                return null;
+            }
+
+            alternatives.Append(parseBlockStatement());
+        }
+
+        if (alternatives.Count > 0) {
+            expression.Alternatives = alternatives.ToArray();
+        }
+
+        if (peekTokenIs(TokenType.ELSE)) { // "else" is optional.
             nextToken();
             if (!expectPeek(TokenType.LBRACE)) {
                 return null;

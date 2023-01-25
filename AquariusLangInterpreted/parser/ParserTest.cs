@@ -353,6 +353,45 @@ public class ParserTest {
     }
 
     [Fact]
+    public void TestIfElifElseExpression() {
+        string input =
+            @"
+            if (a <= b) {
+                a;
+            } elif (x == y) {
+                y;
+            } else {
+                b;
+            }
+            ";
+        Lexer lexer = Lexer.NewInstance(input);
+        Parser parser = Parser.NewInstance(lexer);
+        AbstractSyntaxTree tree = parser.ParseAST();
+        Assert.False(checkParserErrors(parser));
+        Assert.Single(tree.Statements);
+        
+        Assert.IsType<ExpressionStatement>(tree.Statements[0]);
+        ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
+        
+        Assert.IsType<IfExpression>(statement.Expression);
+        IfExpression expression = (IfExpression)statement.Expression;
+        
+        Assert.True(testInfixExpression(expression.Condition, "a", "<=", "b"));
+        Assert.Single(expression.Consequence.Statements);
+        
+        Assert.IsType<ExpressionStatement>(expression.Consequence.Statements[0]);
+        ExpressionStatement consequence = (ExpressionStatement)expression.Consequence.Statements[0];
+        
+        Assert.True(testIdentifier(consequence.Expression, "a"));
+        
+        Assert.Single(expression.LastResort.Statements);
+        
+        Assert.IsType<ExpressionStatement>(expression.LastResort.Statements[0]);
+        ExpressionStatement alternative = (ExpressionStatement)expression.LastResort.Statements[0];
+        Assert.True(testIdentifier(alternative.Expression, "b"));
+    }
+
+    [Fact]
     public void TestFunctionLiteralParsing() {
         string input = "fn(x, y) { x + y; }";
         Lexer lexer = Lexer.NewInstance(input);
@@ -720,10 +759,44 @@ public class ParserTest {
     }
 
     private bool testIntegerLiteral(IExpression expression, int value) {
+        if (expression.GetType() != typeof(IntegerLiteral)) {
+            _testOutputHelper.WriteLine($"expression not IntegerLiteral. Got = {expression}");
+            return false;
+        }
+
+        IntegerLiteral integerLiteral = (IntegerLiteral)expression;
+
+        if (integerLiteral.Value != value) {
+            _testOutputHelper.WriteLine($"integerLiteral.Value not {value}. Got ={integerLiteral.Value}");
+            return false;
+        }
+        
+        if (integerLiteral.TokenLiteral() != value.ToString()) {
+            _testOutputHelper.WriteLine($"integerLiteral.TokenLiteral() not {value}. Got = {integerLiteral.TokenLiteral()}");
+            return false;
+        }
+        
         return true;
     }
 
     private bool testIdentifier(IExpression expression, string value) {
+        if (expression.GetType() != typeof(Identifier)) {
+            _testOutputHelper.WriteLine($"expression not Identifier. Got = {expression}");
+            return false;
+        }
+
+        Identifier identifier = (Identifier)expression;
+
+        if (identifier.Value != value) {
+            _testOutputHelper.WriteLine($"identifier.Value not {value}. Got ={identifier.Value}");
+            return false;
+        }
+
+        if (identifier.TokenLiteral() != value) {
+            _testOutputHelper.WriteLine($"identifier.TokenLiteral() not {value}. Got = {identifier.TokenLiteral()}");
+            return false;
+        }
+
         return true;
     }
 

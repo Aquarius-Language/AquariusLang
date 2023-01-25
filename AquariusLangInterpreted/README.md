@@ -30,6 +30,10 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
 17. Make more types (even custom types) available as hashmap keys.
 18. NullObj type values should be printable. Therefore, implement a void type to tell which are not printable.
 19. Make variables not re-declarable within same environment that owns it.
+20. Design cross-platform DevOps-related libraries.
+21. Design some new syntax combined with libffi library to make calling C-API possible.
+22. Some objects have array ([]) members. But most of their instantiation are passed from list converted to array.
+    Maybe, just change them all to lists, might reduce the time cost of data structure conversion.
 
 <h3>FINISHED IMPLEMENTING:</h3>
 
