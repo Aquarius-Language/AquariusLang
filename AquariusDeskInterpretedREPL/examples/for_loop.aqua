@@ -10,23 +10,13 @@ a = fn() {
 }();
 print(a);
 
-##
-Since variable 'b' is declared as int, for infix mathematical operations,
-values on the right will all cast to int before assigning the new value to the variable.
-##
+
 let b = 0;
 for (let j = 0; j <= 10; j += 2) {
-    b -= 2.8d;
+    b -= 2;
     if (j == 8){
-        b -= 10.3f;
+        b -= 10;
         break;
     }
 }
 print(b);
-
-
-let c = 1.f;
-for (let j = 0; j <= 10; j += 2) {
-    c += 3.23d;
-}
-print(c);

@@ -1,0 +1,28 @@
+﻿print(
+"
+Since variable 'b' is declared as int, for infix mathematical operations,
+values on the right will all cast to int before assigning the new value to the variable.
+");
+
+let b = 0;
+for (let j = 0; j <= 10; j += 2) {
+    b -= 2.8d;
+    if (j == 8){
+        b -= 10.3f;  # 10.3f gets casted into int before assigning to variable 'b'.
+        break;
+    }
+}
+print("b:", b);
+
+
+print(
+"
+Variable 'c' is declared as float type, so each right operands values that are double gets
+casted into float before assigning new value to variable 'c'.
+");
+
+let c = 1.f;
+for (let j = 0; j <= 10; j += 2) {
+    c += 3.23d;  # 3.23d gets casted into float before assigning to variable 'c'.
+}
+print("c:", c);
