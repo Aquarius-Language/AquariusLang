@@ -22,6 +22,7 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
 - Embedding Git functionality as standard library.
 - Interop with multiple languages.
 - Libgccjit or WASI or compiling to DLL (possibly using Zigs? Or maybe Cython?) for JIT or AOT compiling.
+- Or maybe just compile to Julia and run it using embedded Julia. Since Julia is very easy to embed.
 - Maybe make a wrapper and library for Wicked Engine?
 - Wrapper for PyTorch?
 - Calculus math calculations as part of language's operators?
