@@ -23,8 +23,7 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
 - Interop with multiple languages.
 - Libgccjit or WASI or compiling to DLL (possibly using Zigs? Or maybe Cython?) for JIT or AOT compiling.
 - Or maybe just compile to Julia and run it using embedded Julia. Since Julia is very easy to embed.
-  (BUT! Julia embedding into DLL seems to not able to generate fast interpreted code? Because JULIA_DEFINE_FAST_TLS macro should be
-   defined in an executable instead of a binary according to Julia docs. Alternative approach: use Julia's PackageCompiler feature
+  (Or! Alternative approach: use Julia's PackageCompiler feature
    to compile generated Julia code of which was from this language, into DLLs first time at compile time before runtime: https://github.com/JuliaLang/PackageCompiler.jl)
 - Maybe make a wrapper and library for Wicked Engine?
 - Wrapper for PyTorch?
