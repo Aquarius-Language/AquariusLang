@@ -43,7 +43,7 @@ public static class Interpreter {
     /// <summary>
     /// Interpret given filename.
     /// </summary>
-    /// <param name="fileName">Path ot file.</param>
+    /// <param name="fileName">Path of file.</param>
     public static void Interpret(string fileName) {
         Environment environment = Environment.NewEnvironment();
         
