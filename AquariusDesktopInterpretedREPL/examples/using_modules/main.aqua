@@ -1,0 +1,13 @@
+##
+This path is relative path from the .NET project's built executable. Please run this from the project's unit testing.
+##
+let moduleA = import("../../../examples/using_modules/module_folder/module.aqua");
+
+let addResult = moduleA.add(5, 3);
+let minusResult = moduleA.minus(12, 5);
+
+let results = [addResult, minusResult];
+
+print(results);
+
+results;

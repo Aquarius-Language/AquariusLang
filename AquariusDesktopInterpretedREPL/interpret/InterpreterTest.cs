@@ -36,6 +36,19 @@ public class InterpreterTest {
         Assert.True(testArrayObjEquals(evaluatedArr.Elements, new IObject[]{new IntegerObj(-20), new FloatObj(20.38f)}));
     }
 
+    [Fact]
+    public void TestModuleImport() {
+        IObject evaluated = Interpreter.Interpret("../../../examples/using_modules/main.aqua");
+        Assert.IsType<ArrayObj>(evaluated);
+        ArrayObj evaluatedArr = (ArrayObj)evaluated;
+        
+        Assert.IsType<IntegerObj>(evaluatedArr.Elements[0]);
+        Assert.Equal(8, ((IntegerObj)evaluatedArr.Elements[0]).Value);
+        
+        Assert.IsType<IntegerObj>(evaluatedArr.Elements[1]);
+        Assert.Equal(7, ((IntegerObj)evaluatedArr.Elements[1]).Value);
+    }
+
     private bool testArrayObjEquals(IObject[] a, IObject[] b) {
         if (a.Length != b.Length) return false;
         bool same = true;
