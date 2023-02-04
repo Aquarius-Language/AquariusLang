@@ -15,7 +15,7 @@ public class Builtins {
         builtinFuncs = new Dictionary<string, BuiltinObj>();
         builtins = new();
     }
-    
+
     protected static ErrorObj newError(string msg) {
         return new ErrorObj(msg);
     }

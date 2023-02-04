@@ -15,7 +15,7 @@ public class Interpreter {
     /// Read, Evaluate, Print, Loop.
     /// </summary>
     public static void REPL() {
-        Builtins desktopBuiltins = newDefaultBuiltins("");
+        DesktopBuiltins desktopBuiltins = newDefaultBuiltins("");
         
         while (true) {
             Console.Write(PROMPT);
@@ -47,7 +47,7 @@ public class Interpreter {
     /// </summary>
     /// <param name="fileName">Path of file.</param>
     public static IObject Interpret(string fileName) {
-        Builtins desktopBuiltins = newDefaultBuiltins(fileName);
+        DesktopBuiltins desktopBuiltins = newDefaultBuiltins(fileName);
         
         string contents = File.ReadAllText(fileName);
         Lexer lexer = Lexer.NewInstance(contents);
@@ -68,19 +68,8 @@ public class Interpreter {
 
     private static DesktopBuiltins newDefaultBuiltins(string filePath) {
         DesktopBuiltins builtins = new DesktopBuiltins();
-        builtins._Builtins.Add("currScriptPath",
-            Utils.IsFullPath(filePath)
-                ? new StringObj(filePath)
-                : new StringObj(Path.Combine(System.Environment.CurrentDirectory, filePath)));
+        builtins.NewDefaultBuiltins(filePath);
         return builtins;
-        // Environment environment = Environment.NewEnvironment();
-        //
-        // environment.Create("currScriptPath",
-        //     Utils.IsFullPath(filePath)
-        //         ? new StringObj(filePath)
-        //         : new StringObj(Path.Combine(System.Environment.CurrentDirectory, filePath)));
-        //
-        // return environment;
     }
 
     private static void printParserErrors(string[] errors) {

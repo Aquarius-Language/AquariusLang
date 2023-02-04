@@ -96,7 +96,9 @@ public class DesktopBuiltins : Builtins {
                             Lexer lexer = Lexer.NewInstance(fileStr);
                             Parser parser = Parser.NewInstance(lexer);
                             AbstractSyntaxTree tree = parser.ParseAST();
-                            Evaluator evaluator = Evaluator.NewInstance(new DesktopBuiltins());
+
+                            Evaluator evaluator = Evaluator.NewInstance(this);
+                            
                             Environment moduleEnv = Environment.NewEnvironment();
                             evaluator.Eval(tree, moduleEnv);
                             return new ModuleObj(moduleEnv);
@@ -159,6 +161,13 @@ public class DesktopBuiltins : Builtins {
             }
         };
         builtins = new Dictionary<string, IObject>();
+    }
+    
+    public void NewDefaultBuiltins(string filePath) {
+        _Builtins.Add("currWorkingDir",
+            Utils.IsFullPath(filePath)
+                ? new StringObj(Path.GetDirectoryName(filePath))
+                : new StringObj(Path.GetDirectoryName(Path.Combine(System.Environment.CurrentDirectory, filePath))));
     }
 
     private ErrorObj checkArgsCount(string funcName, int expected, int actual) {

@@ -72,19 +72,23 @@ public class InterpreterTest {
     }
 
     [Fact]
-    public void TestCurrentScriptPath() {
-        string scriptRelativePath = "../../../examples/get_paths.aqua";
+    public void TestScriptAndScriptDirPath() {
+        string scriptRelativePath = "../../../examples/dir_paths/main.aqua";
+        string dirRelativePath = "../../../examples/dir_paths";
         IObject evaluated = Interpreter.Interpret(scriptRelativePath);
         
-        _testOutputHelper.WriteLine(evaluated.Inspect());
+        Assert.IsType<ArrayObj>(evaluated);
         
-        Assert.IsType<StringObj>(evaluated);
-        string evaluatedStr = ((StringObj)evaluated).Value;
-        _testOutputHelper.WriteLine(evaluatedStr);
+        ArrayObj evaluatedArrObj = (ArrayObj)evaluated;
+        _testOutputHelper.WriteLine(evaluatedArrObj.Inspect());
         
-        Assert.True(Path.GetFullPath(Path.Combine(System.Environment.CurrentDirectory, scriptRelativePath)).Equals(Path.GetFullPath(evaluatedStr)));
+        IObject[] elements = evaluatedArrObj.Elements;
 
-        Assert.True(File.Exists(evaluatedStr));
+        Assert.True(Path.GetFullPath(Path.Combine(System.Environment.CurrentDirectory, dirRelativePath))
+            .Equals(Path.GetFullPath(((StringObj)elements[0]).Value)));
+
+        Assert.True(Directory.Exists(((StringObj)elements[0]).Value));
+        Assert.True(Directory.Exists(((StringObj)elements[1]).Value));
     }
 
     private bool testArrayObjEquals(IObject[] a, IObject[] b) {

@@ -1,0 +1,3 @@
+﻿let module = import(currWorkingDir + "/others/anotherfile.aqua");
+
+[currWorkingDir, module.getCurrWorkingDir()];
