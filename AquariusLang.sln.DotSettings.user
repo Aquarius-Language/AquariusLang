@@ -7,6 +7,7 @@
       &lt;TestId&gt;xUnit::34CB0693-A2DA-43EE-B232-015E60F474D0::net6.0::AquariusLang.parser.ParserTest.TestLetStatements&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::34CB0693-A2DA-43EE-B232-015E60F474D0::net6.0::AquariusLang.utils.UtilsTest.TestStringToFloat&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::34CB0693-A2DA-43EE-B232-015E60F474D0::net6.0::AquariusLang.utils.UtilsTest.TestStringToDecimal&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::9BEE5F92-ACC3-4753-A927-C780E7C1ADA9::net6.0::AquariusREPL.interpret.InterpreterTest&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
     &lt;ProjectFile&gt;34CB0693-A2DA-43EE-B232-015E60F474D0/d:ast/f:AbstractSyntaxTreeTest.cs&lt;/ProjectFile&gt;&#xD;
     &lt;ProjectFile&gt;34CB0693-A2DA-43EE-B232-015E60F474D0/d:parser/f:ParserTest.cs&lt;/ProjectFile&gt;&#xD;

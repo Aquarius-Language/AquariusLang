@@ -252,8 +252,6 @@ public class Evaluator {
                                     if (isError(______right)) {
                                         return ______right;
                                     }
-                                    // string rightType = ______right.Type();
-                                    // Console.WriteLine(rightType);
                                     return ______right;
                                 } else if (_node.Right is Identifier identifier) {
                                     return NewError(

@@ -12,4 +12,9 @@
       <ProjectReference Include="..\AquariusLangInterpreted\AquariusLangInterpreted.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0-preview-20221221-03" />
+      <PackageReference Include="xunit" Version="2.4.2" />
+    </ItemGroup>
+
 </Project>

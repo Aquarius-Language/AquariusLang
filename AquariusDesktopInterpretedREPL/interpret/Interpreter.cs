@@ -45,7 +45,7 @@ public class Interpreter {
     /// Interpret given filename.
     /// </summary>
     /// <param name="fileName">Path of file.</param>
-    public static void Interpret(string fileName) {
+    public static IObject Interpret(string fileName) {
         Environment environment = Environment.NewEnvironment();
         
         string contents = File.ReadAllText(fileName);
@@ -54,13 +54,15 @@ public class Interpreter {
         AbstractSyntaxTree tree = parser.ParseAST();
         if (parser.Errors.Count != 0) {
             printParserErrors(parser.Errors.ToArray());
-            return;
+            return null;
         }
         Evaluator evaluator = Evaluator.NewInstance(new DesktopBuiltins());
         IObject evaluated = evaluator.Eval(tree, environment);
         if (evaluated != null) {
             Console.WriteLine(evaluated.Inspect());
         }
+
+        return evaluated;
     }
 
     private static void printParserErrors(string[] errors) {

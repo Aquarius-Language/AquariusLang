@@ -16,3 +16,5 @@
 
 let result = outerFunc(12, 25);
 print("Result 2:", result);
+
+result;
