@@ -14,11 +14,11 @@ public struct RepeatedPrimitives {
     public static readonly NullObj NULL = new();
     public static readonly BooleanObj TRUE = new(true);
     public static readonly BooleanObj FALSE = new(false);
-    public static readonly BreakObj BREAK = new BreakObj();
+    public static readonly BreakObj BREAK = new();
 }
 
 public class Evaluator {
-    private static Dictionary<Type, NodeTypeMapValue> nodeTypeMap = new() {
+    private Dictionary<Type, NodeTypeMapValue> nodeTypeMap = new() {
         {typeof(AbstractSyntaxTree), NodeTypeMapValue.ASTMapValue},
         {typeof(BlockStatement), NodeTypeMapValue.BlockMapValue},
         {typeof(ExpressionStatement), NodeTypeMapValue.ExpressMapValue},
@@ -42,7 +42,15 @@ public class Evaluator {
         {typeof(HashLiteral), NodeTypeMapValue.HashMapValue},
     };
 
-    public static IObject Eval(INode node, Environment environment) {
+    private Evaluator() {
+        
+    }
+
+    public static Evaluator NewInstance() {
+        return new Evaluator();
+    }
+
+    public IObject Eval(INode node, Environment environment) {
         Type nodeType = node.GetType();
         switch (nodeTypeMap[nodeType]) {
             case NodeTypeMapValue.ASTMapValue:
@@ -305,7 +313,7 @@ public class Evaluator {
         return null;
     }
 
-    private static IObject evalTree(AbstractSyntaxTree tree, Environment environment) {
+    private IObject evalTree(AbstractSyntaxTree tree, Environment environment) {
         IObject result = null;
         
         /*
@@ -342,7 +350,7 @@ public class Evaluator {
         return result;
     }
 
-    private static IObject evalBlockStatement(BlockStatement blockStatement, Environment environment) {
+    private IObject evalBlockStatement(BlockStatement blockStatement, Environment environment) {
         IObject result = null;
         foreach (var statement in blockStatement.Statements) {
             result = Eval(statement, environment);
@@ -360,7 +368,7 @@ public class Evaluator {
         return result;
     }
 
-    private static IObject evalPrefixExpression(string _operator, IObject right) {
+    private IObject evalPrefixExpression(string _operator, IObject right) {
         switch (_operator) {
             case "!":
                 return evalBangOperatorExpression(right);
@@ -371,7 +379,7 @@ public class Evaluator {
         }
     }
 
-    private static IObject evalInfixExpression(string _operator, IObject left, IObject right) {
+    private IObject evalInfixExpression(string _operator, IObject left, IObject right) {
         if (ObjectType.IsNumber(left.Type()) && ObjectType.IsNumber(right.Type())) {
             return evalNumberInfixExpression(_operator, left, right);
         }
@@ -406,7 +414,7 @@ public class Evaluator {
         return NewError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
     }
 
-    private static IObject evalStringInfixExpression(string _operator, IObject left, IObject right) {
+    private IObject evalStringInfixExpression(string _operator, IObject left, IObject right) {
         if (_operator != "+") {
             return NewError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
         }
@@ -415,7 +423,7 @@ public class Evaluator {
         return new StringObj(leftVal + rightVal);
     }
 
-    private static IObject evalIfExpression(IfExpression ifExpression, Environment environment) {
+    private IObject evalIfExpression(IfExpression ifExpression, Environment environment) {
         IObject condition = Eval(ifExpression.Condition, environment);
         if (isError(condition)) {
             return condition;
@@ -448,7 +456,7 @@ public class Evaluator {
         return RepeatedPrimitives.NULL;
     }
 
-    private static IObject[] evalExpressions(IExpression[] expressions, Environment environment) {
+    private IObject[] evalExpressions(IExpression[] expressions, Environment environment) {
         List<IObject> result = new List<IObject>();
         foreach (var expression in expressions) {
             IObject evaluated = Eval(expression, environment);
@@ -461,7 +469,7 @@ public class Evaluator {
         return result.ToArray();
     }
 
-    private static IObject applyFunction(IObject fn, IObject[] args) {
+    private IObject applyFunction(IObject fn, IObject[] args) {
         if (fn is FunctionObj functionObj) {
             Environment extendedEnv = extendFunctionEnv(functionObj, args);
             IObject evaluated = Eval(functionObj.Body, extendedEnv);
@@ -473,9 +481,9 @@ public class Evaluator {
         return NewError($"Not a function: {fn.Type()}");
     }
     
-    // private static void reassignVariable()
+    // private void reassignVariable()
 
-    private static IObject evalIdentifier(Identifier node, Environment environment) {
+    private IObject evalIdentifier(Identifier node, Environment environment) {
         // Looking up built-in functions.
         bool hasVal = Builtins.builtins.TryGetValue(node.Value, out BuiltinObj value);
         if (hasVal) {
@@ -490,7 +498,7 @@ public class Evaluator {
         return val;
     }
 
-    private static IObject evalMinusPrefixOperatorExpression(IObject right) {
+    private IObject evalMinusPrefixOperatorExpression(IObject right) {
         if (!ObjectType.IsNumber(right.Type())) {
             return NewError($"Unknown operator: -{right.Type()}");
         }
@@ -509,7 +517,7 @@ public class Evaluator {
         return null;
     }
 
-    private static IObject evalNumberInfixExpression(string _operator, IObject left, IObject right) {
+    private IObject evalNumberInfixExpression(string _operator, IObject left, IObject right) {
         INumberObj _left = (INumberObj)left;
         INumberObj _right = (INumberObj)right;
         string leftType = left.Type();
@@ -564,7 +572,7 @@ public class Evaluator {
         };
     }
 
-    private static IObject evalBangOperatorExpression(IObject right) {
+    private IObject evalBangOperatorExpression(IObject right) {
         if (right == RepeatedPrimitives.TRUE) {
             return RepeatedPrimitives.FALSE;
         } else if (right == RepeatedPrimitives.FALSE) {
@@ -576,7 +584,7 @@ public class Evaluator {
         return RepeatedPrimitives.FALSE;
     }
 
-    private static IObject evalIndexExpression(IObject left, IObject index) {
+    private IObject evalIndexExpression(IObject left, IObject index) {
         if (left.Type() == ObjectType.ARRAY_OBJ && index.Type() == ObjectType.INTEGER_OBJ) {
             return evalArrayIndexExpression(left, index);
         } else if (left.Type() == ObjectType.HASH_OBJ) {
@@ -586,7 +594,7 @@ public class Evaluator {
         return NewError($"Index operator not supported: {left.Type()}");
     }
 
-    private static IObject evalArrayIndexExpression(IObject array, IObject index) {
+    private IObject evalArrayIndexExpression(IObject array, IObject index) {
         ArrayObj arrayObj = (ArrayObj)array;
         int idx = ((IntegerObj)index).Value;
         int max = arrayObj.Elements.Length - 1;
@@ -597,7 +605,7 @@ public class Evaluator {
         return arrayObj.Elements[idx];
     }
 
-    private static IObject evalHashIndexExpression(IObject hash, IObject index) {
+    private IObject evalHashIndexExpression(IObject hash, IObject index) {
         HashObj hashObj = (HashObj)hash; 
         bool ok = Utils.TryCast(index, out IHashable key);
         if (!ok) {
@@ -613,7 +621,7 @@ public class Evaluator {
         return pair.Value;
     }
 
-    private static IObject evalHashLiteral(HashLiteral node, Environment environment) {
+    private IObject evalHashLiteral(HashLiteral node, Environment environment) {
         Dictionary<HashKey, HashPair> pairs = new Dictionary<HashKey, HashPair>();
         foreach (var pair in node.Pairs) {
             IObject key = Eval(pair.Key, environment);
@@ -638,7 +646,7 @@ public class Evaluator {
         return new HashObj(pairs);
     }
 
-    private static IObject evalForLoopLiteral(ForLoopLiteral node, Environment environment) {
+    private IObject evalForLoopLiteral(ForLoopLiteral node, Environment environment) {
         Environment enclosedEnvironment = Environment.NewEnclosedEnvironment(environment);
         LetStatement letStatement = node.DeclareStatement;
         IExpression conditionalExpression = node.ConditionalExpression;
@@ -733,7 +741,7 @@ public class Evaluator {
     /// <param name="fn"></param>
     /// <param name="args"></param>
     /// <returns></returns>
-    private static Environment extendFunctionEnv(FunctionObj fn, IObject[] args) {
+    private Environment extendFunctionEnv(FunctionObj fn, IObject[] args) {
         Environment environment = Environment.NewEnclosedEnvironment(fn.Env);
         
         for (var i = 0; i < fn.Parameters.Length; i++) {
@@ -743,7 +751,7 @@ public class Evaluator {
         return environment;
     }
 
-    private static IObject unwrapReturnValue(IObject obj) {
+    private IObject unwrapReturnValue(IObject obj) {
         /*
 		 This is to stop executing any further statements after the return expression.
 		 Just return back the unwrapped value.
@@ -755,7 +763,7 @@ public class Evaluator {
         return obj;
     }
     
-    private static BooleanObj nativeBoolToBoolObj(bool input) {
+    private BooleanObj nativeBoolToBoolObj(bool input) {
         return input ? RepeatedPrimitives.TRUE : RepeatedPrimitives.FALSE;
     }
 
@@ -764,7 +772,7 @@ public class Evaluator {
     /// </summary>
     /// <param name="msg"></param>
     /// <returns></returns>
-    public static ErrorObj NewError(string msg) {
+    public ErrorObj NewError(string msg) {
         return new ErrorObj(msg);
     }
     
@@ -774,7 +782,7 @@ public class Evaluator {
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    private static bool isError(IObject obj) {
+    private bool isError(IObject obj) {
         if (obj != null) {
             return obj.Type() == ObjectType.ERROR_OBJ;
         }
@@ -782,7 +790,7 @@ public class Evaluator {
         return false;
     }
 
-    private static bool isTruthy(IObject obj) {
+    private bool isTruthy(IObject obj) {
         if (obj == RepeatedPrimitives.NULL) {
             return false;
         } else if (obj == RepeatedPrimitives.TRUE) {

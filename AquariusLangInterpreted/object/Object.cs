@@ -352,6 +352,7 @@ public delegate IObject BuiltinFunction(IObject[] args);
 
 public class BuiltinObj : IObject {
     private BuiltinFunction fn;
+    private Environment environment;
 
     public BuiltinObj(BuiltinFunction fn) {
         this.fn = fn;

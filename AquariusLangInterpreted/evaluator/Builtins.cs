@@ -8,7 +8,7 @@ public class Builtins {
         {
             "len", new BuiltinObj(args => {
                 if (args.Length != 1)
-                    return Evaluator.NewError($"Wrong number of arguments. Got={args.Length}, want=1");
+                    return newError($"Wrong number of arguments. Got={args.Length}, want=1");
 
                 var arg0 = args[0];
                 var arg0Type = arg0.GetType();
@@ -22,15 +22,15 @@ public class Builtins {
                     return new IntegerObj(arg0ArrObj.Elements.Length);
                 }
 
-                return Evaluator.NewError($"Argument to `len` not supported, got {arg0.Type()}");
+                return newError($"Argument to `len` not supported, got {arg0.Type()}");
             })
         }, {
             "last", new BuiltinObj(args => {
                 if (args.Length != 1)
-                    return Evaluator.NewError($"Wrong number of arguments. Got{args.Length}, want 1.");
+                    return newError($"Wrong number of arguments. Got{args.Length}, want 1.");
 
                 if (args[0].Type() != ObjectType.ARRAY_OBJ)
-                    return Evaluator.NewError($"Argument to `last` must be ARRAY, got {args[0].Type()}");
+                    return newError($"Argument to `last` must be ARRAY, got {args[0].Type()}");
 
                 var array = (ArrayObj)args[0];
                 var length = array.Elements.Length;
@@ -38,46 +38,49 @@ public class Builtins {
                 return length > 0 ? array.Elements[length - 1] : RepeatedPrimitives.NULL;
             })
         }, {
-           "rest", new BuiltinObj(args => {
-               if (args.Length != 1)
-                   return Evaluator.NewError($"Wrong number of arguments. Got{args.Length}, want 1.");
-               if (args[0].Type() != ObjectType.ARRAY_OBJ)
-                   return Evaluator.NewError($"Argument to `rest` must be ARRAY, got {args[0].Type()}");
-               ArrayObj arrayObj = (ArrayObj)args[0];
-               int length = arrayObj.Elements.Length;
-               if (length > 0) {
-                   IObject[] newElements = arrayObj.Elements.Skip(1).ToArray();
-                   return new ArrayObj(newElements);
-               }
+            "rest", new BuiltinObj(args => {
+                if (args.Length != 1)
+                    return newError($"Wrong number of arguments. Got{args.Length}, want 1.");
+                if (args[0].Type() != ObjectType.ARRAY_OBJ)
+                    return newError($"Argument to `rest` must be ARRAY, got {args[0].Type()}");
+                var arrayObj = (ArrayObj)args[0];
+                var length = arrayObj.Elements.Length;
+                if (length > 0) {
+                    var newElements = arrayObj.Elements.Skip(1).ToArray();
+                    return new ArrayObj(newElements);
+                }
 
-               return RepeatedPrimitives.NULL;
-           }) 
+                return RepeatedPrimitives.NULL;
+            })
         }, {
-           "push", new BuiltinObj(args => {
-               if (args.Length != 2)
-                   return Evaluator.NewError($"Wrong number of arguments. Got{args.Length}, want 2.");
+            "push", new BuiltinObj(args => {
+                if (args.Length != 2)
+                    return newError($"Wrong number of arguments. Got{args.Length}, want 2.");
 
-               if (args[0].Type() != ObjectType.ARRAY_OBJ)
-                   return Evaluator.NewError($"Argument to `push` must be ARRAY, got {args[0].Type()}");
-               
-               ArrayObj arrayObj = (ArrayObj)args[0];
-               IObject[] newElements = Utils.PushToArray(arrayObj.Elements, args[1]);
+                if (args[0].Type() != ObjectType.ARRAY_OBJ)
+                    return newError($"Argument to `push` must be ARRAY, got {args[0].Type()}");
 
-               return new ArrayObj(newElements);
-           }) 
+                var arrayObj = (ArrayObj)args[0];
+                var newElements = Utils.PushToArray(arrayObj.Elements, args[1]);
+
+                return new ArrayObj(newElements);
+            })
         }, {
             "print", new BuiltinObj(args => {
-            for (var i = 0; i < args.Length; i++) {
-                Console.Write(args[i].Inspect());
-                if (i < args.Length - 1) {
-                    Console.Write(" ");
+                for (var i = 0; i < args.Length; i++) {
+                    Console.Write(args[i].Inspect());
+                    if (i < args.Length - 1) Console.Write(" ");
                 }
-            }
-            Console.WriteLine();
 
-            return null;
-        })}
+                Console.WriteLine();
+
+                return null;
+            })
+        },
+        { "import", new BuiltinObj(args => { return null; }) }
     };
     
-
+    private static ErrorObj newError(string msg) {
+        return new ErrorObj(msg);
+    }
 }

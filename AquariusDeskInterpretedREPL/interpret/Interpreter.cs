@@ -7,7 +7,7 @@ using Environment = AquariusLang.Object.Environment;
 
 namespace AquariusREPL.interpret; 
 
-public static class Interpreter {
+public class Interpreter {
     const string PROMPT = ">> ";
 
     /// <summary>
@@ -29,7 +29,8 @@ public static class Interpreter {
                 continue;
             }
 
-            IObject evaluated = Evaluator.Eval(tree, environment);
+            Evaluator evaluator = Evaluator.NewInstance();
+            IObject evaluated = evaluator.Eval(tree, environment);
             
             /*
              * Note: C#'s null shouldn't be printed out; but NullObj needs to be printed out.
@@ -55,7 +56,8 @@ public static class Interpreter {
             printParserErrors(parser.Errors.ToArray());
             return;
         }
-        IObject evaluated = Evaluator.Eval(tree, environment);
+        Evaluator evaluator = Evaluator.NewInstance();
+        IObject evaluated = evaluator.Eval(tree, environment);
         if (evaluated != null) {
             Console.WriteLine(evaluated.Inspect());
         }
