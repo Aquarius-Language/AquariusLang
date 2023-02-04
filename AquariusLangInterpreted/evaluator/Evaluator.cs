@@ -33,6 +33,7 @@ public class Evaluator {
 
     public IObject Eval(INode node, Environment environment) {
         Type nodeType = node.GetType();
+        
         switch (nodeTypeMap[nodeType]) {
             case NodeTypeMapValue.ASTMapValue:
                 return evalTree((AbstractSyntaxTree)node, environment);
@@ -253,7 +254,7 @@ public class Evaluator {
                     return args[0];
                 }
 
-                return applyFunction(function, args);
+                return applyFunction(function, args, environment);
             
             case NodeTypeMapValue.StringMapValue:
                 return new StringObj(((StringLiteral)node).Value);
@@ -290,7 +291,6 @@ public class Evaluator {
                 }
                 break;
         }
-
         return null;
     }
 
@@ -450,13 +450,13 @@ public class Evaluator {
         return result.ToArray();
     }
 
-    private IObject applyFunction(IObject fn, IObject[] args) {
+    private IObject applyFunction(IObject fn, IObject[] args, Environment environment) {
         if (fn is FunctionObj functionObj) {
             Environment extendedEnv = extendFunctionEnv(functionObj, args);
             IObject evaluated = Eval(functionObj.Body, extendedEnv);
             return unwrapReturnValue(evaluated);
         } else if (fn is BuiltinObj builtinObj) {
-            return builtinObj.Fn(args);
+            return builtinObj.Fn(environment, args);
         }
 
         return NewError($"Not a function: {fn.Type()}");

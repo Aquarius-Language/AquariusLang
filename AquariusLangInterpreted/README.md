@@ -35,7 +35,18 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
 - Bindings for SFML/SDL2.
 - Bindings for MonoGame. (might actually be a good idea) MonoGame course: https://www.youtube.com/watch?v=r5dM0_J7KuY&list=PLV27bZtgVIJqoeHrQq6Mt_S1-Fvq_zzGZ
 
-NOTES AND SPECIALS ABOUT THIS LANGUAGE
+<h3>NOTES AND SPECIALS ABOUT THIS LANGUAGE</h3>
 
 - If a variable/identifier is declared int/float/double type, but right operand's also number but not the same type, the right operand's value gets casted into the same type before assigning.
   (basically, the variable/identifier's number type keeps the same)
+
+<h3>NOTES FOR DEVELOPMENT</h3>
+
+- "System.Reflection.Assembly.GetExecutingAssembly().Location" can get directory of the current working EXE or DLL.
+
+<h3>TODO</h3>
+
+- Development for Built-in function "import" has started. Maybe also make modules an IObject, so it can be used as a variable can call its owned functions like this:
+
+        let anotherModule = import("someDirectory/modulefile.aqua);
+        anotherModule.callSomeFunction();
