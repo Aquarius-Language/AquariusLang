@@ -64,6 +64,13 @@ public class InterpreterTest {
         }, evaluatedArr.Elements));
     }
 
+    [Fact]
+    public void TestExecuteFile() {
+        IObject evaluated = Interpreter.Interpret("../../../examples/execute_file.aqua");
+        Assert.IsType<BooleanObj>(evaluated);
+        _testOutputHelper.WriteLine(evaluated.Inspect());
+    }
+
     private bool testArrayObjEquals(IObject[] a, IObject[] b) {
         if (a.Length != b.Length) return false;
         bool same = true;

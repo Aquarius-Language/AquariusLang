@@ -1,0 +1,9 @@
+﻿if (isOSWindows()) {
+    let result = execFile("python", ["../../../examples/test_files/test_get_main_args.py hello world"]);
+    print(result);
+    return result;
+} elif (isOSMacOS()) {
+
+} elif (isOSLinux()) {
+
+}

@@ -1,4 +1,6 @@
-﻿using AquariusLang.ast;
+﻿using System.Diagnostics;
+using System.Text;
+using AquariusLang.ast;
 using AquariusLang.evaluator;
 using AquariusLang.lexer;
 using AquariusLang.Object;
@@ -128,10 +130,29 @@ public class DesktopBuiltins : Builtins {
                     if (args.Length != 0) {
                         return newError($"Wrong number of arguments. Got{args.Length}, want 0.");
                     }
-
+                    
                     return new BooleanObj(OperatingSystem.IsMacOS());
                 }) 
-            }, 
+            }, {
+                "execFile", new BuiltinObj(args => {
+                    if (args.Length != 2) {
+                        return newError($"Wrong number of arguments. Got{args.Length}, want 2.");
+                    }
+                    
+                    StringBuilder builder = new StringBuilder();
+                    ArrayObj args1Arr = (ArrayObj)args[1];
+                    foreach (var args1ArrElement in args1Arr.Elements) {
+                        builder.Append(((StringObj)args1ArrElement).Value).Append(' ');
+                    }
+
+                    string arguments = builder.ToString();
+
+                    Process p = new Process();
+                    p.StartInfo.FileName = ((StringObj)args[0]).Value;
+                    p.StartInfo.Arguments = arguments;
+                    return new BooleanObj(p.Start());
+                }) 
+            }
         };
     }
 }
