@@ -71,6 +71,22 @@ public class InterpreterTest {
         _testOutputHelper.WriteLine(evaluated.Inspect());
     }
 
+    [Fact]
+    public void TestCurrentScriptPath() {
+        string scriptRelativePath = "../../../examples/get_paths.aqua";
+        IObject evaluated = Interpreter.Interpret(scriptRelativePath);
+        
+        _testOutputHelper.WriteLine(evaluated.Inspect());
+        
+        Assert.IsType<StringObj>(evaluated);
+        string evaluatedStr = ((StringObj)evaluated).Value;
+        _testOutputHelper.WriteLine(evaluatedStr);
+        
+        Assert.True(Path.GetFullPath(Path.Combine(System.Environment.CurrentDirectory, scriptRelativePath)).Equals(Path.GetFullPath(evaluatedStr)));
+
+        Assert.True(File.Exists(evaluatedStr));
+    }
+
     private bool testArrayObjEquals(IObject[] a, IObject[] b) {
         if (a.Length != b.Length) return false;
         bool same = true;

@@ -12,7 +12,7 @@ namespace AquariusREPL;
 
 public class DesktopBuiltins : Builtins {
     public DesktopBuiltins() {
-        builtins = new Dictionary<string, BuiltinObj> {
+        builtinFuncs = new Dictionary<string, BuiltinObj> {
             {
                 "len", new BuiltinObj(args => {
                     ErrorObj argsCountMatch = checkArgsCount("len", 1, args.Length);
@@ -158,6 +158,7 @@ public class DesktopBuiltins : Builtins {
                 }) 
             }
         };
+        builtins = new Dictionary<string, IObject>();
     }
 
     private ErrorObj checkArgsCount(string funcName, int expected, int actual) {

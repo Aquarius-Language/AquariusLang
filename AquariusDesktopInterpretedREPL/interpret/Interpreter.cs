@@ -3,6 +3,7 @@ using AquariusLang.evaluator;
 using AquariusLang.lexer;
 using AquariusLang.Object;
 using AquariusLang.parser;
+using AquariusLang.utils;
 using Environment = AquariusLang.Object.Environment;
 
 namespace AquariusREPL.interpret; 
@@ -14,7 +15,7 @@ public class Interpreter {
     /// Read, Evaluate, Print, Loop.
     /// </summary>
     public static void REPL() {
-        Environment environment = Environment.NewEnvironment();
+        Builtins desktopBuiltins = newDefaultBuiltins("");
         
         while (true) {
             Console.Write(PROMPT);
@@ -29,8 +30,8 @@ public class Interpreter {
                 continue;
             }
 
-            Evaluator evaluator = Evaluator.NewInstance(new DesktopBuiltins());
-            IObject evaluated = evaluator.Eval(tree, environment);
+            Evaluator evaluator = Evaluator.NewInstance(desktopBuiltins);
+            IObject evaluated = evaluator.Eval(tree, Environment.NewEnvironment());
             
             /*
              * Note: C#'s null shouldn't be printed out; but NullObj needs to be printed out.
@@ -46,7 +47,7 @@ public class Interpreter {
     /// </summary>
     /// <param name="fileName">Path of file.</param>
     public static IObject Interpret(string fileName) {
-        Environment environment = Environment.NewEnvironment();
+        Builtins desktopBuiltins = newDefaultBuiltins(fileName);
         
         string contents = File.ReadAllText(fileName);
         Lexer lexer = Lexer.NewInstance(contents);
@@ -56,13 +57,30 @@ public class Interpreter {
             printParserErrors(parser.Errors.ToArray());
             return null;
         }
-        Evaluator evaluator = Evaluator.NewInstance(new DesktopBuiltins());
-        IObject evaluated = evaluator.Eval(tree, environment);
+        Evaluator evaluator = Evaluator.NewInstance(desktopBuiltins);
+        IObject evaluated = evaluator.Eval(tree, Environment.NewEnvironment());
         if (evaluated != null) {
             Console.WriteLine(evaluated.Inspect());
         }
 
         return evaluated;
+    }
+
+    private static DesktopBuiltins newDefaultBuiltins(string filePath) {
+        DesktopBuiltins builtins = new DesktopBuiltins();
+        builtins._Builtins.Add("currScriptPath",
+            Utils.IsFullPath(filePath)
+                ? new StringObj(filePath)
+                : new StringObj(Path.Combine(System.Environment.CurrentDirectory, filePath)));
+        return builtins;
+        // Environment environment = Environment.NewEnvironment();
+        //
+        // environment.Create("currScriptPath",
+        //     Utils.IsFullPath(filePath)
+        //         ? new StringObj(filePath)
+        //         : new StringObj(Path.Combine(System.Environment.CurrentDirectory, filePath)));
+        //
+        // return environment;
     }
 
     private static void printParserErrors(string[] errors) {

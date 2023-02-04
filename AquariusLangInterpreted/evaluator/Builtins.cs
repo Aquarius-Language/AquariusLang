@@ -4,19 +4,22 @@ using AquariusLang.utils;
 namespace AquariusLang.evaluator;
 
 public class Builtins {
-    protected Dictionary<string, BuiltinObj> builtins;
+    protected Dictionary<string, BuiltinObj> builtinFuncs;
+    protected Dictionary<string, IObject> builtins;
 
-    public Builtins(Dictionary<string, BuiltinObj> builtins) {
-        this.builtins = builtins;
+    public Builtins(Dictionary<string, BuiltinObj> builtinFuncs) {
+        this.builtinFuncs = builtinFuncs;
     }
 
     public Builtins() {
-        builtins = new Dictionary<string, BuiltinObj>();
+        builtinFuncs = new Dictionary<string, BuiltinObj>();
+        builtins = new();
     }
     
     protected static ErrorObj newError(string msg) {
         return new ErrorObj(msg);
     }
 
-    public Dictionary<string, BuiltinObj> _Builtins => builtins;
+    public Dictionary<string, BuiltinObj> BuiltinFuncs => builtinFuncs;
+    public Dictionary<string, IObject> _Builtins => builtins;
 }

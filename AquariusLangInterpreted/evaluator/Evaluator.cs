@@ -506,9 +506,15 @@ public class Evaluator {
 
     private IObject evalIdentifier(Identifier node, Environment environment) {
         // Looking up built-in functions.
-        bool hasVal = builtins._Builtins.TryGetValue(node.Value, out BuiltinObj value);
+        bool hasVal = builtins.BuiltinFuncs.TryGetValue(node.Value, out BuiltinObj value);
         if (hasVal) {
             return value;
+        }
+        
+        // Looking up built-in identifiers.
+        hasVal = builtins._Builtins.TryGetValue(node.Value, out IObject _value);
+        if (hasVal) {
+            return _value;
         }
         
         IObject val = environment.Get(node.Value, out bool hasVar);
