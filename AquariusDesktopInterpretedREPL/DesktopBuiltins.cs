@@ -4,6 +4,7 @@ using AquariusLang.lexer;
 using AquariusLang.Object;
 using AquariusLang.parser;
 using AquariusLang.utils;
+using Environment = AquariusLang.Object.Environment;
 
 namespace AquariusREPL;
 
@@ -11,7 +12,7 @@ public class DesktopBuiltins : Builtins {
     public DesktopBuiltins() {
         builtins = new Dictionary<string, BuiltinObj> {
             {
-                "len", new BuiltinObj((env, args) => {
+                "len", new BuiltinObj(args => {
                     if (args.Length != 1)
                         return newError($"Wrong number of arguments. Got={args.Length}, want=1");
 
@@ -30,7 +31,7 @@ public class DesktopBuiltins : Builtins {
                     return newError($"Argument to `len` not supported, got {arg0.Type()}");
                 })
             }, {
-                "last", new BuiltinObj((env, args) => {
+                "last", new BuiltinObj(args => {
                     if (args.Length != 1)
                         return newError($"Wrong number of arguments. Got{args.Length}, want 1.");
 
@@ -43,7 +44,7 @@ public class DesktopBuiltins : Builtins {
                     return length > 0 ? array.Elements[length - 1] : RepeatedPrimitives.NULL;
                 })
             }, {
-                "rest", new BuiltinObj((env, args) => {
+                "rest", new BuiltinObj(args => {
                     if (args.Length != 1)
                         return newError($"Wrong number of arguments. Got{args.Length}, want 1.");
                     if (args[0].Type() != ObjectType.ARRAY_OBJ)
@@ -58,7 +59,7 @@ public class DesktopBuiltins : Builtins {
                     return RepeatedPrimitives.NULL;
                 })
             }, {
-                "push", new BuiltinObj((env, args) => {
+                "push", new BuiltinObj(args => {
                     if (args.Length != 2)
                         return newError($"Wrong number of arguments. Got{args.Length}, want 2.");
 
@@ -71,7 +72,7 @@ public class DesktopBuiltins : Builtins {
                     return new ArrayObj(newElements);
                 })
             }, {
-                "print", new BuiltinObj((env, args) => {
+                "print", new BuiltinObj(args => {
                     for (var i = 0; i < args.Length; i++) {
                         Console.Write(args[i].Inspect());
                         if (i < args.Length - 1) Console.Write(" ");
@@ -82,7 +83,7 @@ public class DesktopBuiltins : Builtins {
                     return null;
                 })
             }, { 
-                "import", new BuiltinObj((env, args) => {
+                "import", new BuiltinObj(args => {
                     if (args.Length != 1) {
                         return newError($"Wrong number of arguments. Got{args.Length}, want 1.");
                     }
@@ -94,7 +95,7 @@ public class DesktopBuiltins : Builtins {
                             Parser parser = Parser.NewInstance(lexer);
                             AbstractSyntaxTree tree = parser.ParseAST();
                             Evaluator evaluator = Evaluator.NewInstance(new DesktopBuiltins());
-                            evaluator.Eval(tree, env);
+                            evaluator.Eval(tree, Environment.NewEnvironment());
                         } catch (FileNotFoundException e) {
                             Console.WriteLine($"Exception error: Could not find file '${e.FileName}'");
                         }

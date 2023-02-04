@@ -456,7 +456,7 @@ public class Evaluator {
             IObject evaluated = Eval(functionObj.Body, extendedEnv);
             return unwrapReturnValue(evaluated);
         } else if (fn is BuiltinObj builtinObj) {
-            return builtinObj.Fn(environment, args);
+            return builtinObj.Fn(args);
         }
 
         return NewError($"Not a function: {fn.Type()}");

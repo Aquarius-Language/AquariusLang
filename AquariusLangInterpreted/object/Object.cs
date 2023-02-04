@@ -348,10 +348,11 @@ public class FunctionObj : IObject {
     }
 }
 
-/// <summary>
-/// @environment: Is passed from Evaluator object, to get the current most inner environment.
-/// </summary>
-public delegate IObject BuiltinFunction(Environment environment, IObject[] args);
+// /// <summary>
+// /// @environment: Is passed from Evaluator object, to get the current most inner environment.
+// /// </summary>
+// public delegate IObject BuiltinFunction(Environment environment, IObject[] args);
+public delegate IObject BuiltinFunction(IObject[] args);
 
 public class BuiltinObj : IObject {
     private BuiltinFunction fn;
