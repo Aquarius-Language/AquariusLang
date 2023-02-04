@@ -15,8 +15,8 @@ public class DesktopBuiltins : Builtins {
         builtins = new Dictionary<string, BuiltinObj> {
             {
                 "len", new BuiltinObj(args => {
-                    if (args.Length != 1)
-                        return newError($"Wrong number of arguments. Got={args.Length}, want=1");
+                    ErrorObj argsCountMatch = checkArgsCount("len", 1, args.Length);
+                    if (argsCountMatch != null) return argsCountMatch;
 
                     var arg0 = args[0];
                     var arg0Type = arg0.GetType();
@@ -34,9 +34,9 @@ public class DesktopBuiltins : Builtins {
                 })
             }, {
                 "last", new BuiltinObj(args => {
-                    if (args.Length != 1)
-                        return newError($"Wrong number of arguments. Got{args.Length}, want 1.");
-
+                    ErrorObj argsCountMatch = checkArgsCount("last", 1, args.Length);
+                    if (argsCountMatch != null) return argsCountMatch;
+                    
                     if (args[0].Type() != ObjectType.ARRAY_OBJ)
                         return newError($"Argument to `last` must be ARRAY, got {args[0].Type()}");
 
@@ -47,8 +47,9 @@ public class DesktopBuiltins : Builtins {
                 })
             }, {
                 "rest", new BuiltinObj(args => {
-                    if (args.Length != 1)
-                        return newError($"Wrong number of arguments. Got{args.Length}, want 1.");
+                    ErrorObj argsCountMatch = checkArgsCount("rest", 1, args.Length);
+                    if (argsCountMatch != null) return argsCountMatch;
+                    
                     if (args[0].Type() != ObjectType.ARRAY_OBJ)
                         return newError($"Argument to `rest` must be ARRAY, got {args[0].Type()}");
                     var arrayObj = (ArrayObj)args[0];
@@ -62,9 +63,9 @@ public class DesktopBuiltins : Builtins {
                 })
             }, {
                 "push", new BuiltinObj(args => {
-                    if (args.Length != 2)
-                        return newError($"Wrong number of arguments. Got{args.Length}, want 2.");
-
+                    ErrorObj argsCountMatch = checkArgsCount("push", 2, args.Length);
+                    if (argsCountMatch != null) return argsCountMatch;
+                    
                     if (args[0].Type() != ObjectType.ARRAY_OBJ)
                         return newError($"Argument to `push` must be ARRAY, got {args[0].Type()}");
 
@@ -86,9 +87,8 @@ public class DesktopBuiltins : Builtins {
                 })
             }, { 
                 "import", new BuiltinObj(args => {
-                    if (args.Length != 1) {
-                        return newError($"Wrong number of arguments. Got{args.Length}, want 1.");
-                    }
+                    ErrorObj argsCountMatch = checkArgsCount("import", 1, args.Length);
+                    if (argsCountMatch != null) return argsCountMatch;
                     
                     if (args[0] is StringObj stringObj) {
                         try {
@@ -111,33 +111,29 @@ public class DesktopBuiltins : Builtins {
                 }) 
             }, {
                "isOSWindows", new BuiltinObj(args => {
-                   if (args.Length != 0) {
-                       return newError($"Wrong number of arguments. Got{args.Length}, want 0.");
-                   }
+                   ErrorObj argsCountMatch = checkArgsCount("isOSWindows", 0, args.Length);
+                   if (argsCountMatch != null) return argsCountMatch;
 
                    return new BooleanObj(OperatingSystem.IsWindows());
                }) 
             }, {
                 "isOSLinux", new BuiltinObj(args => {
-                    if (args.Length != 0) {
-                        return newError($"Wrong number of arguments. Got{args.Length}, want 0.");
-                    }
+                    ErrorObj argsCountMatch = checkArgsCount("isOSLinux", 0, args.Length);
+                    if (argsCountMatch != null) return argsCountMatch;
 
                     return new BooleanObj(OperatingSystem.IsLinux());
                 }) 
             }, {
                 "isOSMacOS", new BuiltinObj(args => {
-                    if (args.Length != 0) {
-                        return newError($"Wrong number of arguments. Got{args.Length}, want 0.");
-                    }
+                    ErrorObj argsCountMatch = checkArgsCount("isOSMacOS", 0, args.Length);
+                    if (argsCountMatch != null) return argsCountMatch;
                     
                     return new BooleanObj(OperatingSystem.IsMacOS());
                 }) 
             }, {
-                "execFile", new BuiltinObj(args => {
-                    if (args.Length != 2) {
-                        return newError($"Wrong number of arguments. Got{args.Length}, want 2.");
-                    }
+                "execFile", new BuiltinObj(args => { // Executes file synchronously.
+                    ErrorObj argsCountMatch = checkArgsCount("execFile", 2, args.Length);
+                    if (argsCountMatch != null) return argsCountMatch;
                     
                     StringBuilder builder = new StringBuilder();
                     ArrayObj args1Arr = (ArrayObj)args[1];
@@ -150,9 +146,25 @@ public class DesktopBuiltins : Builtins {
                     Process p = new Process();
                     p.StartInfo.FileName = ((StringObj)args[0]).Value;
                     p.StartInfo.Arguments = arguments;
-                    return new BooleanObj(p.Start());
+
+                    bool started = p.Start();
+                    if (!started) {
+                        return RepeatedPrimitives.FALSE;
+                    }
+
+                    p.WaitForExit();
+                    
+                    return new BooleanObj(true);
                 }) 
             }
         };
+    }
+
+    private ErrorObj checkArgsCount(string funcName, int expected, int actual) {
+        if (expected != actual) {
+            return newError($"Wrong number of arguments for '${funcName}'. Got{actual}, want ${expected}.");
+        }
+
+        return null;
     }
 }
