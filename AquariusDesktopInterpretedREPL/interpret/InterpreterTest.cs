@@ -49,6 +49,21 @@ public class InterpreterTest {
         Assert.Equal(7, ((IntegerObj)evaluatedArr.Elements[1]).Value);
     }
 
+    [Fact]
+    public void TestCheckOSPlatform() {
+        IObject evaluated = Interpreter.Interpret("../../../examples/check_os_platform.aqua");
+        Assert.IsType<ArrayObj>(evaluated);
+        ArrayObj evaluatedArr = (ArrayObj)evaluated;
+        
+        _testOutputHelper.WriteLine(evaluatedArr.Inspect());
+        
+        Assert.True(testArrayObjEquals(new IObject[] {
+            new BooleanObj(OperatingSystem.IsWindows()),
+            new BooleanObj(OperatingSystem.IsLinux()),
+            new BooleanObj(OperatingSystem.IsMacOS()),
+        }, evaluatedArr.Elements));
+    }
+
     private bool testArrayObjEquals(IObject[] a, IObject[] b) {
         if (a.Length != b.Length) return false;
         bool same = true;

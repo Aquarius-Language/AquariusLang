@@ -46,7 +46,7 @@ Extra advantage of this: since HashKey doesn't have complicated types nor polymo
 
 <h3>TODO</h3>
 
-- Development for Built-in function "import" has started. Maybe also make modules an IObject, so it can be used as a variable can call its owned functions like this:
+- ~~Development for Built-in function "import" has started. Maybe also make modules an IObject, so it can be used as a variable can call its owned functions like this:~~
 
         let anotherModule = import("someDirectory/modulefile.aqua);
         anotherModule.callSomeFunction();

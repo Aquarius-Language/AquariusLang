@@ -107,7 +107,31 @@ public class DesktopBuiltins : Builtins {
 
                     return null;
                 }) 
-            },
+            }, {
+               "isOSWindows", new BuiltinObj(args => {
+                   if (args.Length != 0) {
+                       return newError($"Wrong number of arguments. Got{args.Length}, want 0.");
+                   }
+
+                   return new BooleanObj(OperatingSystem.IsWindows());
+               }) 
+            }, {
+                "isOSLinux", new BuiltinObj(args => {
+                    if (args.Length != 0) {
+                        return newError($"Wrong number of arguments. Got{args.Length}, want 0.");
+                    }
+
+                    return new BooleanObj(OperatingSystem.IsLinux());
+                }) 
+            }, {
+                "isOSMacOS", new BuiltinObj(args => {
+                    if (args.Length != 0) {
+                        return newError($"Wrong number of arguments. Got{args.Length}, want 0.");
+                    }
+
+                    return new BooleanObj(OperatingSystem.IsMacOS());
+                }) 
+            }, 
         };
     }
 }
