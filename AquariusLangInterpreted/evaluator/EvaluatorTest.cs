@@ -760,7 +760,7 @@ public class EvaluatorTest {
         Parser parser = Parser.NewInstance(lexer);
         AbstractSyntaxTree tree = parser.ParseAST();
         Environment environment = Environment.NewEnvironment();
-        Evaluator evaluator = Evaluator.NewInstance();
+        Evaluator evaluator = Evaluator.NewInstance(new Builtins());
         return evaluator.Eval(tree, environment);
     }
 

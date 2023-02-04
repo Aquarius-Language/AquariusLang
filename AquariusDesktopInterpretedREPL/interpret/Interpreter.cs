@@ -29,7 +29,7 @@ public class Interpreter {
                 continue;
             }
 
-            Evaluator evaluator = Evaluator.NewInstance();
+            Evaluator evaluator = Evaluator.NewInstance(new DesktopBuiltins());
             IObject evaluated = evaluator.Eval(tree, environment);
             
             /*
@@ -56,7 +56,7 @@ public class Interpreter {
             printParserErrors(parser.Errors.ToArray());
             return;
         }
-        Evaluator evaluator = Evaluator.NewInstance();
+        Evaluator evaluator = Evaluator.NewInstance(new DesktopBuiltins());
         IObject evaluated = evaluator.Eval(tree, environment);
         if (evaluated != null) {
             Console.WriteLine(evaluated.Inspect());

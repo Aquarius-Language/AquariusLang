@@ -18,36 +18,17 @@ public struct RepeatedPrimitives {
 }
 
 public class Evaluator {
-    private Dictionary<Type, NodeTypeMapValue> nodeTypeMap = new() {
-        {typeof(AbstractSyntaxTree), NodeTypeMapValue.ASTMapValue},
-        {typeof(BlockStatement), NodeTypeMapValue.BlockMapValue},
-        {typeof(ExpressionStatement), NodeTypeMapValue.ExpressMapValue},
-        {typeof(ReturnStatement), NodeTypeMapValue.ReturnMapValue},
-        {typeof(BreakStatement), NodeTypeMapValue.BreakMapValue},
-        {typeof(LetStatement), NodeTypeMapValue.LetMapValue},
-        {typeof(IntegerLiteral), NodeTypeMapValue.IntMapValue},
-        {typeof(FloatLiteral), NodeTypeMapValue.FloatMapValue},
-        {typeof(DoubleLiteral), NodeTypeMapValue.DoubleMapValue},
-        {typeof(BooleanLiteral), NodeTypeMapValue.BoolMapValue},
-        {typeof(ForLoopLiteral), NodeTypeMapValue.ForMapValue},
-        {typeof(PrefixExpression), NodeTypeMapValue.PrefixMapValue},
-        {typeof(InfixExpression), NodeTypeMapValue.InfixMapValue},
-        {typeof(IfExpression), NodeTypeMapValue.IfMapValue},
-        {typeof(Identifier), NodeTypeMapValue.IdentMapValue},
-        {typeof(FunctionLiteral), NodeTypeMapValue.FuncMapValue},
-        {typeof(CallExpression), NodeTypeMapValue.CallMapValue},
-        {typeof(StringLiteral), NodeTypeMapValue.StringMapValue},
-        {typeof(ArrayLiteral), NodeTypeMapValue.ArrayMapValue},
-        {typeof(IndexExpression), NodeTypeMapValue.IndexMapValue},
-        {typeof(HashLiteral), NodeTypeMapValue.HashMapValue},
-    };
+    private Builtins builtins;
 
     private Evaluator() {
         
     }
+    private Evaluator(Builtins builtins) {
+        this.builtins = builtins;
+    }
 
-    public static Evaluator NewInstance() {
-        return new Evaluator();
+    public static Evaluator NewInstance(Builtins builtins) {
+        return new Evaluator(builtins);
     }
 
     public IObject Eval(INode node, Environment environment) {
@@ -485,7 +466,7 @@ public class Evaluator {
 
     private IObject evalIdentifier(Identifier node, Environment environment) {
         // Looking up built-in functions.
-        bool hasVal = Builtins.builtins.TryGetValue(node.Value, out BuiltinObj value);
+        bool hasVal = builtins._Builtins.TryGetValue(node.Value, out BuiltinObj value);
         if (hasVal) {
             return value;
         }
@@ -801,6 +782,30 @@ public class Evaluator {
         
         return true;
     }
+    
+    private Dictionary<Type, NodeTypeMapValue> nodeTypeMap = new() {
+        {typeof(AbstractSyntaxTree), NodeTypeMapValue.ASTMapValue},
+        {typeof(BlockStatement), NodeTypeMapValue.BlockMapValue},
+        {typeof(ExpressionStatement), NodeTypeMapValue.ExpressMapValue},
+        {typeof(ReturnStatement), NodeTypeMapValue.ReturnMapValue},
+        {typeof(BreakStatement), NodeTypeMapValue.BreakMapValue},
+        {typeof(LetStatement), NodeTypeMapValue.LetMapValue},
+        {typeof(IntegerLiteral), NodeTypeMapValue.IntMapValue},
+        {typeof(FloatLiteral), NodeTypeMapValue.FloatMapValue},
+        {typeof(DoubleLiteral), NodeTypeMapValue.DoubleMapValue},
+        {typeof(BooleanLiteral), NodeTypeMapValue.BoolMapValue},
+        {typeof(ForLoopLiteral), NodeTypeMapValue.ForMapValue},
+        {typeof(PrefixExpression), NodeTypeMapValue.PrefixMapValue},
+        {typeof(InfixExpression), NodeTypeMapValue.InfixMapValue},
+        {typeof(IfExpression), NodeTypeMapValue.IfMapValue},
+        {typeof(Identifier), NodeTypeMapValue.IdentMapValue},
+        {typeof(FunctionLiteral), NodeTypeMapValue.FuncMapValue},
+        {typeof(CallExpression), NodeTypeMapValue.CallMapValue},
+        {typeof(StringLiteral), NodeTypeMapValue.StringMapValue},
+        {typeof(ArrayLiteral), NodeTypeMapValue.ArrayMapValue},
+        {typeof(IndexExpression), NodeTypeMapValue.IndexMapValue},
+        {typeof(HashLiteral), NodeTypeMapValue.HashMapValue},
+    };
 
     /// <summary>
     /// For use to compare types using switch through the help of dictionary and constant enum values.
