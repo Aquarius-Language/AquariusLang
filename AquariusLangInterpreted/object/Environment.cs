@@ -63,19 +63,6 @@ public class Environment {
         return null;
     }
 
-    public IObject GetFunction(string name, out bool hasVar) {
-        IObject _object = Get(name, out bool _hasVar);
-        if (_hasVar) {
-            if (_object is FunctionObj functionObj) {
-                hasVar = true;
-                return functionObj;
-            }
-        }
-
-        hasVar = false;
-        return null;
-    }
-
     public bool Owns(string name) {
         return owned.ContainsKey(name);
     }

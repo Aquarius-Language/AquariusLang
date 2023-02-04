@@ -89,14 +89,13 @@ public class Evaluator {
                 if (isError(_left)) {
                     return _left;
                 }
-
-                IObject _right = Eval(_node.Right, environment);
-                if (isError(_right)) {
-                    return _right;
-                }
                 
                 switch (_node.Operator) {
                     case "=":
+                        IObject _right = Eval(_node.Right, environment);
+                        if (isError(_right)) {
+                            return _right;
+                        }
                         if (_node.Left is Identifier leftIdent) {
                             environment.Set(leftIdent.Value, _right);
                         } else {
@@ -104,10 +103,14 @@ public class Evaluator {
                         }
                         break;
                     case "+=":
+                        IObject __right = Eval(_node.Right, environment);
+                        if (isError(__right)) {
+                            return __right;
+                        }
                         if (_node.Left is Identifier _leftIdent) {
                             IObject identVal = evalIdentifier(_leftIdent, environment);
                             string identType = identVal.Type();
-                            string rightType = _right.Type();
+                            string rightType = __right.Type();
                             if (ObjectType.IsNumber(rightType)) {
                                 if (ObjectType.IsNumber(identType)) {
                                     /*
@@ -115,13 +118,13 @@ public class Evaluator {
                                      */
                                     switch (identType) {
                                         case ObjectType.INTEGER_OBJ:
-                                            environment.Set(_leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value + ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(_leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value + ((INumberObj)__right).GetNumValue())));
                                             break;
                                         case ObjectType.FLOAT_OBJ:
-                                            environment.Set(_leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value + ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(_leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value + ((INumberObj)__right).GetNumValue())));
                                             break;
                                         case ObjectType.DOUBLE_OBJ:
-                                            environment.Set(_leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value + ((INumberObj)_right).GetNumValue()));
+                                            environment.Set(_leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value + ((INumberObj)__right).GetNumValue()));
                                             break;
                                     }
                                 } else {
@@ -129,7 +132,7 @@ public class Evaluator {
                                 }
                             } else if (rightType == ObjectType.STRING_OBJ) {
                                 if (identType == ObjectType.STRING_OBJ) {
-                                    environment.Set(_leftIdent.Value, new StringObj(((StringObj)identVal).Value + ((StringObj)_right).Value));
+                                    environment.Set(_leftIdent.Value, new StringObj(((StringObj)identVal).Value + ((StringObj)__right).Value));
                                 } else {
                                     return NewError($"Incorrect left operand type for STRING +=: {identVal.Type()}");
                                 }
@@ -141,91 +144,130 @@ public class Evaluator {
                         }
                         break;
                     case "-=":
+                        IObject ___right = Eval(_node.Right, environment);
+                        if (isError(___right)) {
+                            return ___right;
+                        }
                         if (_node.Left is Identifier __leftIdent) {
                             IObject identVal = evalIdentifier(__leftIdent, environment);
                             string identType = identVal.Type();
-                            string rightType = _right.Type();
+                            string rightType = ___right.Type();
                             if (ObjectType.IsNumber(rightType)) {
                                 if (ObjectType.IsNumber(identType)) {
                                     switch (identType) {
                                         case ObjectType.INTEGER_OBJ:
-                                            environment.Set(__leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value - ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(__leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value - ((INumberObj)___right).GetNumValue())));
                                             break;
                                         case ObjectType.FLOAT_OBJ:
-                                            environment.Set(__leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value - ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(__leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value - ((INumberObj)___right).GetNumValue())));
                                             break;
                                         case ObjectType.DOUBLE_OBJ:
-                                            environment.Set(__leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value - ((INumberObj)_right).GetNumValue()));
+                                            environment.Set(__leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value - ((INumberObj)___right).GetNumValue()));
                                             break;
                                     }
                                 } else {
                                     return NewError($"Incorrect left operand type for {identType} -= NUMBER");
                                 }
                             } else {
-                                return NewError($"{_right.Type()} as right operand type for -= doesn't exist.");
+                                return NewError($"{___right.Type()} as right operand type for -= doesn't exist.");
                             }
                         } else {
                             return NewError($"Left operand for -= operator not identifier. Got={_node.Left.GetType()}");
                         }
                         break;
                     case "*=":
+                        IObject ____right = Eval(_node.Right, environment);
+                        if (isError(____right)) {
+                            return ____right;
+                        }
                         if (_node.Left is Identifier ___leftIdent) {
                             IObject identVal = evalIdentifier(___leftIdent, environment);
                             string identType = identVal.Type();
-                            string rightType = _right.Type();
+                            string rightType = ____right.Type();
                             if (ObjectType.IsNumber(rightType)) {
                                 if (ObjectType.IsNumber(identType)) {
                                     switch (identType) {
                                         case ObjectType.INTEGER_OBJ:
-                                            environment.Set(___leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value * ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(___leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value * ((INumberObj)____right).GetNumValue())));
                                             break;
                                         case ObjectType.FLOAT_OBJ:
-                                            environment.Set(___leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value * ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(___leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value * ((INumberObj)____right).GetNumValue())));
                                             break;
                                         case ObjectType.DOUBLE_OBJ:
-                                            environment.Set(___leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value * ((INumberObj)_right).GetNumValue()));
+                                            environment.Set(___leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value * ((INumberObj)____right).GetNumValue()));
                                             break;
                                     }
                                 } else {
                                     return NewError($"Incorrect left operand type for {identType} *= NUMBER");
                                 }
                             } else {
-                                return NewError($"{_right.Type()} as right operand type for *= doesn't exist.");
+                                return NewError($"{____right.Type()} as right operand type for *= doesn't exist.");
                             }
                         } else {
                             return NewError($"Left operand for *= operator not identifier. Got={_node.Left.GetType()}");
                         }
                         break;
                     case "/=":
+                        IObject _____right = Eval(_node.Right, environment);
+                        if (isError(_____right)) {
+                            return _____right;
+                        }
                         if (_node.Left is Identifier ____leftIdent) {
                             IObject identVal = evalIdentifier(____leftIdent, environment);
                             string identType = identVal.Type();
-                            string rightType = _right.Type();
+                            string rightType = _____right.Type();
                             if (ObjectType.IsNumber(rightType)) {
                                 if (ObjectType.IsNumber(identType)) {
                                     switch (identType) {
                                         case ObjectType.INTEGER_OBJ:
-                                            environment.Set(____leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value / ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(____leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value / ((INumberObj)_____right).GetNumValue())));
                                             break;
                                         case ObjectType.FLOAT_OBJ:
-                                            environment.Set(____leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value / ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(____leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value / ((INumberObj)_____right).GetNumValue())));
                                             break;
                                         case ObjectType.DOUBLE_OBJ:
-                                            environment.Set(____leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value / ((INumberObj)_right).GetNumValue()));
+                                            environment.Set(____leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value / ((INumberObj)_____right).GetNumValue()));
                                             break;
                                     }
                                 } else {
                                     return NewError($"Incorrect left operand type for {identType} /= NUMBER");
                                 }
                             } else {
-                                return NewError($"{_right.Type()} as right operand type for *= doesn't exist.");
+                                return NewError($"{_____right.Type()} as right operand type for *= doesn't exist.");
                             }
                         } else {
                             return NewError($"Left operand for *= operator not identifier. Got={_node.Left.GetType()}");
                         }
                         break;
+                    case ".":
+                        if (_node.Left is Identifier _____leftIdent) {
+                            IObject identVal = evalIdentifier(_____leftIdent, environment);
+                            string identType = identVal.Type();
+                            
+                            if (identType == ObjectType.MODULE_OBJ) {
+                                ModuleObj moduleObj = (ModuleObj)identVal;
+                                
+                                if (_node.Right is CallExpression callExpression) {
+                                    IObject ______right = Eval(callExpression, moduleObj._Environment);
+                                    if (isError(______right)) {
+                                        return ______right;
+                                    }
+                                    // string rightType = ______right.Type();
+                                    // Console.WriteLine(rightType);
+                                    return ______right;
+                                } else if (_node.Right is Identifier identifier) {
+                                    return NewError(
+                                        $"Cannot access identifier from module using . operator. Call module's function instead.");
+                                }
+                            }
+                        }
+                        break;
                     default:
-                        return evalInfixExpression(_node.Operator, _left, _right);
+                        IObject _______right = Eval(_node.Right, environment);
+                        if (isError(_______right)) {
+                            return _______right;
+                        }
+                        return evalInfixExpression(_node.Operator, _left, _______right);
                 }
                 
                 break;

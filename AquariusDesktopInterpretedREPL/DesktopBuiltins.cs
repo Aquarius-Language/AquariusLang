@@ -95,7 +95,9 @@ public class DesktopBuiltins : Builtins {
                             Parser parser = Parser.NewInstance(lexer);
                             AbstractSyntaxTree tree = parser.ParseAST();
                             Evaluator evaluator = Evaluator.NewInstance(new DesktopBuiltins());
-                            evaluator.Eval(tree, Environment.NewEnvironment());
+                            Environment moduleEnv = Environment.NewEnvironment();
+                            evaluator.Eval(tree, moduleEnv);
+                            return new ModuleObj(moduleEnv);
                         } catch (FileNotFoundException e) {
                             Console.WriteLine($"Exception error: Could not find file '${e.FileName}'");
                         }
