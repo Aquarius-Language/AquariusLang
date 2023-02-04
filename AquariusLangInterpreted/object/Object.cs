@@ -348,10 +348,6 @@ public class FunctionObj : IObject {
     }
 }
 
-// /// <summary>
-// /// @environment: Is passed from Evaluator object, to get the current most inner environment.
-// /// </summary>
-// public delegate IObject BuiltinFunction(Environment environment, IObject[] args);
 public delegate IObject BuiltinFunction(IObject[] args);
 
 public class BuiltinObj : IObject {
@@ -374,13 +370,6 @@ public class BuiltinObj : IObject {
         get => fn;
         set => fn = value ?? throw new ArgumentNullException(nameof(value));
     }
-    
-    // /// <summary>
-    // /// Passed from Evaluator, to get the current most local environment.
-    // /// </summary>
-    // public Environment Environment {
-    //     set => environment = value;
-    // }
 }
 
 public class ArrayObj : IObject {

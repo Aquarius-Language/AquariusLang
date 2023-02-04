@@ -1,5 +1,6 @@
 ﻿using AquariusLang.ast;
 using AquariusLang.lexer;
+using AquariusLang.token;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -209,6 +210,12 @@ public class ParserTest {
             new() { input = "8 >= 6", leftValue = 8, _operator = ">=", rightValue = 6 },
             new() { input = "true && false", leftValue = true, _operator = "&&", rightValue = false },
             new() { input = "false || true", leftValue = false, _operator = "||", rightValue = true },
+            new() { input = "false || true", leftValue = false, _operator = "||", rightValue = true },
+            // new() { input = "module.callFunc();", leftValue = new Identifier(new Token() {
+            //     Type = TokenType.IDENT, Literal = "module",
+            // }, "module"), _operator = ".", rightValue = new CallExpression(new Token() {
+            //     Type = TokenType.FUNCTION, Literal = "callFunc()",
+            // }, new ) },
         };
         foreach (var test in tests) {
             Lexer lexer = Lexer.NewInstance(test.input);
@@ -539,25 +546,55 @@ public class ParserTest {
         Lexer lexer = Lexer.NewInstance(input);
         Parser parser = Parser.NewInstance(lexer);
         AbstractSyntaxTree tree = parser.ParseAST();
-        Assert.NotEqual(checkParserErrors(parser), true);
+        Assert.False(checkParserErrors(parser));
         
-        Assert.Equal(tree.Statements.Length, 1);
+        Assert.Single(tree.Statements);
         
-        Assert.IsType(typeof(ExpressionStatement), tree.Statements[0]);
+        Assert.IsType<ExpressionStatement>(tree.Statements[0]);
         ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
         
-        Assert.IsType(typeof(CallExpression), statement.Expression);
+        Assert.IsType<CallExpression>(statement.Expression);
         CallExpression expression = (CallExpression)statement.Expression;
         
-        Assert.Equal(testIdentifier(expression.Function, "add"), true);
+        Assert.True(testIdentifier(expression.Function, "add"));
         
-        Assert.Equal(expression.Arguments.Length, 3);
+        Assert.Equal(3, expression.Arguments.Length);
         
-        Assert.Equal(testLiteralExpression(expression.Arguments[0], 1), true);
-        Assert.Equal(testInfixExpression(expression.Arguments[1], 2, "*", 3), true);
-        Assert.Equal(testInfixExpression(expression.Arguments[2], 4, "+", 5), true);
+        Assert.True(testLiteralExpression(expression.Arguments[0], 1));
+        Assert.True(testInfixExpression(expression.Arguments[1], 2, "*", 3));
+        Assert.True(testInfixExpression(expression.Arguments[2], 4, "+", 5));
     }
 
+    [Fact]
+    public void TestModuleCallExpressionParsing() {
+        string input = "module.callFunc(8, \"Wow!\");";
+        
+        Lexer lexer = Lexer.NewInstance(input);
+        Parser parser = Parser.NewInstance(lexer);
+        AbstractSyntaxTree tree = parser.ParseAST();
+        Assert.False(checkParserErrors(parser));
+        
+        Assert.Single(tree.Statements);
+        
+        Assert.IsType<ExpressionStatement>(tree.Statements[0]);
+        ExpressionStatement statement = (ExpressionStatement)tree.Statements[0];
+        
+        Assert.IsType<InfixExpression>(statement.Expression);
+        InfixExpression expression = (InfixExpression)statement.Expression;
+
+        Assert.IsType<Identifier>(expression.Left);
+        Assert.Equal("module", expression.Left.String());
+        
+        Assert.Equal(".", expression.Operator);
+        
+        Assert.IsType<CallExpression>(expression.Right);
+        CallExpression callExpression = (CallExpression)expression.Right;
+        
+        Assert.True(testLiteralExpression(callExpression.Arguments[0], 8));
+        Assert.Equal("Wow!", callExpression.Arguments[1].String());
+    }
+    
+    
     struct CallExpressionParameterTest {
         public string input;
         public string expectedIdent;
@@ -780,7 +817,9 @@ public class ParserTest {
             return testFloatLiteral(expression, (float)expected);
         } else if (typeOfExpected == typeof(double)) {
             return testDoubleLiteral(expression, (double)expected);
-        }
+        } /*else if (typeOfExpected == typeof(Identifier)) {
+            return testIdentifier(expression, ((Identifier)expected).Value);
+        }*/
         _testOutputHelper.WriteLine($"Type of expression not handled. Got={expression}");
         return false;
     }

@@ -22,6 +22,9 @@ public class LexerTest {
     [Fact]
     public void TestNextToken() {
         string? input = @"
+            let module = import(""./anotherfile.aqua"");
+            module.callFunc();
+
             let five = 5;
             let ten = -10;
 
@@ -74,6 +77,22 @@ public class LexerTest {
         ";
 
         ExpectedTest[] tests = new [] {
+            new ExpectedTest(){ExpectedType = TokenType.LET,       ExpectedLiteral = "let"},
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,       ExpectedLiteral = "module"},
+            new ExpectedTest(){ExpectedType = TokenType.ASSIGN,       ExpectedLiteral = "="},
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,       ExpectedLiteral = "import"},
+            new ExpectedTest(){ExpectedType = TokenType.LPAREN,    ExpectedLiteral = "("},
+            new ExpectedTest(){ExpectedType = TokenType.STRING,       ExpectedLiteral = "./anotherfile.aqua"},
+            new ExpectedTest(){ExpectedType = TokenType.RPAREN,    ExpectedLiteral = ")"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,    ExpectedLiteral = ";"},
+            
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,       ExpectedLiteral = "module"},
+            new ExpectedTest(){ExpectedType = TokenType.DOT,       ExpectedLiteral = "."},
+            new ExpectedTest(){ExpectedType = TokenType.IDENT,       ExpectedLiteral = "callFunc"},
+            new ExpectedTest(){ExpectedType = TokenType.LPAREN,       ExpectedLiteral = "("},
+            new ExpectedTest(){ExpectedType = TokenType.RPAREN,       ExpectedLiteral = ")"},
+            new ExpectedTest(){ExpectedType = TokenType.SEMICOLON,       ExpectedLiteral = ";"},
+            
             new ExpectedTest(){ExpectedType = TokenType.LET,       ExpectedLiteral = "let"},
             new ExpectedTest(){ExpectedType = TokenType.IDENT,     ExpectedLiteral = "five"},
             new ExpectedTest(){ExpectedType = TokenType.ASSIGN,    ExpectedLiteral = "="},

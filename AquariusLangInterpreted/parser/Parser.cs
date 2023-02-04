@@ -21,8 +21,9 @@ public static class Precedence {
         SUM = 7,
         PRODUCT = 8,
         PREFIX = 9,
-        CALL = 10,
-        INDEX = 11, //  array[index].
+        DOT = 10, // For accessing functions in module.
+        CALL = 11,
+        INDEX = 12, //  array[index].
     }
 
     /// <summary>
@@ -49,6 +50,7 @@ public static class Precedence {
         {TokenType.SLASH_EQ, OperatorPrecedence.PLUS_EQ},
         {TokenType.AND_AND, OperatorPrecedence.AND_AND},
         {TokenType.OR_OR, OperatorPrecedence.AND_AND},
+        {TokenType.DOT, OperatorPrecedence.DOT},
     };
 
     public static int PrecedenceFor(string tokenType) {
@@ -142,6 +144,7 @@ public class Parser {
         parser.registerInfix(TokenType.SLASH_EQ, parser.parseInfixExpression);
         parser.registerInfix(TokenType.AND_AND, parser.parseInfixExpression);
         parser.registerInfix(TokenType.OR_OR, parser.parseInfixExpression);
+        parser.registerInfix(TokenType.DOT, parser.parseInfixExpression);
 
         // Read two tokens, so curToken and peekToken are both set.
         parser.nextToken();

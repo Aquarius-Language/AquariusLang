@@ -157,6 +157,9 @@ public class Lexer {
                     // TODO Implement Binary Or '|' feature.
                 }
                 break;
+            case '.':
+                token = newToken(TokenType.DOT, '.');
+                break;
             case (char)0:
                 token = newToken(TokenType.EOF, "");
                 break;
