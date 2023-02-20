@@ -17,6 +17,7 @@ public static class ObjectType {
     public const string BUILTIN_OBJ = "BUILTIN";
     public const string ARRAY_OBJ = "ARRAY";
     public const string HASH_OBJ = "HASH";
+    public const string MODULE_OBJ = "MODULE";
 
     private const int is_number = 0;
 
@@ -352,6 +353,7 @@ public delegate IObject BuiltinFunction(IObject[] args);
 
 public class BuiltinObj : IObject {
     private BuiltinFunction fn;
+    // private Environment environment;
 
     public BuiltinObj(BuiltinFunction fn) {
         this.fn = fn;
@@ -369,6 +371,27 @@ public class BuiltinObj : IObject {
         get => fn;
         set => fn = value ?? throw new ArgumentNullException(nameof(value));
     }
+}
+
+/// <summary>
+/// Module object that gets created when importing new scripts from another file. (let module = import('./anotherfile.aqua')) 
+/// </summary>
+public class ModuleObj : IObject {
+    private Environment environment;
+
+    public ModuleObj(Environment environment) {
+        this.environment = environment;
+    }
+    
+    public string Type() {
+        return ObjectType.MODULE_OBJ;
+    }
+
+    public string Inspect() {
+        return "module";
+    }
+
+    public Environment _Environment => environment;
 }
 
 public class ArrayObj : IObject {

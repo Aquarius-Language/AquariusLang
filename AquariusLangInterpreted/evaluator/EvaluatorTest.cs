@@ -760,7 +760,8 @@ public class EvaluatorTest {
         Parser parser = Parser.NewInstance(lexer);
         AbstractSyntaxTree tree = parser.ParseAST();
         Environment environment = Environment.NewEnvironment();
-        return Evaluator.Eval(tree, environment);
+        Evaluator evaluator = Evaluator.NewInstance(new Builtins());
+        return evaluator.Eval(tree, environment);
     }
 
     private bool testBooleanObject(IObject obj, bool expected) {

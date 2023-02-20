@@ -3,18 +3,19 @@ using AquariusLang.evaluator;
 using AquariusLang.lexer;
 using AquariusLang.Object;
 using AquariusLang.parser;
+using AquariusLang.utils;
 using Environment = AquariusLang.Object.Environment;
 
 namespace AquariusREPL.interpret; 
 
-public static class Interpreter {
+public class Interpreter {
     const string PROMPT = ">> ";
 
     /// <summary>
     /// Read, Evaluate, Print, Loop.
     /// </summary>
     public static void REPL() {
-        Environment environment = Environment.NewEnvironment();
+        DesktopBuiltins desktopBuiltins = newDefaultBuiltins("");
         
         while (true) {
             Console.Write(PROMPT);
@@ -29,7 +30,8 @@ public static class Interpreter {
                 continue;
             }
 
-            IObject evaluated = Evaluator.Eval(tree, environment);
+            Evaluator evaluator = Evaluator.NewInstance(desktopBuiltins);
+            IObject evaluated = evaluator.Eval(tree, Environment.NewEnvironment());
             
             /*
              * Note: C#'s null shouldn't be printed out; but NullObj needs to be printed out.
@@ -43,9 +45,9 @@ public static class Interpreter {
     /// <summary>
     /// Interpret given filename.
     /// </summary>
-    /// <param name="fileName">Path ot file.</param>
-    public static void Interpret(string fileName) {
-        Environment environment = Environment.NewEnvironment();
+    /// <param name="fileName">Path of file.</param>
+    public static IObject Interpret(string fileName) {
+        DesktopBuiltins desktopBuiltins = newDefaultBuiltins(fileName);
         
         string contents = File.ReadAllText(fileName);
         Lexer lexer = Lexer.NewInstance(contents);
@@ -53,12 +55,21 @@ public static class Interpreter {
         AbstractSyntaxTree tree = parser.ParseAST();
         if (parser.Errors.Count != 0) {
             printParserErrors(parser.Errors.ToArray());
-            return;
+            return null;
         }
-        IObject evaluated = Evaluator.Eval(tree, environment);
+        Evaluator evaluator = Evaluator.NewInstance(desktopBuiltins);
+        IObject evaluated = evaluator.Eval(tree, Environment.NewEnvironment());
         if (evaluated != null) {
             Console.WriteLine(evaluated.Inspect());
         }
+
+        return evaluated;
+    }
+
+    private static DesktopBuiltins newDefaultBuiltins(string filePath) {
+        DesktopBuiltins builtins = new DesktopBuiltins();
+        builtins.NewDefaultBuiltins(filePath);
+        return builtins;
     }
 
     private static void printParserErrors(string[] errors) {

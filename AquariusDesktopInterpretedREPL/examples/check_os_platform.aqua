@@ -1,0 +1,5 @@
+﻿let isWindows = isOSWindows();
+let isLinux = isOSLinux();
+let isMacOS = isOSMacOS();
+
+return [isWindows, isLinux, isMacOS];

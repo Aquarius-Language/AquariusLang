@@ -14,36 +14,26 @@ public struct RepeatedPrimitives {
     public static readonly NullObj NULL = new();
     public static readonly BooleanObj TRUE = new(true);
     public static readonly BooleanObj FALSE = new(false);
-    public static readonly BreakObj BREAK = new BreakObj();
+    public static readonly BreakObj BREAK = new();
 }
 
 public class Evaluator {
-    private static Dictionary<Type, NodeTypeMapValue> nodeTypeMap = new() {
-        {typeof(AbstractSyntaxTree), NodeTypeMapValue.ASTMapValue},
-        {typeof(BlockStatement), NodeTypeMapValue.BlockMapValue},
-        {typeof(ExpressionStatement), NodeTypeMapValue.ExpressMapValue},
-        {typeof(ReturnStatement), NodeTypeMapValue.ReturnMapValue},
-        {typeof(BreakStatement), NodeTypeMapValue.BreakMapValue},
-        {typeof(LetStatement), NodeTypeMapValue.LetMapValue},
-        {typeof(IntegerLiteral), NodeTypeMapValue.IntMapValue},
-        {typeof(FloatLiteral), NodeTypeMapValue.FloatMapValue},
-        {typeof(DoubleLiteral), NodeTypeMapValue.DoubleMapValue},
-        {typeof(BooleanLiteral), NodeTypeMapValue.BoolMapValue},
-        {typeof(ForLoopLiteral), NodeTypeMapValue.ForMapValue},
-        {typeof(PrefixExpression), NodeTypeMapValue.PrefixMapValue},
-        {typeof(InfixExpression), NodeTypeMapValue.InfixMapValue},
-        {typeof(IfExpression), NodeTypeMapValue.IfMapValue},
-        {typeof(Identifier), NodeTypeMapValue.IdentMapValue},
-        {typeof(FunctionLiteral), NodeTypeMapValue.FuncMapValue},
-        {typeof(CallExpression), NodeTypeMapValue.CallMapValue},
-        {typeof(StringLiteral), NodeTypeMapValue.StringMapValue},
-        {typeof(ArrayLiteral), NodeTypeMapValue.ArrayMapValue},
-        {typeof(IndexExpression), NodeTypeMapValue.IndexMapValue},
-        {typeof(HashLiteral), NodeTypeMapValue.HashMapValue},
-    };
+    private Builtins builtins;
 
-    public static IObject Eval(INode node, Environment environment) {
+    private Evaluator() {
+        
+    }
+    private Evaluator(Builtins builtins) {
+        this.builtins = builtins;
+    }
+
+    public static Evaluator NewInstance(Builtins builtins) {
+        return new Evaluator(builtins);
+    }
+
+    public IObject Eval(INode node, Environment environment) {
         Type nodeType = node.GetType();
+        
         switch (nodeTypeMap[nodeType]) {
             case NodeTypeMapValue.ASTMapValue:
                 return evalTree((AbstractSyntaxTree)node, environment);
@@ -99,14 +89,13 @@ public class Evaluator {
                 if (isError(_left)) {
                     return _left;
                 }
-
-                IObject _right = Eval(_node.Right, environment);
-                if (isError(_right)) {
-                    return _right;
-                }
                 
                 switch (_node.Operator) {
                     case "=":
+                        IObject _right = Eval(_node.Right, environment);
+                        if (isError(_right)) {
+                            return _right;
+                        }
                         if (_node.Left is Identifier leftIdent) {
                             environment.Set(leftIdent.Value, _right);
                         } else {
@@ -114,10 +103,14 @@ public class Evaluator {
                         }
                         break;
                     case "+=":
+                        IObject __right = Eval(_node.Right, environment);
+                        if (isError(__right)) {
+                            return __right;
+                        }
                         if (_node.Left is Identifier _leftIdent) {
                             IObject identVal = evalIdentifier(_leftIdent, environment);
                             string identType = identVal.Type();
-                            string rightType = _right.Type();
+                            string rightType = __right.Type();
                             if (ObjectType.IsNumber(rightType)) {
                                 if (ObjectType.IsNumber(identType)) {
                                     /*
@@ -125,13 +118,13 @@ public class Evaluator {
                                      */
                                     switch (identType) {
                                         case ObjectType.INTEGER_OBJ:
-                                            environment.Set(_leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value + ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(_leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value + ((INumberObj)__right).GetNumValue())));
                                             break;
                                         case ObjectType.FLOAT_OBJ:
-                                            environment.Set(_leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value + ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(_leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value + ((INumberObj)__right).GetNumValue())));
                                             break;
                                         case ObjectType.DOUBLE_OBJ:
-                                            environment.Set(_leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value + ((INumberObj)_right).GetNumValue()));
+                                            environment.Set(_leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value + ((INumberObj)__right).GetNumValue()));
                                             break;
                                     }
                                 } else {
@@ -139,7 +132,7 @@ public class Evaluator {
                                 }
                             } else if (rightType == ObjectType.STRING_OBJ) {
                                 if (identType == ObjectType.STRING_OBJ) {
-                                    environment.Set(_leftIdent.Value, new StringObj(((StringObj)identVal).Value + ((StringObj)_right).Value));
+                                    environment.Set(_leftIdent.Value, new StringObj(((StringObj)identVal).Value + ((StringObj)__right).Value));
                                 } else {
                                     return NewError($"Incorrect left operand type for STRING +=: {identVal.Type()}");
                                 }
@@ -151,91 +144,128 @@ public class Evaluator {
                         }
                         break;
                     case "-=":
+                        IObject ___right = Eval(_node.Right, environment);
+                        if (isError(___right)) {
+                            return ___right;
+                        }
                         if (_node.Left is Identifier __leftIdent) {
                             IObject identVal = evalIdentifier(__leftIdent, environment);
                             string identType = identVal.Type();
-                            string rightType = _right.Type();
+                            string rightType = ___right.Type();
                             if (ObjectType.IsNumber(rightType)) {
                                 if (ObjectType.IsNumber(identType)) {
                                     switch (identType) {
                                         case ObjectType.INTEGER_OBJ:
-                                            environment.Set(__leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value - ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(__leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value - ((INumberObj)___right).GetNumValue())));
                                             break;
                                         case ObjectType.FLOAT_OBJ:
-                                            environment.Set(__leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value - ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(__leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value - ((INumberObj)___right).GetNumValue())));
                                             break;
                                         case ObjectType.DOUBLE_OBJ:
-                                            environment.Set(__leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value - ((INumberObj)_right).GetNumValue()));
+                                            environment.Set(__leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value - ((INumberObj)___right).GetNumValue()));
                                             break;
                                     }
                                 } else {
                                     return NewError($"Incorrect left operand type for {identType} -= NUMBER");
                                 }
                             } else {
-                                return NewError($"{_right.Type()} as right operand type for -= doesn't exist.");
+                                return NewError($"{___right.Type()} as right operand type for -= doesn't exist.");
                             }
                         } else {
                             return NewError($"Left operand for -= operator not identifier. Got={_node.Left.GetType()}");
                         }
                         break;
                     case "*=":
+                        IObject ____right = Eval(_node.Right, environment);
+                        if (isError(____right)) {
+                            return ____right;
+                        }
                         if (_node.Left is Identifier ___leftIdent) {
                             IObject identVal = evalIdentifier(___leftIdent, environment);
                             string identType = identVal.Type();
-                            string rightType = _right.Type();
+                            string rightType = ____right.Type();
                             if (ObjectType.IsNumber(rightType)) {
                                 if (ObjectType.IsNumber(identType)) {
                                     switch (identType) {
                                         case ObjectType.INTEGER_OBJ:
-                                            environment.Set(___leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value * ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(___leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value * ((INumberObj)____right).GetNumValue())));
                                             break;
                                         case ObjectType.FLOAT_OBJ:
-                                            environment.Set(___leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value * ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(___leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value * ((INumberObj)____right).GetNumValue())));
                                             break;
                                         case ObjectType.DOUBLE_OBJ:
-                                            environment.Set(___leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value * ((INumberObj)_right).GetNumValue()));
+                                            environment.Set(___leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value * ((INumberObj)____right).GetNumValue()));
                                             break;
                                     }
                                 } else {
                                     return NewError($"Incorrect left operand type for {identType} *= NUMBER");
                                 }
                             } else {
-                                return NewError($"{_right.Type()} as right operand type for *= doesn't exist.");
+                                return NewError($"{____right.Type()} as right operand type for *= doesn't exist.");
                             }
                         } else {
                             return NewError($"Left operand for *= operator not identifier. Got={_node.Left.GetType()}");
                         }
                         break;
                     case "/=":
+                        IObject _____right = Eval(_node.Right, environment);
+                        if (isError(_____right)) {
+                            return _____right;
+                        }
                         if (_node.Left is Identifier ____leftIdent) {
                             IObject identVal = evalIdentifier(____leftIdent, environment);
                             string identType = identVal.Type();
-                            string rightType = _right.Type();
+                            string rightType = _____right.Type();
                             if (ObjectType.IsNumber(rightType)) {
                                 if (ObjectType.IsNumber(identType)) {
                                     switch (identType) {
                                         case ObjectType.INTEGER_OBJ:
-                                            environment.Set(____leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value / ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(____leftIdent.Value, new IntegerObj((int)(((IntegerObj)identVal).Value / ((INumberObj)_____right).GetNumValue())));
                                             break;
                                         case ObjectType.FLOAT_OBJ:
-                                            environment.Set(____leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value / ((INumberObj)_right).GetNumValue())));
+                                            environment.Set(____leftIdent.Value, new FloatObj((float)(((FloatObj)identVal).Value / ((INumberObj)_____right).GetNumValue())));
                                             break;
                                         case ObjectType.DOUBLE_OBJ:
-                                            environment.Set(____leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value / ((INumberObj)_right).GetNumValue()));
+                                            environment.Set(____leftIdent.Value, new DoubleObj(((DoubleObj)identVal).Value / ((INumberObj)_____right).GetNumValue()));
                                             break;
                                     }
                                 } else {
                                     return NewError($"Incorrect left operand type for {identType} /= NUMBER");
                                 }
                             } else {
-                                return NewError($"{_right.Type()} as right operand type for *= doesn't exist.");
+                                return NewError($"{_____right.Type()} as right operand type for *= doesn't exist.");
                             }
                         } else {
                             return NewError($"Left operand for *= operator not identifier. Got={_node.Left.GetType()}");
                         }
                         break;
+                    case ".":
+                        if (_node.Left is Identifier _____leftIdent) {
+                            IObject identVal = evalIdentifier(_____leftIdent, environment);
+                            string identType = identVal.Type();
+                            
+                            if (identType == ObjectType.MODULE_OBJ) {
+                                ModuleObj moduleObj = (ModuleObj)identVal;
+                                
+                                if (_node.Right is CallExpression callExpression) {
+                                    IObject ______right = Eval(callExpression, moduleObj._Environment);
+                                    if (isError(______right)) {
+                                        return ______right;
+                                    }
+                                    return ______right;
+                                } else if (_node.Right is Identifier identifier) {
+                                    return NewError(
+                                        $"Cannot access identifier from module using . operator. Call module's function instead.");
+                                }
+                            }
+                        }
+                        break;
                     default:
-                        return evalInfixExpression(_node.Operator, _left, _right);
+                        IObject _______right = Eval(_node.Right, environment);
+                        if (isError(_______right)) {
+                            return _______right;
+                        }
+                        return evalInfixExpression(_node.Operator, _left, _______right);
                 }
                 
                 break;
@@ -264,7 +294,7 @@ public class Evaluator {
                     return args[0];
                 }
 
-                return applyFunction(function, args);
+                return applyFunction(function, args, environment);
             
             case NodeTypeMapValue.StringMapValue:
                 return new StringObj(((StringLiteral)node).Value);
@@ -301,11 +331,10 @@ public class Evaluator {
                 }
                 break;
         }
-
         return null;
     }
 
-    private static IObject evalTree(AbstractSyntaxTree tree, Environment environment) {
+    private IObject evalTree(AbstractSyntaxTree tree, Environment environment) {
         IObject result = null;
         
         /*
@@ -342,7 +371,7 @@ public class Evaluator {
         return result;
     }
 
-    private static IObject evalBlockStatement(BlockStatement blockStatement, Environment environment) {
+    private IObject evalBlockStatement(BlockStatement blockStatement, Environment environment) {
         IObject result = null;
         foreach (var statement in blockStatement.Statements) {
             result = Eval(statement, environment);
@@ -360,7 +389,7 @@ public class Evaluator {
         return result;
     }
 
-    private static IObject evalPrefixExpression(string _operator, IObject right) {
+    private IObject evalPrefixExpression(string _operator, IObject right) {
         switch (_operator) {
             case "!":
                 return evalBangOperatorExpression(right);
@@ -371,7 +400,7 @@ public class Evaluator {
         }
     }
 
-    private static IObject evalInfixExpression(string _operator, IObject left, IObject right) {
+    private IObject evalInfixExpression(string _operator, IObject left, IObject right) {
         if (ObjectType.IsNumber(left.Type()) && ObjectType.IsNumber(right.Type())) {
             return evalNumberInfixExpression(_operator, left, right);
         }
@@ -406,7 +435,7 @@ public class Evaluator {
         return NewError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
     }
 
-    private static IObject evalStringInfixExpression(string _operator, IObject left, IObject right) {
+    private IObject evalStringInfixExpression(string _operator, IObject left, IObject right) {
         if (_operator != "+") {
             return NewError($"Unknown operator: {left.Type()} {_operator} {right.Type()}");
         }
@@ -415,7 +444,7 @@ public class Evaluator {
         return new StringObj(leftVal + rightVal);
     }
 
-    private static IObject evalIfExpression(IfExpression ifExpression, Environment environment) {
+    private IObject evalIfExpression(IfExpression ifExpression, Environment environment) {
         IObject condition = Eval(ifExpression.Condition, environment);
         if (isError(condition)) {
             return condition;
@@ -448,7 +477,7 @@ public class Evaluator {
         return RepeatedPrimitives.NULL;
     }
 
-    private static IObject[] evalExpressions(IExpression[] expressions, Environment environment) {
+    private IObject[] evalExpressions(IExpression[] expressions, Environment environment) {
         List<IObject> result = new List<IObject>();
         foreach (var expression in expressions) {
             IObject evaluated = Eval(expression, environment);
@@ -461,7 +490,7 @@ public class Evaluator {
         return result.ToArray();
     }
 
-    private static IObject applyFunction(IObject fn, IObject[] args) {
+    private IObject applyFunction(IObject fn, IObject[] args, Environment environment) {
         if (fn is FunctionObj functionObj) {
             Environment extendedEnv = extendFunctionEnv(functionObj, args);
             IObject evaluated = Eval(functionObj.Body, extendedEnv);
@@ -473,13 +502,19 @@ public class Evaluator {
         return NewError($"Not a function: {fn.Type()}");
     }
     
-    // private static void reassignVariable()
+    // private void reassignVariable()
 
-    private static IObject evalIdentifier(Identifier node, Environment environment) {
+    private IObject evalIdentifier(Identifier node, Environment environment) {
         // Looking up built-in functions.
-        bool hasVal = Builtins.builtins.TryGetValue(node.Value, out BuiltinObj value);
+        bool hasVal = builtins.BuiltinFuncs.TryGetValue(node.Value, out BuiltinObj value);
         if (hasVal) {
             return value;
+        }
+        
+        // Looking up built-in identifiers.
+        hasVal = builtins._Builtins.TryGetValue(node.Value, out IObject _value);
+        if (hasVal) {
+            return _value;
         }
         
         IObject val = environment.Get(node.Value, out bool hasVar);
@@ -490,7 +525,7 @@ public class Evaluator {
         return val;
     }
 
-    private static IObject evalMinusPrefixOperatorExpression(IObject right) {
+    private IObject evalMinusPrefixOperatorExpression(IObject right) {
         if (!ObjectType.IsNumber(right.Type())) {
             return NewError($"Unknown operator: -{right.Type()}");
         }
@@ -509,7 +544,7 @@ public class Evaluator {
         return null;
     }
 
-    private static IObject evalNumberInfixExpression(string _operator, IObject left, IObject right) {
+    private IObject evalNumberInfixExpression(string _operator, IObject left, IObject right) {
         INumberObj _left = (INumberObj)left;
         INumberObj _right = (INumberObj)right;
         string leftType = left.Type();
@@ -564,7 +599,7 @@ public class Evaluator {
         };
     }
 
-    private static IObject evalBangOperatorExpression(IObject right) {
+    private IObject evalBangOperatorExpression(IObject right) {
         if (right == RepeatedPrimitives.TRUE) {
             return RepeatedPrimitives.FALSE;
         } else if (right == RepeatedPrimitives.FALSE) {
@@ -576,7 +611,7 @@ public class Evaluator {
         return RepeatedPrimitives.FALSE;
     }
 
-    private static IObject evalIndexExpression(IObject left, IObject index) {
+    private IObject evalIndexExpression(IObject left, IObject index) {
         if (left.Type() == ObjectType.ARRAY_OBJ && index.Type() == ObjectType.INTEGER_OBJ) {
             return evalArrayIndexExpression(left, index);
         } else if (left.Type() == ObjectType.HASH_OBJ) {
@@ -586,7 +621,7 @@ public class Evaluator {
         return NewError($"Index operator not supported: {left.Type()}");
     }
 
-    private static IObject evalArrayIndexExpression(IObject array, IObject index) {
+    private IObject evalArrayIndexExpression(IObject array, IObject index) {
         ArrayObj arrayObj = (ArrayObj)array;
         int idx = ((IntegerObj)index).Value;
         int max = arrayObj.Elements.Length - 1;
@@ -597,7 +632,7 @@ public class Evaluator {
         return arrayObj.Elements[idx];
     }
 
-    private static IObject evalHashIndexExpression(IObject hash, IObject index) {
+    private IObject evalHashIndexExpression(IObject hash, IObject index) {
         HashObj hashObj = (HashObj)hash; 
         bool ok = Utils.TryCast(index, out IHashable key);
         if (!ok) {
@@ -613,7 +648,7 @@ public class Evaluator {
         return pair.Value;
     }
 
-    private static IObject evalHashLiteral(HashLiteral node, Environment environment) {
+    private IObject evalHashLiteral(HashLiteral node, Environment environment) {
         Dictionary<HashKey, HashPair> pairs = new Dictionary<HashKey, HashPair>();
         foreach (var pair in node.Pairs) {
             IObject key = Eval(pair.Key, environment);
@@ -638,7 +673,7 @@ public class Evaluator {
         return new HashObj(pairs);
     }
 
-    private static IObject evalForLoopLiteral(ForLoopLiteral node, Environment environment) {
+    private IObject evalForLoopLiteral(ForLoopLiteral node, Environment environment) {
         Environment enclosedEnvironment = Environment.NewEnclosedEnvironment(environment);
         LetStatement letStatement = node.DeclareStatement;
         IExpression conditionalExpression = node.ConditionalExpression;
@@ -737,7 +772,7 @@ public class Evaluator {
     /// <param name="fn"></param>
     /// <param name="args"></param>
     /// <returns></returns>
-    private static Environment extendFunctionEnv(FunctionObj fn, IObject[] args) {
+    private Environment extendFunctionEnv(FunctionObj fn, IObject[] args) {
         Environment environment = Environment.NewEnclosedEnvironment(fn.Env);
         
         for (var i = 0; i < fn.Parameters.Length; i++) {
@@ -747,7 +782,7 @@ public class Evaluator {
         return environment;
     }
 
-    private static IObject unwrapReturnValue(IObject obj) {
+    private IObject unwrapReturnValue(IObject obj) {
         /*
 		 This is to stop executing any further statements after the return expression.
 		 Just return back the unwrapped value.
@@ -759,7 +794,7 @@ public class Evaluator {
         return obj;
     }
     
-    private static BooleanObj nativeBoolToBoolObj(bool input) {
+    private BooleanObj nativeBoolToBoolObj(bool input) {
         return input ? RepeatedPrimitives.TRUE : RepeatedPrimitives.FALSE;
     }
 
@@ -768,7 +803,7 @@ public class Evaluator {
     /// </summary>
     /// <param name="msg"></param>
     /// <returns></returns>
-    public static ErrorObj NewError(string msg) {
+    public ErrorObj NewError(string msg) {
         return new ErrorObj(msg);
     }
     
@@ -778,7 +813,7 @@ public class Evaluator {
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    private static bool isError(IObject obj) {
+    private bool isError(IObject obj) {
         if (obj != null) {
             return obj.Type() == ObjectType.ERROR_OBJ;
         }
@@ -786,7 +821,7 @@ public class Evaluator {
         return false;
     }
 
-    private static bool isTruthy(IObject obj) {
+    private bool isTruthy(IObject obj) {
         if (obj == RepeatedPrimitives.NULL) {
             return false;
         } else if (obj == RepeatedPrimitives.TRUE) {
@@ -797,6 +832,30 @@ public class Evaluator {
         
         return true;
     }
+    
+    private Dictionary<Type, NodeTypeMapValue> nodeTypeMap = new() {
+        {typeof(AbstractSyntaxTree), NodeTypeMapValue.ASTMapValue},
+        {typeof(BlockStatement), NodeTypeMapValue.BlockMapValue},
+        {typeof(ExpressionStatement), NodeTypeMapValue.ExpressMapValue},
+        {typeof(ReturnStatement), NodeTypeMapValue.ReturnMapValue},
+        {typeof(BreakStatement), NodeTypeMapValue.BreakMapValue},
+        {typeof(LetStatement), NodeTypeMapValue.LetMapValue},
+        {typeof(IntegerLiteral), NodeTypeMapValue.IntMapValue},
+        {typeof(FloatLiteral), NodeTypeMapValue.FloatMapValue},
+        {typeof(DoubleLiteral), NodeTypeMapValue.DoubleMapValue},
+        {typeof(BooleanLiteral), NodeTypeMapValue.BoolMapValue},
+        {typeof(ForLoopLiteral), NodeTypeMapValue.ForMapValue},
+        {typeof(PrefixExpression), NodeTypeMapValue.PrefixMapValue},
+        {typeof(InfixExpression), NodeTypeMapValue.InfixMapValue},
+        {typeof(IfExpression), NodeTypeMapValue.IfMapValue},
+        {typeof(Identifier), NodeTypeMapValue.IdentMapValue},
+        {typeof(FunctionLiteral), NodeTypeMapValue.FuncMapValue},
+        {typeof(CallExpression), NodeTypeMapValue.CallMapValue},
+        {typeof(StringLiteral), NodeTypeMapValue.StringMapValue},
+        {typeof(ArrayLiteral), NodeTypeMapValue.ArrayMapValue},
+        {typeof(IndexExpression), NodeTypeMapValue.IndexMapValue},
+        {typeof(HashLiteral), NodeTypeMapValue.HashMapValue},
+    };
 
     /// <summary>
     /// For use to compare types using switch through the help of dictionary and constant enum values.

@@ -26,3 +26,5 @@ for (let j = 0; j <= 10; j += 2) {
     c += 3.23d;  # 3.23d gets casted into float before assigning to variable 'c'.
 }
 print("c:", c);
+
+return [b, c];

@@ -4,80 +4,22 @@ using AquariusLang.utils;
 namespace AquariusLang.evaluator;
 
 public class Builtins {
-    public static readonly Dictionary<string, BuiltinObj> builtins = new() {
-        {
-            "len", new BuiltinObj(args => {
-                if (args.Length != 1)
-                    return Evaluator.NewError($"Wrong number of arguments. Got={args.Length}, want=1");
+    protected Dictionary<string, BuiltinObj> builtinFuncs;
+    protected Dictionary<string, IObject> builtins;
 
-                var arg0 = args[0];
-                var arg0Type = arg0.GetType();
-                if (arg0Type == typeof(StringObj)) {
-                    var arg0StrObj = (StringObj)arg0;
-                    return new IntegerObj(arg0StrObj.Value.Length);
-                }
+    public Builtins(Dictionary<string, BuiltinObj> builtinFuncs) {
+        this.builtinFuncs = builtinFuncs;
+    }
 
-                if (arg0Type == typeof(ArrayObj)) {
-                    var arg0ArrObj = (ArrayObj)arg0;
-                    return new IntegerObj(arg0ArrObj.Elements.Length);
-                }
+    public Builtins() {
+        builtinFuncs = new Dictionary<string, BuiltinObj>();
+        builtins = new();
+    }
 
-                return Evaluator.NewError($"Argument to `len` not supported, got {arg0.Type()}");
-            })
-        }, {
-            "last", new BuiltinObj(args => {
-                if (args.Length != 1)
-                    return Evaluator.NewError($"Wrong number of arguments. Got{args.Length}, want 1.");
+    protected static ErrorObj newError(string msg) {
+        return new ErrorObj(msg);
+    }
 
-                if (args[0].Type() != ObjectType.ARRAY_OBJ)
-                    return Evaluator.NewError($"Argument to `last` must be ARRAY, got {args[0].Type()}");
-
-                var array = (ArrayObj)args[0];
-                var length = array.Elements.Length;
-
-                return length > 0 ? array.Elements[length - 1] : RepeatedPrimitives.NULL;
-            })
-        }, {
-           "rest", new BuiltinObj(args => {
-               if (args.Length != 1)
-                   return Evaluator.NewError($"Wrong number of arguments. Got{args.Length}, want 1.");
-               if (args[0].Type() != ObjectType.ARRAY_OBJ)
-                   return Evaluator.NewError($"Argument to `rest` must be ARRAY, got {args[0].Type()}");
-               ArrayObj arrayObj = (ArrayObj)args[0];
-               int length = arrayObj.Elements.Length;
-               if (length > 0) {
-                   IObject[] newElements = arrayObj.Elements.Skip(1).ToArray();
-                   return new ArrayObj(newElements);
-               }
-
-               return RepeatedPrimitives.NULL;
-           }) 
-        }, {
-           "push", new BuiltinObj(args => {
-               if (args.Length != 2)
-                   return Evaluator.NewError($"Wrong number of arguments. Got{args.Length}, want 2.");
-
-               if (args[0].Type() != ObjectType.ARRAY_OBJ)
-                   return Evaluator.NewError($"Argument to `push` must be ARRAY, got {args[0].Type()}");
-               
-               ArrayObj arrayObj = (ArrayObj)args[0];
-               IObject[] newElements = Utils.PushToArray(arrayObj.Elements, args[1]);
-
-               return new ArrayObj(newElements);
-           }) 
-        }, {
-            "print", new BuiltinObj(args => {
-            for (var i = 0; i < args.Length; i++) {
-                Console.Write(args[i].Inspect());
-                if (i < args.Length - 1) {
-                    Console.Write(" ");
-                }
-            }
-            Console.WriteLine();
-
-            return null;
-        })}
-    };
-    
-
+    public Dictionary<string, BuiltinObj> BuiltinFuncs => builtinFuncs;
+    public Dictionary<string, IObject> _Builtins => builtins;
 }

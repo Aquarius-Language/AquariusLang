@@ -32,6 +32,7 @@ public struct TokenType {
     public const string SLASH_EQ = "/=";
     public const string AND_AND = "&&";
     public const string OR_OR = "||";
+    public const string DOT = ".";
         
     // Delimiters
     public const string COMMA     = ",";
