@@ -1,0 +1,4 @@
+﻿# This should generate error, as the array is not defined yet.
+for (let i = 0; i < len(array); i+=1) {
+    print(array[i])
+}

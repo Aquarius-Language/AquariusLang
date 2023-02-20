@@ -197,10 +197,21 @@ public class EvaluatorTest {
                     a;
                     ",
                 expected = "XD!XD!XD!Wow!",
+            },
+            new () {
+                input = @"
+                    # Empty for loop.
+                    for (let i = 0; i < 5; i+=1) {
+                    }
+                    ",
+                expected = null,
             }
         };
         foreach (ForLoopTest test in tests) {
             IObject result = testEval(test.input);
+            if (result == null) {
+                continue;
+            }
             if (result.Type() == ObjectType.INTEGER_OBJ) {
                 Assert.Equal(test.expected, ((IntegerObj)result).Value);
             } else if (result.Type() == ObjectType.STRING_OBJ) {
@@ -752,6 +763,22 @@ public class EvaluatorTest {
             } else {
                 Assert.True(testNullObject(evaluated));
             }
+        }
+    }
+
+    [Fact]
+    public void TestExceptionForIncorrectScript() {
+        string[] scripts = {
+            @"
+            # Use of undeclared array.
+            for (let i = 0; i < len(array); i+=1) {
+                print(array[i])
+            }
+            ",
+        };
+        foreach (string script in scripts) {
+            IObject evaluated = testEval(script);
+            Assert.IsType<ErrorObj>(evaluated);
         }
     }
 

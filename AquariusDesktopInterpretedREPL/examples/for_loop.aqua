@@ -1,4 +1,8 @@
-﻿let a = "";
+﻿# Empty for loop.
+for (let i = 0; i < 5; i+=1) {
+}
+
+let a = "";
 a = fn() {
     for (let j = 0; j <= 10; j += 2) {
         a += "XD!";

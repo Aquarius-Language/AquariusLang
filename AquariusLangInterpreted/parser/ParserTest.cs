@@ -782,6 +782,23 @@ public class ParserTest {
         }
     }
 
+    [Fact]
+    public void TestExceptionForIncorrectScript() {
+        string[] scripts = {
+            @"
+            # This should generate error, as there's no '++' implementation in AquariusLang yet.
+            for (let i = 0; i < 5; i++) {
+            }
+            ",
+        };
+        foreach (string script in scripts) {
+            Lexer lexer = Lexer.NewInstance(script);
+            Parser parser = Parser.NewInstance(lexer);
+            AbstractSyntaxTree tree = parser.ParseAST();
+            Assert.True(checkParserErrors(parser));
+        }
+    }
+
     private bool testInfixExpression(IExpression expression, object left, string _operator, object right) {
         if (expression.GetType() != typeof(InfixExpression)) {
             _testOutputHelper.WriteLine($"expression is not InfixExpression. Got={expression}");

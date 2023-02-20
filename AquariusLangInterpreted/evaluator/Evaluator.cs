@@ -98,6 +98,10 @@ public class Evaluator {
                         }
                         if (_node.Left is Identifier leftIdent) {
                             environment.Set(leftIdent.Value, _right);
+                        } else if (_node.Left is ArrayObj arrayObj) {
+                            throw new NotImplementedException("Value-reassignment for ArrayObj not implemented yet.");
+                        } else if (_node.Left is HashObj hashObj) {
+                            throw new NotImplementedException("Value-reassignment for HashObj not implemented yet.");
                         } else {
                             return NewError($"Left operand for = operator not identifier. Got={_node.Left.GetType()}");
                         }
@@ -679,58 +683,71 @@ public class Evaluator {
         IExpression conditionalExpression = node.ConditionalExpression;
         IStatement valueChangeStatement = node.ValueChangeStatement;
         BlockStatement blockStatement = node.Body;
-        
-        IObject letStmtResult = Eval(letStatement, enclosedEnvironment);
-        if (isError(letStmtResult)) {
-            return letStmtResult;
+
+        if (letStatement != null) {
+            IObject letStmtResult = Eval(letStatement, enclosedEnvironment);
+            if (isError(letStmtResult)) {
+                return letStmtResult;
+            }            
         }
 
         while (true) {
-            IObject evalConditionResult = Eval(conditionalExpression, enclosedEnvironment);
-            if (isError(evalConditionResult)) {
-                return evalConditionResult;
+            IObject evalConditionResult = null;
+            if (conditionalExpression != null) {
+                evalConditionResult = Eval(conditionalExpression, enclosedEnvironment);
+                if (isError(evalConditionResult)) {
+                    return evalConditionResult;
+                }
+            }
+
+            if (evalConditionResult == null) {
+                return NewError("No boolean result for for loop condition evaluation. Got=NULL.");
+            }
+            if (evalConditionResult.Type() != ObjectType.BOOLEAN_OBJ) {
+                NewError($"Expected bool from for loop conditionals. Got={evalConditionResult.Type()}");
             }
             
-            if (evalConditionResult.Type() == ObjectType.BOOLEAN_OBJ) {
-                if (!((BooleanObj)evalConditionResult).Value) {
-                    break;
-                }
+            if (!((BooleanObj)evalConditionResult).Value) {
+                break;
+            }
 
-                IObject result = Eval(blockStatement, enclosedEnvironment);
+            IObject result = null;
+            if (blockStatement != null) {
+                result = Eval(blockStatement, enclosedEnvironment);
                 if (isError(result)) {
                     return result;
                 }
+            }
 
-                /*
-                 * If the for loop is inside a function, this can instantiate a return value, break
-                 * out of this for loop, and return the value out of the function.
-                 */
-                if (result != null) {
-                    if (result.Type() == ObjectType.RETURN_VALUE_OBJ) {
-                        return unwrapReturnValue(result);
-                    } else if (result.Type() != ObjectType.NULL_OBJ) {
-                        if (result.Type() == ObjectType.BREAK_OBJ) {
-                            /*
-                             * If is break, just break out of current loop and avoid returning break object to
-                             * outer loop. As if returned to outer loop, the outer loop will also return to its
-                             * further outer loop.
-                             */
-                            break;
-                        }
+            /*
+             * If the for loop is inside a function, this can instantiate a return value, break
+             * out of this for loop, and return the value out of the function.
+             */
+            if (result != null) {
+                if (result.Type() == ObjectType.RETURN_VALUE_OBJ) {
+                    return unwrapReturnValue(result);
+                } else if (result.Type() != ObjectType.NULL_OBJ) {
+                    if (result.Type() == ObjectType.BREAK_OBJ) {
                         /*
-                         * If is nested for loop, the value returned from inner for loop will be the unwrapped
-                         * value from the ReturnValueObj.
+                         * If is break, just break out of current loop and avoid returning break object to
+                         * outer loop. As if returned to outer loop, the outer loop will also return to its
+                         * further outer loop.
                          */
-                        return result;
-                    } 
-                }
+                        break;
+                    }
+                    /*
+                     * If is nested for loop, the value returned from inner for loop will be the unwrapped
+                     * value from the ReturnValueObj.
+                     */
+                    return result;
+                } 
+            }
 
+            if (valueChangeStatement != null) {
                 IObject valChangeResult = Eval(valueChangeStatement, enclosedEnvironment);
                 if (isError(valChangeResult)) {
                     return valChangeResult;
                 }
-            } else {
-                NewError($"Expected bool from for loop conditionals. Got={evalConditionResult.Type()}");
             }
 
             string letStatementVarName = letStatement.Name.Value;
