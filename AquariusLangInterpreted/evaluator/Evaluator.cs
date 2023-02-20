@@ -652,6 +652,10 @@ public class Evaluator {
 
         while (true) {
             IObject evalConditionResult = Eval(conditionalExpression, enclosedEnvironment);
+            if (isError(evalConditionResult)) {
+                return evalConditionResult;
+            }
+            
             if (evalConditionResult.Type() == ObjectType.BOOLEAN_OBJ) {
                 if (!((BooleanObj)evalConditionResult).Value) {
                     break;
