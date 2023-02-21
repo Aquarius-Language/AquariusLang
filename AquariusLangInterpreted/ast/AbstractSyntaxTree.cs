@@ -1,9 +1,10 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using AquariusLang.token;
 
-namespace AquariusLang.ast;
-
-/// <summary>
+namespace AquariusLang.ast {
+    /// <summary>
 /// The base Node interface.
 /// </summary>
 public interface INode {
@@ -1047,4 +1048,6 @@ public class HashLiteral : IExpression {
         get => pairs;
         set => pairs = value;
     }
+}
+
 }
