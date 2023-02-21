@@ -11,7 +11,7 @@ public class ObjectTest {
         StringObj diff2 = new StringObj("My name is Johnny");
         
         Assert.Equal(hello1.HashKey(), hello2.HashKey());
-        Assert.Equal(diff1.HashKey(), hello2.HashKey());
+        Assert.Equal(diff1.HashKey(), diff2.HashKey());
         Assert.NotEqual(hello1.HashKey(), diff1.HashKey());
     }
 }

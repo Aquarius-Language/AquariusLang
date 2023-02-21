@@ -781,7 +781,7 @@ public class FunctionLiteral : IExpression {
     }
 }
 
-class CallExpression : IExpression {
+public class CallExpression : IExpression {
     private Token token; // The '(' token.
     private IExpression function; // Identifier or FunctionLiteral.
     private IExpression[] arguments;
