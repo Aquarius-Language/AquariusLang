@@ -818,7 +818,7 @@ namespace AquariusLang.evaluator {
 
         /// <summary>
         ///     Create a new environment (local scope) for inside the function. Values of variables
-        /// from paramters get passed into this newly created environment.
+        /// from parameters get passed into this newly created environment.
         ///
         ///     Extending the function’s environment and not the current environment also makes it
         /// possible to return closures:

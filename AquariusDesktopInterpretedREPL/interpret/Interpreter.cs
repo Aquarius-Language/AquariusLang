@@ -10,6 +10,7 @@ namespace AquariusREPL.interpret;
 
 public class Interpreter {
     const string PROMPT = ">> ";
+    static Environment environment = Environment.NewEnvironment();
 
     /// <summary>
     /// Read, Evaluate, Print, Loop.
@@ -31,7 +32,7 @@ public class Interpreter {
             }
 
             Evaluator evaluator = Evaluator.NewInstance(desktopBuiltins);
-            IObject evaluated = evaluator.Eval(tree, Environment.NewEnvironment());
+            IObject evaluated = evaluator.Eval(tree, environment);
             
             /*
              * Note: C#'s null shouldn't be printed out; but NullObj needs to be printed out.
